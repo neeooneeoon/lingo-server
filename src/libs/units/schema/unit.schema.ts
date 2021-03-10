@@ -58,8 +58,8 @@ export class Unit {
     @Prop({ type: String, ref: "Sentence" })
     sentenceIds: string[];
 
-    @Prop({ type: [Level] })
-    levels: [Level];
+    @Prop({ type: [Object] })
+    levels: Level[];
 
 }
 

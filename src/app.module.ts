@@ -9,6 +9,7 @@ import { WordsModule } from './libs/words/words.module';
 import { SentencesModule } from './libs/sentences/sentences.module';
 import { UnitsModule } from './libs/units/units.module';
 import { QuestionHoldersModule } from './libs/question-holders/question-holders.module';
+import { CaslModule } from './authorization/casl/casl.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,6 +24,7 @@ import { QuestionHoldersModule } from './libs/question-holders/question-holders.
     SentencesModule,
     UnitsModule,
     QuestionHoldersModule,
+    CaslModule,
     
     ],
   controllers: [AppController],

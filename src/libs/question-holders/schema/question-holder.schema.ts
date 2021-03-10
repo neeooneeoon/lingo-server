@@ -19,11 +19,10 @@ export class QuestionHolder {
     @Prop({ type: String })
     unitId: string;
 
-    @Prop({ type: [Question] })
+    @Prop({ type: [Object] })
     questions: [Question]
 
 }
 
 export type QuestionHolderDocument = Document & QuestionHolder;
 export const QuestionHolderSchema = SchemaFactory.createForClass(QuestionHolder);
-const a: QuestionHolderDocument = undefined;
