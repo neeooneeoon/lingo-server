@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
 
 @ApiTags('books')
 @Controller('api/books')
@@ -14,7 +16,10 @@ export class BooksController {
     return this.booksService.create(createBookDto);
   }
 
-  @Get()
+  @UseGuards(JwtAuthGuard)
+  @Get('all')
+  @ApiBearerAuth()
+  @ApiConsumes('application/json')
   findAll() {
     return this.booksService.findAll();
   }

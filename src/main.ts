@@ -6,6 +6,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      in: 'header',
+    })
     .setTitle('Swagger SMLing')
     .setDescription('The SMLing API description')
     .setVersion('2.0.0')

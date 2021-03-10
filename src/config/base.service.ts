@@ -1,6 +1,7 @@
 import { IBaseService } from "./i.base.service";
-import { Model, Document, Types } from "mongoose";
+import { Model, Document, Types, Schema } from "mongoose";
 import { InternalServerErrorException } from "@nestjs/common";
+import { InjectModel } from '@nestjs/mongoose';
 export class BaseService<T extends Document, R extends Model<T>> implements IBaseService<T> {
 
     protected readonly model: R;
