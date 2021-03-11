@@ -53,7 +53,7 @@ export class Book {
     @Prop({ type: Number, required: true, default: 0 })
     totalLessons: number;
     
-    @Prop({ type: [UnitSchema] })
+    @Prop({ type: [Object] })
     units: [UnitDocument]
 }
 

@@ -10,6 +10,8 @@ import { SentencesModule } from './libs/sentences/sentences.module';
 import { UnitsModule } from './libs/units/units.module';
 import { QuestionHoldersModule } from './libs/question-holders/question-holders.module';
 import { CaslModule } from './authorization/casl/casl.module';
+import { ProgressesModule } from './libs/progresses/progresses.module';
+import { WorksModule } from './libs/works/works.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,7 +27,8 @@ import { CaslModule } from './authorization/casl/casl.module';
     UnitsModule,
     QuestionHoldersModule,
     CaslModule,
-    
+    ProgressesModule,
+    WorksModule,
     ],
   controllers: [AppController],
   providers: [AppService],

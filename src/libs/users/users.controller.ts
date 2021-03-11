@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
+import { UserCtx } from 'src/common/custom.decorator';
+import { UserDocument } from './schema/user.schema';
 @ApiTags('users')
 @Controller('api/users')
 export class UsersController {
@@ -36,5 +39,13 @@ export class UsersController {
   @Post('/login')
   login() {
     return this.usersService.login();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/query/me')
+  @ApiBearerAuth()
+  @ApiConsumes('application/json')
+  queryMe(@UserCtx('user')user: UserDocument) {
+    return user;
   }
 }
