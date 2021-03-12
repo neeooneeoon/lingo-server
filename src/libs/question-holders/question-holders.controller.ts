@@ -20,7 +20,6 @@ export class QuestionHoldersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.questionHoldersService.findOne(+id);
   }
 
   @Put(':id')

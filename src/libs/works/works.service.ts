@@ -28,8 +28,8 @@ export class WorksService {
     return `This action returns all works`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} work`;
+  findOne(userId: Types.ObjectId | string, bookId: string) {
+    return this.workModel.findOne({ userId: userId, bookId: bookId });
   }
 
   update(id: number, updateWorkDto: UpdateWorkDto) {

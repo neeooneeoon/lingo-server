@@ -5,7 +5,7 @@ export class Question {
     _id: string;
     group: string;
     focus: string;
-    type: string;
+    type: number;
     choices: string[];
     hiddenIndex: number;
 }
@@ -20,7 +20,7 @@ export class QuestionHolder {
     unitId: string;
 
     @Prop({ type: [Object] })
-    questions: [Question]
+    questions: Array<Question>
 
 }
 

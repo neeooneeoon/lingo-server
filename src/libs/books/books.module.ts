@@ -6,6 +6,9 @@ import { Book, BookSchema } from './schema/book.schema';
 import { AuthenticationModule } from 'src/authentication/authentication.module';
 import { ProgressesModule } from '../progresses/progresses.module';
 import { WorksModule } from '../works/works.module';
+import { QuestionHoldersModule } from 'src/libs/question-holders/question-holders.module';
+import { WordsModule } from 'src/libs/words/words.module';
+import { SentencesModule } from 'src/libs/sentences/sentences.module';
 
 @Module({
   imports: [
@@ -15,6 +18,9 @@ import { WorksModule } from '../works/works.module';
     AuthenticationModule,
     ProgressesModule,
     WorksModule,
+    QuestionHoldersModule,
+    WordsModule,
+    SentencesModule,
   ],
   controllers: [BooksController],
   providers: [BooksService]

@@ -5,7 +5,7 @@ import { Progress, ProgressDocument } from './schema/progress.schema';
 import { Types, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { BookDocument } from '../books/schema/book.schema';
-import { mapUnitWithUserUnitProgress, mapBookToBookProgress } from 'src/common/result.map';
+import { mapUnitWithUserUnitProgress, mapBookToBookProgress } from 'src/helper/result.map';
 
 @Injectable()
 export class ProgressesService {

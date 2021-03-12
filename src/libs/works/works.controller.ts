@@ -21,7 +21,6 @@ export class WorksController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.worksService.findOne(+id);
   }
 
   @Put(':id')

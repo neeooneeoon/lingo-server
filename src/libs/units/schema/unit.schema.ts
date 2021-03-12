@@ -1,18 +1,48 @@
 import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
+export class SentenceQuestion {
+    _id: string;
+    type: string;
+    skills: string[];
+    questionType: number;
+    interaction: string;
+    point: number;
+    focusSentence: string;
+    sentences: string[]
+    wrongWords: string[];
+    hiddenWord: number;
+    checkSentence: string;
+    unitId: string;
+    bookId: string;
+    content: string;
+}
+
+export class WordQuestion {
+    _id: string;
+    type: string;
+    skills: string[];
+    interaction: string;
+    focusWord: string;
+    point: number;
+    questionType: number;
+    words: string[];
+    unitId: string;
+    bookId: string;
+    content: string;
+}
 export class Lesson {
     lessonIndex: number;
     totalQuestions: number
-    questions: [];
-    questionIds: [String];
+    questions: (SentenceQuestion | WordQuestion)[];
+    questionIds: Array<string>;
 }
 
 export class Level {
     levelIndex: number;
     totalLessons: number;
     totalQuestions: number;
-    lessons: [Lesson];
+    lessons: Array<Lesson>;
 }
 
 
@@ -52,7 +82,7 @@ export class Unit {
     @Prop({ type: String })
     tips: string;
 
-    @Prop({ type: [{ type: String, ref: "Word"}] })
+    @Prop({ type: [{ type: String, ref: "Word" }] })
     wordIds: string[];
 
     @Prop({ type: String, ref: "Sentence" })

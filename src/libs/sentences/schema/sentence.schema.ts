@@ -47,11 +47,11 @@ export class Sentence {
     @Prop({ type: Number })
     wordBaseIndex: number;
 
-    @Prop({ type: [TranSlateSplit] })
-    translateSplit: [TranSlateSplit]
+    @Prop({ type: [Object] })
+    translateSplit: Array<TranSlateSplit>
 
-    @Prop({ type: [ContentSplit] })
-    contentSplit: [ContentSplit]
+    @Prop({ type: [Object] })
+    contentSplit: Array<ContentSplit>
 }
 
 export type SentenceDocument = Document & Sentence;
