@@ -85,12 +85,10 @@ export class UsersService {
     try {
       const userProfile = await this.userHelper.queryMeFacebookByAccessToken(access_token);
       if (!userProfile) {
-        console.log("running")
         throw new BadRequestException('Can not find user facebook')
       }
       let user: UserDocument;
       if (userProfile.email) {
-        console.log("running")
         user = await this.userModel.findOne({ email: userProfile.email });
         if (!user) {
           user = await this.userModel.findOne({ facebookId: userProfile.id });
