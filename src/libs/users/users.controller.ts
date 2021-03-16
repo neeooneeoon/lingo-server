@@ -20,7 +20,7 @@ export class UsersController {
   @Get('/profile')
   @ApiBearerAuth()
   @ApiConsumes('application/json')
-  queryMe(@UserCtx('user')user: UserDocument) {
-    return this.usersService.queryMe(user)
+  queryMe(@UserCtx('user')user) {
+    return this.usersService.queryMe(user.userId)
   }
 }

@@ -3,7 +3,7 @@ import { AuthService } from 'src/authentication/auth.service';
 import { google } from "googleapis";
 import { InjectModel } from '@nestjs/mongoose';
 import { RankEnum, User, UserDocument } from './schema/user.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { UserHelper } from 'src/helper/user.helper';
 import { ProgressesService } from 'src/libs/progresses/progresses.service';
 import { UserLoginResponse } from './dto/user-profile.dto';
@@ -136,7 +136,8 @@ export class UsersService {
       throw new InternalServerErrorException(e)
     }
   }
-  public queryMe(user: UserDocument) {
+  async queryMe(userId: string | Types.ObjectId) {
+    const user = await this.userModel.findById(userId)
     return this.userHelper.mapToUserProfile(user)
   }
 }
