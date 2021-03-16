@@ -12,6 +12,10 @@ export class AuthService {
     }
     generateToken (user: any): string {
         const payload = { user: user }
-        return this.jwtService.sign( payload, { secret: process.env.TOKEN_KEY } )
+        return this.jwtService.sign( payload, { secret: process.env.TOKEN_KEY, expiresIn: 3600 } )
+    }
+    generateRefreshToken(user: any): string {
+        const payload = { user: user };
+        return this.jwtService.sign(payload, { secret: process.env.REFRESH_TOKEN_KEY, expiresIn: 864000 })
     }
 }

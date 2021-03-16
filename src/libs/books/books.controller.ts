@@ -17,18 +17,6 @@ import { Request } from 'express';
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
-  @Post()
-  create(@Body() createBookDto: CreateBookDto) {
-    return this.booksService.create(createBookDto);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('allByGrade')
-  @ApiConsumes('application/json')
-  findAll() {
-    return this.booksService.findAll();
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiConsumes('application/json')
@@ -64,15 +52,5 @@ export class BooksController {
     @Query('level') level: number, @Query('lesson') lesson: number
     ) {
       return this.booksService.getLessonsByUnit(user.userId, { bookId: bookId, unitId: unitId, lessonIndex: lesson, levelIndex: level })
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
-    return this.booksService.update(+id, updateBookDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.booksService.remove(+id);
   }
 }

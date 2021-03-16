@@ -9,28 +9,4 @@ import { UpdateSentenceDto } from './dto/update-sentence.dto';
 export class SentencesController {
   constructor(private readonly sentencesService: SentencesService) {}
 
-  @Post()
-  create(@Body() createSentenceDto: CreateSentenceDto) {
-    return this.sentencesService.create(createSentenceDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.sentencesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sentencesService.findOne(+id);
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateSentenceDto: UpdateSentenceDto) {
-    return this.sentencesService.update(+id, updateSentenceDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.sentencesService.remove(+id);
-  }
 }

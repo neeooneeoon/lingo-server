@@ -130,7 +130,6 @@ export class BooksService {
       }
       else {
         lesson = level.lessons.find(val => val.lessonIndex == request.lessonIndex);
-        console.log(lesson)
         if (!lesson) {
           const path = `${request.bookId}/${request.unitId}/${request.levelIndex}/${request.lessonIndex}`;
           throw new Error(`Can't find lesson: ${path}`);

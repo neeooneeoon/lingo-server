@@ -46,7 +46,7 @@ export class User {
     displayName: string;
 
     @Prop({ type: String })
-    role: String;
+    role: string;
 
     @Prop({ type: Number })
     level: number;

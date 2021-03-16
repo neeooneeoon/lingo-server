@@ -27,7 +27,7 @@ async function bootstrap() {
       '\u001b[' +
       32 +
       'm' +
-      `http://0.0.0.0:${process.env.PORT || 8080}/api-docs` +
+      `http://localhost:${process.env.PORT || 8080}/api-docs` +
       '\u001b[0m',
   );
 }

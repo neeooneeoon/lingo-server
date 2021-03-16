@@ -8,29 +8,4 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('progresses')
 export class ProgressesController {
   constructor(private readonly progressesService: ProgressesService) {}
-
-  @Post()
-  create(@Body() createProgressDto: CreateProgressDto) {
-    return this.progressesService.create(createProgressDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.progressesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.progressesService.findOne(+id);
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateProgressDto: UpdateProgressDto) {
-    return this.progressesService.update(+id, updateProgressDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.progressesService.remove(+id);
-  }
 }

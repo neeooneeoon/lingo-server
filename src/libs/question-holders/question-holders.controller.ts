@@ -8,27 +8,4 @@ import { ApiTags } from '@nestjs/swagger';
 export class QuestionHoldersController {
   constructor(private readonly questionHoldersService: QuestionHoldersService) {}
 
-  @Post()
-  create(@Body() createQuestionHolderDto: CreateQuestionHolderDto) {
-    return this.questionHoldersService.create(createQuestionHolderDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.questionHoldersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateQuestionHolderDto: UpdateQuestionHolderDto) {
-    return this.questionHoldersService.update(+id, updateQuestionHolderDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.questionHoldersService.remove(+id);
-  }
 }

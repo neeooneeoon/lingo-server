@@ -9,27 +9,4 @@ import { ApiTags } from '@nestjs/swagger';
 export class WorksController {
   constructor(private readonly worksService: WorksService) {}
 
-  @Post()
-  create(@Body() createWorkDto: CreateWorkDto) {
-    return this.worksService.create(createWorkDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.worksService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateWorkDto: UpdateWorkDto) {
-    return this.worksService.update(+id, updateWorkDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.worksService.remove(+id);
-  }
 }
