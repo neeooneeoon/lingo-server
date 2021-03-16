@@ -136,4 +136,7 @@ export class UsersService {
       throw new InternalServerErrorException(e)
     }
   }
+  public queryMe(user: UserDocument) {
+    return this.userHelper.mapToUserProfile(user)
+  }
 }

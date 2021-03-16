@@ -7,7 +7,9 @@ import { UserDocument } from './schema/user.schema';
 @ApiTags('users')
 @Controller('api/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    ) {}
 
   @Post('/login')
   login() {
@@ -15,10 +17,10 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/query/me')
+  @Get('/profile')
   @ApiBearerAuth()
   @ApiConsumes('application/json')
   queryMe(@UserCtx('user')user: UserDocument) {
-    return user;
+    return this.usersService.queryMe(user)
   }
 }
