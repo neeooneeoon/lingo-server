@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateSentenceDto } from './dto/create-sentence.dto';
 import { UpdateSentenceDto } from './dto/update-sentence.dto';
 import { Sentence, SentenceDocument } from './schema/sentence.schema';
@@ -17,28 +17,14 @@ export class SentencesService {
 
   constructor(@InjectModel(Sentence.name) private readonly sentenceModel: Model<SentenceDocument>) { }
 
-  create(createSentenceDto: CreateSentenceDto) {
-    return 'This action adds a new sentence';
-  }
-
-  findAll() {
-    return `This action returns all sentences`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} sentence`;
-  }
-
-  update(id: number, updateSentenceDto: UpdateSentenceDto) {
-    return `This action updates a #${id} sentence`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} sentence`;
-  }
   findSentences(sentenceIds: Set<string>) {
     return this.sentenceModel.find({ _id: { $in: Array.from(sentenceIds) } });
   }
+
+  findById(id: string) {
+    return this.sentenceModel.findById(id);
+  }
+
   createFakeSentences(questionId: string, sentence: SentenceDocument, words: Array<WordDocument>, sentenceIds: string[]): CreateFakeSentencesType {
     const errorSentences: Array<SentenceDataOfLesson> = [];
     let randomIndexes: Array<number> = Array.from(Array(sentence.contentSplit.length).keys()).sort(() => Math.random() - 0.5);

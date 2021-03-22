@@ -1,30 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { CreateQuestionHolderDto } from './dto/create-question-holder.dto';
-import { UpdateQuestionHolderDto } from './dto/update-question-holder.dto';
-import { QuestionHolderDocument, QuestionHolder } from './schema/question-holder.schema';
-import{ InjectModel } from '@nestjs/mongoose';
+import { QuestionHolderDocument, QuestionHolder, Question } from './schema/question-holder.schema';
+import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 @Injectable()
 export class QuestionHoldersService {
-  constructor(@InjectModel(QuestionHolder.name) private readonly questionHolderModel: Model<QuestionHolderDocument>) {}
-  create(createQuestionHolderDto: CreateQuestionHolderDto) {
-    return 'This action adds a new questionHolder';
-  }
-
-  findAll() {
-    return `This action returns all questionHolders`;
-  }
-
+  constructor(@InjectModel(QuestionHolder.name) private readonly questionHolderModel: Model<QuestionHolderDocument>) { }
   findOne(bookId: string, unitId: string) {
     return this.questionHolderModel.findOne({ bookId: bookId, unitId: unitId });
   }
-
-  update(id: number, updateQuestionHolderDto: UpdateQuestionHolderDto) {
-    return `This action updates a #${id} questionHolder`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} questionHolder`;
+  getQuestionPoint(question: Question): number {
+    if (question.group == "word") {
+      if ([2, 3, 4, 6, 6.4, 6.6, 13, 13.4].includes(question.type))
+        return 1;
+      else if ([9, 9.4].includes(question.type))
+        return 2;
+      else if ([7, 11, 12].includes(question.type))
+        return 3;
+      else if ([8, 14].includes(question.type))
+        return 4;
+    }
+    else {
+      if ([10, 12, 2].includes(question.type))
+        return 2;
+      else if ([1, 17, 7, 4].includes(question.type))
+        return 3;
+      else if ([14, 15, 16, 18].includes(question.type))
+        return 4;
+    }
   }
 }

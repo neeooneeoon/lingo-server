@@ -23,6 +23,7 @@ import { SentencesModule } from 'src/libs/sentences/sentences.module';
     SentencesModule,
   ],
   controllers: [BooksController],
-  providers: [BooksService]
+  providers: [BooksService],
+  exports: [BooksService]
 })
 export class BooksModule {}

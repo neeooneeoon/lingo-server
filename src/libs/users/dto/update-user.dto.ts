@@ -3,7 +3,7 @@ import { IsEmail } from 'class-validator';
 export class UpdateUserDto {
 
     @IsEmail()
-    @ApiProperty({ type: "string" })
+    @ApiProperty({ type: String, name:'email' })
     email: string
 
     @ApiProperty({ type: "string" })
@@ -19,7 +19,7 @@ export class UpdateUserDto {
     birthday: string
 
     @ApiProperty({ type: Number, default: 1 })
-    grade: string
+    grade: number
 
     @ApiProperty({ type: "string" })
     displayName: string

@@ -12,6 +12,7 @@ import { QuestionHoldersModule } from './libs/question-holders/question-holders.
 import { CaslModule } from './authorization/casl/casl.module';
 import { ProgressesModule } from './libs/progresses/progresses.module';
 import { WorksModule } from './libs/works/works.module';
+import { ReportModule } from './libs/report/report.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,6 +30,7 @@ import { WorksModule } from './libs/works/works.module';
     CaslModule,
     ProgressesModule,
     WorksModule,
+    ReportModule
     ],
   controllers: [AppController],
   providers: [AppService],

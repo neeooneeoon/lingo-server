@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -16,7 +16,8 @@ import { WordsService } from '../words/words.service';
 import { BookByGradeResponse } from './dto/book-by-grade.dto';
 import { mapWordToLessonData, mapSentenceToLessonData } from 'src/helper/result.map';
 import { getQuestionOutPut } from 'src/helper/helper';
-
+import { RequestLesson } from './dto/request-lesson.dto';
+import { LessonTree } from './dto/lesson-tree.dto';
 @Injectable()
 export class BooksService {
 
@@ -249,11 +250,45 @@ export class BooksService {
     }
   }
 
-  update(id: number, updateBookDto: UpdateBookDto) {
-    return `This action updates a #${id} book`;
-  }
+  async getLessonTree(request: RequestLesson): Promise<LessonTree> {
+    try {
+      const book = await this.bookModel.findById(request.bookId);
+      let checkIsLastLesson = false;
 
-  remove(id: number) {
-    return `This action removes a #${id} book`;
+      if (!book) {
+        throw new BadRequestException("Can not find book");
+      }
+      const unit = book.units.find(unit => unit._id === request.unitId);
+      if (!unit) {
+        throw new BadRequestException("Cant not find unit");
+      }
+      const level = unit.levels.find(level => level.levelIndex === request.levelIndex)
+      if (!level) {
+        throw new BadRequestException("Can not find level");
+      }
+      let lesson: Lesson;
+      if (request.levelIndex === unit.levels.length - 1 && request.lessonIndex === level.lessons.length) {
+        checkIsLastLesson = true;
+        lesson = level.lessons[level.lessons.length - 1];
+        if (!lesson) {
+          const path = `${request.bookId}/${request.unitId}/${request.levelIndex}/${request.lessonIndex}`;
+          throw new Error(`Can't find lesson: ${path}`);
+        }
+      }
+      return {
+        isLastLesson: checkIsLastLesson,
+        grade: book.grade,
+        bookId: book._id,
+        unitId: unit._id,
+        levelIndex: level.levelIndex,
+        lessonIndex: lesson.lessonIndex,
+        unitTotalLevels: unit.levels.length,
+        levelTotalLessons: level.lessons.length,
+        lessonTotalQuestions: lesson.totalQuestions,
+      }
+    }
+    catch (e) {
+      throw new InternalServerErrorException(e)
+    }
   }
 }

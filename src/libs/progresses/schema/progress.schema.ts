@@ -29,7 +29,7 @@ export type ProgressBookUnitLevel = {
     totalLessons: number,
     doneLessons: number,
     passed: boolean,
-    lessons: [number]
+    lessons: Array<number>
 }
 
 @Schema()

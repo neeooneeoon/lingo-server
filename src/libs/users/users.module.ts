@@ -10,6 +10,9 @@ import { FacebookStrategy } from 'src//authentication/facebook.strategy';
 import { FacebookAuthenticationController } from './facebookAuth.controller';
 import { UserHelper } from 'src/helper/user.helper';
 import { ProgressesModule } from 'src/libs/progresses/progresses.module';
+import { BooksModule } from 'src/libs/books/books.module';
+import { WorksModule } from 'src/libs/works/works.module';
+import { LeaderBoardModule } from 'src/libs/leaderBoard/leaderBoard.module';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -19,6 +22,9 @@ import { ProgressesModule } from 'src/libs/progresses/progresses.module';
     GoogleStrategy,
     FacebookStrategy,
     ProgressesModule,
+    BooksModule,
+    WorksModule,
+    LeaderBoardModule,
   ],
   controllers: [UsersController, GoogleAuthentication, FacebookAuthenticationController],
   providers: [UsersService, UserHelper]
