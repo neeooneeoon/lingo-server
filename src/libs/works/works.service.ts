@@ -40,7 +40,7 @@ export class WorksService {
     try {
       const { bookId, unitId, levelIndex, lessonIndex } = lessonTree;
       const userWork = await this.workModel.findOne({ bookId: bookId, userId: user._id });
-      const questionHolder = await this.questionHolderService.findOne(bookId, unitId);
+      const questionHolder = await this.questionHolderService.findOne(bookId, unitId, levelIndex );
       const userUnitWorkIndex = userWork.units.findIndex(work => work.unitId === unitId);
       if (userUnitWorkIndex == -1) {
         const userUnit: UnitWork = {

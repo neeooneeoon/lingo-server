@@ -130,13 +130,14 @@ export class BooksService {
         lesson = level.lessons[level.lessons.length - 1];
       }
       else {
-        lesson = level.lessons.find(val => val.lessonIndex == request.lessonIndex);
+        lesson = level.lessons[request.lessonIndex];
         if (!lesson) {
           const path = `${request.bookId}/${request.unitId}/${request.levelIndex}/${request.lessonIndex}`;
           throw new Error(`Can't find lesson: ${path}`);
         }
       }
-      const questionHolder = await this.questionHolderService.findOne(request.bookId, request.unitId);
+      // console.log(les)
+      const questionHolder = await this.questionHolderService.findOne(request.bookId, request.unitId, request.levelIndex);
       const questions = questionHolder.questions;
 
       if (lesson.questionIds.length == 0) {
