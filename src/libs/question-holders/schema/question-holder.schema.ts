@@ -19,6 +19,9 @@ export class QuestionHolder {
     @Prop({ type: String })
     unitId: string;
 
+    @Prop({ type: Number })
+    level: number;
+
     @Prop({ type: [Object] })
     questions: Array<Question>
 
