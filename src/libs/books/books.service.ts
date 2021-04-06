@@ -110,7 +110,6 @@ export class BooksService {
       throw new InternalServerErrorException(e)
     }
   }
-
   async getLessonsByUnit(userId: Types.ObjectId | string, request: GetLessonsByUnitInput) {
     try {
       const book = await this.bookModel.findById(request.bookId);
@@ -136,6 +135,7 @@ export class BooksService {
           throw new Error(`Can't find lesson: ${path}`);
         }
       }
+      const missed = await this.wordService.getMissedSpelling(book.nId, unit.nId)
       const questionHolder = await this.questionHolderService.findOne(request.bookId, request.unitId);
       const questions = questionHolder.questions;
 
@@ -242,7 +242,8 @@ export class BooksService {
       return {
         lesson: lesson,
         words: resultWords,
-        sentences: resultSentences
+        sentences: resultSentences,
+        missedSpelling: missed
       };
     }
     catch (e) {
