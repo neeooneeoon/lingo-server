@@ -8,6 +8,7 @@ import { Question } from 'src/libs/question-holders/schema/question-holder.schem
 import { SentenceDocument } from 'src/libs/sentences/schema/sentence.schema';
 import { Result } from 'src/libs/works/dto/result.dto';
 import { SentencesService } from 'src/libs/sentences/sentences.service';
+import { MissedSpelling, MissedSpellingDocument } from './schema/missedSpelling.schema';
 type CreateFakeWordsType = {
   errorWords: WordDataOfLesson[],
   choices: string[]
@@ -18,6 +19,7 @@ export class WordsService {
 
   constructor(
     @InjectModel(Word.name) private readonly wordModel: Model<WordDocument>,
+    @InjectModel(MissedSpelling.name) private readonly missedSpellingModel: Model<MissedSpellingDocument>,
     private readonly sentenceService: SentencesService
     ) { }
 
@@ -260,6 +262,15 @@ export class WordsService {
 
     }
     catch (e) {
+      throw new InternalServerErrorException(e)
+    }
+  }
+  async getMissedSpelling(bookNId: number, unitNId: number) {
+    try {
+      const missed = await this.missedSpellingModel.find({ bookNId: bookNId, unitNId: unitNId })
+      return missed;
+    }
+    catch(e) {
       throw new InternalServerErrorException(e)
     }
   }
