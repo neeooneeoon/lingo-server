@@ -268,7 +268,7 @@ export class BooksService {
         throw new BadRequestException("Can not find level");
       }
       let lesson: Lesson;
-      if (request.levelIndex === unit.levels.length - 1 && request.lessonIndex === level.lessons.length) {
+      if (request.levelIndex && request.levelIndex === unit.levels.length - 1 && request.lessonIndex === level.lessons.length) {
         checkIsLastLesson = true;
         lesson = level.lessons[level.lessons.length - 1];
         if (!lesson) {
@@ -276,13 +276,16 @@ export class BooksService {
           throw new Error(`Can't find lesson: ${path}`);
         }
       }
+      else {
+        lesson = level.lessons[request.lessonIndex];
+      }
       return {
         isLastLesson: checkIsLastLesson,
         grade: book.grade,
         bookId: book._id,
         unitId: unit._id,
         levelIndex: level.levelIndex,
-        lessonIndex: lesson.lessonIndex,
+        lessonIndex: lesson?.lessonIndex,
         unitTotalLevels: unit.levels.length,
         levelTotalLessons: level.lessons.length,
         lessonTotalQuestions: lesson.totalQuestions,

@@ -18,7 +18,7 @@ export class WorksService {
     private readonly questionHolderService: QuestionHoldersService,
     private readonly wordService: WordsService,
   ) { }
-
+  
   findOne(userId: string | Types.ObjectId, bookId: string) {
     return this.workModel.findOne({ userId: userId, bookId: bookId })
   }
@@ -36,11 +36,27 @@ export class WorksService {
       throw new InternalServerErrorException(e)
     }
   }
+
+  async findUserWorkIfNotExistThenCreateNew(bookId:string, userId:string): Promise<Work> {
+    const userWork = await this.workModel.findOne({ bookId: bookId, userId: userId });
+    if (userWork) {
+      return userWork;
+    } else {
+      const units:Array<any> = [];
+      const createWorkDto: CreateWorkDto = {
+        userId: userId,
+        bookId: bookId,
+        units: units
+      }
+      return this.create(createWorkDto);
+    }
+  }
+
   async saveUserWork(user: UserDocument, lessonTree: LessonTree, workInfo: WorkInfo, results: Array<Result>): Promise<number> {
     try {
       const { bookId, unitId, levelIndex, lessonIndex } = lessonTree;
       const userWork = await this.workModel.findOne({ bookId: bookId, userId: user._id });
-      const questionHolder = await this.questionHolderService.findOne(bookId, unitId, levelIndex );
+      const questionHolder = await this.questionHolderService.findOne(bookId, unitId, levelIndex);
       const userUnitWorkIndex = userWork.units.findIndex(work => work.unitId === unitId);
       if (userUnitWorkIndex == -1) {
         const userUnit: UnitWork = {
@@ -136,7 +152,7 @@ export class WorksService {
       const bonusLevel = lessonTree.levelIndex;
       const bonusLesson = lessonTree.lessonIndex / 2;
       return Number.isNaN(Math.floor(questionPoint + bonusLevel + bonusStreak + bonusLesson)) ? 0 :
-      Math.floor(questionPoint + bonusLevel + bonusStreak + bonusLesson);
+        Math.floor(questionPoint + bonusLevel + bonusStreak + bonusLesson);
     }
     catch (e) {
       throw new InternalServerErrorException(e)

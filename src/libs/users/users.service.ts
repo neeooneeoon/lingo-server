@@ -232,7 +232,7 @@ export class UsersService {
       }
       else {
         const { bookId, unitId } = input;
-        const levelIndex = Number(input.lessonIndex);
+        const levelIndex = Number(input.levelIndex);
         const lessonIndex = Number(input.lessonIndex);
         const results = input.results.map(result => ({ _id: result._id, answer: result.answer, status: false }));
         const userWork: WorkInfo = {
@@ -240,12 +240,14 @@ export class UsersService {
           timeStart: new Date(input.timeStart),
           timeEnd: new Date(input.timeEnd)
         }
-        const lessonTree = await this.bookService.getLessonTree({ bookId, unitId, lessonIndex, levelIndex });
-        const LevelPassStatus = await this.progressService.saveProgress(userId, lessonTree, userWork);
+        const lessonTree = await this.bookService.getLessonTree({ bookId, unitId, levelIndex, lessonIndex });
+        // const LevelPassStatus = await this.progressService.saveProgress(userId, lessonTree, userWork);
+        console.log(lessonTree); 
         const point = await this.workService.saveUserWork(user, lessonTree, userWork, results);
-        await this.updateUserStatus(user, userWork, LevelPassStatus, point)
-        await this.leaderBoardService.updateUserPoint(user, point)
-        return "Save User Work"
+        console.log(point);
+        // await this.updateUserStatus(user, userWork, LevelPassStatus, point)
+        // await this.leaderBoardService.updateUserPoint(user, point)
+        return "Save User Work";
       }
     }
     catch (e) {
