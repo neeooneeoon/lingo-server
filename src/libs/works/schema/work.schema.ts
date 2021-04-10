@@ -11,6 +11,7 @@ export type UnitWork = {
 export type LevelWork = {
     levelIndex: number;
     lessons: LessonWork[];
+    incorrectList: string[];
 }
 
 export type LessonWork = {

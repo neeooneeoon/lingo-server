@@ -8,6 +8,7 @@ export class Question {
     type: number;
     choices: string[];
     hiddenIndex: number;
+    rank?: number;
 }
 
 @Schema()

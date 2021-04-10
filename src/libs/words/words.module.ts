@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Word, WordSchema } from './schema/word.schema';
 import { SentencesModule } from 'src/libs/sentences/sentences.module';
 import { MissedSpelling, MissedSpellingSchema } from './schema/missedSpelling.schema';
+import { ExtendHelper } from 'src/helper/extendHelper';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -14,7 +15,7 @@ import { MissedSpelling, MissedSpellingSchema } from './schema/missedSpelling.sc
     SentencesModule
   ],
   controllers: [WordsController],
-  providers: [WordsService],
+  providers: [WordsService, ExtendHelper],
   exports: [WordsService]
 })
 export class WordsModule {}

@@ -1,16 +1,18 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateProgressDto } from './dto/create-progress.dto';
-import { UpdateProgressDto } from './dto/update-progress.dto';
 import { Progress, ProgressDocument } from './schema/progress.schema';
 import { Types, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { BookDocument } from '../books/schema/book.schema';
-import { mapUnitWithUserUnitProgress, mapBookToBookProgress } from 'src/helper/result.map';
+import { ResultMappingHelper } from 'src/helper/resultMapping.helper';
 import { LessonTree } from 'src/libs/books/dto/lesson-tree.dto';
 import { WorkInfo } from 'src/libs/works/dto/work-info.dto';
 @Injectable()
 export class ProgressesService {
-  constructor(@InjectModel(Progress.name) private readonly progressModel: Model<ProgressDocument>) { }
+  constructor(
+    @InjectModel(Progress.name) private readonly progressModel: Model<ProgressDocument>,
+    private readonly resultMapping: ResultMappingHelper,
+    ) { }
   async create(createProgressDto: CreateProgressDto) {
     return this.progressModel.create({ userId: createProgressDto.userId, books: createProgressDto.books })
   }
@@ -51,11 +53,11 @@ export class ProgressesService {
       const units = book.units.map(unit => {
         const unitProgress = bookProgress.units.find(unitProgress => unitProgress.unitId === unit._id);
         if (unitProgress)
-          return mapUnitWithUserUnitProgress(unit, unitProgress);
+          return this.resultMapping.mapUnitWithUserUnitProgress(unit, unitProgress);
         else
-          return mapUnitWithUserUnitProgress(unit);
+          return this.resultMapping.mapUnitWithUserUnitProgress(unit);
       });
-      return mapBookToBookProgress(book, bookProgress, units);
+      return this.resultMapping.mapBookToBookProgress(book, bookProgress, units);
     }
     catch (e) {
       throw new IntersectionObserver(e);

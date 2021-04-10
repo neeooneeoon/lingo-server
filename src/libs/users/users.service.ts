@@ -242,9 +242,9 @@ export class UsersService {
         }
         const lessonTree = await this.bookService.getLessonTree({ bookId, unitId, levelIndex, lessonIndex });
         // const LevelPassStatus = await this.progressService.saveProgress(userId, lessonTree, userWork);
-        console.log(lessonTree); 
+        // console.log(lessonTree); 
         const point = await this.workService.saveUserWork(user, lessonTree, userWork, results);
-        console.log(point);
+        // console.log(point);
         // await this.updateUserStatus(user, userWork, LevelPassStatus, point)
         // await this.leaderBoardService.updateUserPoint(user, point)
         return "Save User Work";

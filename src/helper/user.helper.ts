@@ -49,7 +49,7 @@ export class UserHelper {
                 }
             })
             .catch(e => {
-                console.log(e)
+                throw new InternalServerErrorException(e)
             })
             return facebookProfile;
         }

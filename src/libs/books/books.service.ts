@@ -1,7 +1,6 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
 import { Book, BookDocument } from './schema/book.schema';
 import { Model, Types } from 'mongoose';
 import { ProgressesService } from 'src/libs/progresses/progresses.service';
@@ -14,10 +13,10 @@ import { SentenceDocument } from '../sentences/schema/sentence.schema';
 import { SentencesService } from '../sentences/sentences.service';
 import { WordsService } from '../words/words.service';
 import { BookByGradeResponse } from './dto/book-by-grade.dto';
-import { mapWordToLessonData, mapSentenceToLessonData } from 'src/helper/result.map';
 import { getQuestionOutPut } from 'src/helper/helper';
 import { RequestLesson } from './dto/request-lesson.dto';
 import { LessonTree } from './dto/lesson-tree.dto';
+import { ResultMappingHelper } from 'src/helper/resultMapping.helper';
 @Injectable()
 export class BooksService {
 
@@ -28,11 +27,8 @@ export class BooksService {
     private readonly questionHolderService: QuestionHoldersService,
     private readonly sentenceService: SentencesService,
     private readonly wordService: WordsService,
+    private readonly resultMapping: ResultMappingHelper
   ) { }
-
-  create(createBookDto: CreateBookDto) {
-    return 'This action adds a new book';
-  }
 
   async findAll(): Promise<BookDocument[]> {
     try {
@@ -135,54 +131,55 @@ export class BooksService {
           throw new Error(`Can't find lesson: ${path}`);
         }
       }
-      const missed = await this.wordService.getMissedSpelling(book.nId, unit.nId)
-      // console.log(les)
       const questionHolder = await this.questionHolderService.findOne(request.bookId, request.unitId, request.levelIndex);
       const questions = questionHolder.questions;
 
       if (lesson.questionIds.length == 0) {
         const userWork = await this.workService.findOne(userId, request.bookId);
         const userUnit = userWork.units.find(val => val.unitId === request.unitId);
-        const incorrectList = userUnit.incorrectList;
+
         if (userUnit.levels[userUnit.levels.length - 1].levelIndex !== level.levelIndex) {
-          if (incorrectList.length <= 9)
-            lesson.questionIds.push(...incorrectList);
-          else if (incorrectList.length > 9) {
-            const incorrectIndexes: number[] = [];
-            while (incorrectIndexes.length < 6) {
-              const index = Math.floor(Math.random() * incorrectList.length);
-              if (!incorrectIndexes.includes(index)) {
-                lesson.questionIds.push(incorrectList[index]);
-                incorrectIndexes.push(index);
-              }
-            }
+          const userLevel = userUnit.levels.find(val => val.levelIndex === level.levelIndex);
+          const levelIncorrectList = userLevel.incorrectList;
+
+          const incorrectPercent = Math.floor(levelIncorrectList.length / questions.length) * 100;
+          if (incorrectPercent < 20) {
+            lesson.questionIds = questions.filter(question => question.rank === 4)
+              .sort(() => 0.5 - Math.random()).slice(0, 10).map(question => question._id);
+          } else if (incorrectPercent >= 20 && incorrectPercent < 40) {
+            lesson.questionIds = questions.filter(question => question.rank < 4 && question.rank > 1)
+              .sort(() => 0.5 - Math.random()).slice(0, 10).map(question => question._id);
+          } else if (incorrectPercent >= 40) {
+            lesson.questionIds = questions.filter(question => question.rank === 1)
+              .sort(() => 0.5 - Math.random()).slice(0, 10).map(question => question._id);
           }
-        }
-        else {
-          const didList = userUnit.didList;
-          const leftOver = incorrectList.filter(q => didList.indexOf(q) === -1);
-          if (leftOver.length <= 7)
-            lesson.questionIds.push(...leftOver);
           else {
-            const incorrectIndexes: number[] = [];
-            while (incorrectIndexes.length < 7) {
-              const index = Math.floor(Math.random() * leftOver.length);
-              if (!incorrectIndexes.includes(index)) {
-                lesson.questionIds.push(leftOver[index]);
-                incorrectIndexes.push(index);
+            const unitIncorrectList = userUnit.incorrectList;
+            const didList = userUnit.didList;
+            const leftOver = unitIncorrectList.filter(q => didList.indexOf(q) === -1);
+            if (leftOver.length <= 7) {
+              lesson.questionIds.push(...leftOver);
+            } else {
+              const incorrectIndexes: number[] = [];
+              while (incorrectIndexes.length < 7) {
+                const index = Math.floor(Math.random() * leftOver.length);
+                if (!incorrectIndexes.includes(index)) {
+                  lesson.questionIds.push(leftOver[index]);
+                  incorrectIndexes.push(index);
+                }
               }
             }
           }
-        }
-        const indexes: number[] = [];
-        while (lesson.questionIds.length < 12) {
-          const index = Math.floor(Math.random() * questions.length);
-          if (!indexes.includes(index)) {
-            lesson.questionIds.push(questions[index]._id);
-            indexes.push(index);
+          const indexes: number[] = [];
+          while (lesson.questionIds.length < 12) {
+            const index = Math.floor(Math.random() * questions.length);
+            if (!indexes.includes(index)) {
+              lesson.questionIds.push(questions[index]._id);
+              indexes.push(index);
+            }
           }
+          lesson.questionIds = lesson.questionIds.sort(() => 0.5 - Math.random());
         }
-        lesson.questionIds = lesson.questionIds.sort(() => 0.5 - Math.random());
       }
       const wordIds: Set<string> = new Set(unit.wordIds);
       const sentenceIds: Set<string> = new Set(unit.sentenceIds);
@@ -192,7 +189,7 @@ export class BooksService {
 
       for (let questionIdIndex = 0; questionIdIndex < lesson.questionIds.length; questionIdIndex++) {
         const question = questions.find(q => q._id == lesson.questionIds[questionIdIndex]);
-        if (question.group == "word") {
+        if (question && question.group == "word") {
           if (question.focus !== "")
             wordIds.add(question.focus);
           for (const choice of question.choices) {
@@ -201,7 +198,7 @@ export class BooksService {
               indexes.push(questionIdIndex);
             }
           }
-        } else {
+        } else if (question && question.group !== "word") {
           sentenceIds.add(question.focus);
           for (const choice of question.choices) {
             if (choice != "ERROR" && !choice.includes("@")) {
@@ -213,38 +210,41 @@ export class BooksService {
       }
       words.push(...await this.wordService.findWords(wordIds));
       sentences.push(...await this.sentenceService.findSentences(sentenceIds));
-      const resultWords = words.map(word => mapWordToLessonData(word));
-      const resultSentences = sentences.map(sentence => mapSentenceToLessonData(sentence));
+
+      const missed = await this.wordService.getMissedSpelling(book.nId, unit.nId) as unknown as Partial<WordDocument>[]
+      const resultWords = words.map(word => this.resultMapping.mapWordToLessonData(word));
+      const resultSentences = sentences.map(sentence => this.resultMapping.mapSentenceToLessonData(sentence));
       for (let questionIdIndex = 0; questionIdIndex < lesson.questionIds.length; questionIdIndex++) {
         const question = questions.find(q => q._id == lesson.questionIds[questionIdIndex]);
-        if (indexes.includes(questionIdIndex)) {
-          if (question.group == "word") {
-            const word = words.find(word => word._id == question.focus);
-            const { choices, errorWords } = this.wordService.createFakeWords(question._id, word, question.choices);
-            question.choices = choices;
-            resultWords.push(...errorWords);
-          }
-          else {
-            if (question.type == 7) {
-              const sentence = sentences.find(sentence => sentence._id == question.focus);
-              question.choices = this.wordService.createFakeWordContent(question, sentence, words.map(word => word.content));
-            }
-            else if (question.type == 10) {
-              const sentence = sentences.find(sentence => sentence._id == question.focus);
-              const { choices, errorSentences }
-                = this.sentenceService.createFakeSentences(question._id, sentence, words, question.choices);
+        if (question) {
+          if (indexes.includes(questionIdIndex)) {
+            if (question && question.group == "word") {
+              const word = words.find(word => word._id == question.focus);
+              const { choices, errorWords } = this.wordService.createFakeWords(question._id, word, question.choices);
               question.choices = choices;
-              resultSentences.push(...errorSentences);
+              resultWords.push(...errorWords);
+            }
+            else if (question && question.group !== "word"){
+              if (question.type == 7) {
+                const sentence = sentences.find(sentence => sentence._id == question.focus);
+                question.choices = this.wordService.createFakeWordContent(question, sentence, words.map(word => word.content));
+              }
+              else if (question.type == 10) {
+                const sentence = sentences.find(sentence => sentence._id == question.focus);
+                const { choices, errorSentences }
+                  = this.sentenceService.createFakeSentences(question._id, sentence, words, question.choices);
+                question.choices = choices;
+                resultSentences.push(...errorSentences);
+              }
             }
           }
+          lesson.questions.push(getQuestionOutPut(question));
         }
-        lesson.questions.push(getQuestionOutPut(question));
       }
       return {
         lesson: lesson,
-        words: resultWords,
+        words: [...resultWords, ...missed],
         sentences: resultSentences,
-        missedSpelling: missed
       };
     }
     catch (e) {

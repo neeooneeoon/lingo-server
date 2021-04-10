@@ -3,7 +3,7 @@ import { ProgressesService } from './progresses.service';
 import { ProgressesController } from './progresses.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Progress, ProgressSchema } from './schema/progress.schema';
-
+import { ResultMappingHelper } from 'src/helper/resultMapping.helper';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -11,7 +11,7 @@ import { Progress, ProgressSchema } from './schema/progress.schema';
     ])
   ],
   controllers: [ProgressesController],
-  providers: [ProgressesService],
+  providers: [ProgressesService, ResultMappingHelper],
   exports: [ProgressesService]
 })
 export class ProgressesModule {}

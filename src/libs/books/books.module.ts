@@ -9,6 +9,7 @@ import { WorksModule } from '../works/works.module';
 import { QuestionHoldersModule } from 'src/libs/question-holders/question-holders.module';
 import { WordsModule } from 'src/libs/words/words.module';
 import { SentencesModule } from 'src/libs/sentences/sentences.module';
+import { ResultMappingHelper } from 'src/helper/resultMapping.helper';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { SentencesModule } from 'src/libs/sentences/sentences.module';
     SentencesModule,
   ],
   controllers: [BooksController],
-  providers: [BooksService],
+  providers: [BooksService, ResultMappingHelper],
   exports: [BooksService]
 })
 export class BooksModule {}

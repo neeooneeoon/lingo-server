@@ -6,8 +6,7 @@ import { UpdateSentenceDto } from './dto/update-sentence.dto';
 import { Sentence, SentenceDocument } from './schema/sentence.schema';
 import { WordDocument } from 'src/libs/words/schema/word.schema';
 import { SentenceDataOfLesson } from './dto/sentence.dto';
-import { getReplaceCharacter } from 'src/helper/textFormat';
-
+import { ExtendHelper } from 'src/helper/extendHelper';
 type CreateFakeSentencesType = {
   errorSentences: Array<SentenceDataOfLesson>,
   choices: Array<string>
@@ -15,7 +14,10 @@ type CreateFakeSentencesType = {
 @Injectable()
 export class SentencesService {
 
-  constructor(@InjectModel(Sentence.name) private readonly sentenceModel: Model<SentenceDocument>) { }
+  constructor(
+    @InjectModel(Sentence.name) private readonly sentenceModel: Model<SentenceDocument>,
+    private readonly extendHelper: ExtendHelper
+    ) { }
 
   findSentences(sentenceIds: Set<string>) {
     return this.sentenceModel.find({ _id: { $in: Array.from(sentenceIds) } });
@@ -83,7 +85,7 @@ export class SentencesService {
                 if (["?", "!", "-", ".", ",", "'", "`", "_"].includes(characters[random]))
                   continue;
                 if (Math.random() <= 0.3) {
-                  const replaceCharacter = getReplaceCharacter(characters[random]);
+                  const replaceCharacter = this.extendHelper.getReplaceCharacter(characters[random]);
                   characters[random] = replaceCharacter;
                 } else if (Math.random() > 0.3 && Math.random() <= 0.6) {
                   characters.splice(random, 1);

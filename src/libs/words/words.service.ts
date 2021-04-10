@@ -3,7 +3,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { WordDataOfLesson } from './dto/word.dto';
-import { getReplaceCharacter } from 'src/helper/textFormat';
+import { ExtendHelper } from 'src/helper/extendHelper';
 import { Question } from 'src/libs/question-holders/schema/question-holder.schema';
 import { SentenceDocument } from 'src/libs/sentences/schema/sentence.schema';
 import { Result } from 'src/libs/works/dto/result.dto';
@@ -20,7 +20,8 @@ export class WordsService {
   constructor(
     @InjectModel(Word.name) private readonly wordModel: Model<WordDocument>,
     @InjectModel(MissedSpelling.name) private readonly missedSpellingModel: Model<MissedSpellingDocument>,
-    private readonly sentenceService: SentencesService
+    private readonly sentenceService: SentencesService,
+    private readonly extendHelper: ExtendHelper,
     ) { }
 
   findWords(wordIds: Set<string>) {
@@ -40,7 +41,7 @@ export class WordsService {
             continue;
           }
           if (Math.random() <= 0.3) {
-            const replaceCharacter = getReplaceCharacter(characters[random]);
+            const replaceCharacter = this.extendHelper.getReplaceCharacter(characters[random]);
             characters[random] = replaceCharacter;
           }
           else if (Math.random() > 0.3 && Math.random() <= 0.6) {
@@ -102,7 +103,7 @@ export class WordsService {
               continue;
             }
             if (Math.random() <= 0.3) {
-              const replaceCharacter = getReplaceCharacter(characters[random]);
+              const replaceCharacter = this.extendHelper.getReplaceCharacter(characters[random]);
               characters[random] = replaceCharacter;
             }
             else if (Math.random() > 0.3 && Math.random() <= 0.6) {

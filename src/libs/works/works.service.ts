@@ -70,7 +70,8 @@ export class WorksService {
                   lessonIndex: lessonTree.lessonIndex,
                   works: []
                 }
-              ]
+              ],
+              incorrectList: []
             }
           ],
           didList: [],
@@ -82,7 +83,8 @@ export class WorksService {
         if (userLevelWorkIndex === -1) {
           const newUserLevelWork: LevelWork = {
             levelIndex: lessonTree.levelIndex,
-            lessons: [{ lessonIndex: lessonIndex, works: [] }]
+            lessons: [{ lessonIndex: lessonIndex, works: [] }],
+            incorrectList: []
           };
           userWork.units[userUnitWorkIndex].levels.push(newUserLevelWork);
         }
