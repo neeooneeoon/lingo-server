@@ -1,12 +1,51 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { UserDocument } from '../users/schema/user.schema';
-import { LeaderBoard, LeaderBoardDocument } from './schema/leaderBoard.schema';
+import { LeaderBoard, LeaderBoardDocument, Rank } from './schema/leaderBoard.schema';
+import { UsersService } from 'src/libs/users/users.service';
 
 @Injectable()
 export class LeaderBoardService {
-    constructor(@InjectModel(LeaderBoard.name) private readonly leaderBoardModel: Model<LeaderBoardDocument>) { }
+    constructor(
+        @InjectModel(LeaderBoard.name) private readonly leaderBoardModel: Model<LeaderBoardDocument>,
+         private readonly userService: UsersService
+    ) { }
+
+    async getLeaderBoard(userId: string, rank: Rank) {
+        try {
+            let leaderBoard = await this.leaderBoardModel.findOne({
+                rank: rank,
+                "champions.userId": Types.ObjectId(userId)
+            })
+            if (!leaderBoard) {
+                leaderBoard = await this.leaderBoardModel.findOne({ rank: rank, group: 1 });
+            }
+            const userIds = leaderBoard.champions.map(e => e.userId);
+            const users = await this.userService.findUserByLeaderBoardChampion(userIds);
+            if (users) {
+                const result = {
+                    champions: leaderBoard.champions.map(champion => {
+                        const user = users.find(user => String(user._id) === String(champion.userId));
+                        return {
+                            displayName: user.displayName,
+                            userId: user._id,
+                            point: champion.point,
+                            image: user.avatar
+                        };
+                    }),
+                    group: leaderBoard.group,
+                    rank: leaderBoard.rank,
+                    index: leaderBoard.index
+                };
+                return result
+            }
+            return null
+        }
+        catch (e) {
+            throw new InternalServerErrorException(e)
+        }
+    }
 
     async updateUserPoint(user: UserDocument, point: number): Promise<void> {
         try {

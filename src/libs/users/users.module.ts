@@ -12,7 +12,6 @@ import { UserHelper } from 'src/helper/user.helper';
 import { ProgressesModule } from 'src/libs/progresses/progresses.module';
 import { BooksModule } from 'src/libs/books/books.module';
 import { WorksModule } from 'src/libs/works/works.module';
-import { LeaderBoardModule } from 'src/libs/leaderBoard/leaderBoard.module';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -24,9 +23,9 @@ import { LeaderBoardModule } from 'src/libs/leaderBoard/leaderBoard.module';
     ProgressesModule,
     BooksModule,
     WorksModule,
-    LeaderBoardModule,
   ],
   controllers: [UsersController, GoogleAuthentication, FacebookAuthenticationController],
-  providers: [UsersService, UserHelper]
+  providers: [UsersService, UserHelper],
+  exports: [UsersService]
 })
 export class UsersModule {}

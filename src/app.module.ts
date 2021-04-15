@@ -13,6 +13,7 @@ import { CaslModule } from './authorization/casl/casl.module';
 import { ProgressesModule } from './libs/progresses/progresses.module';
 import { WorksModule } from './libs/works/works.module';
 import { ReportModule } from './libs/report/report.module';
+import { LeaderBoardModule } from './libs/leaderBoard/leaderBoard.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,7 +31,8 @@ import { ReportModule } from './libs/report/report.module';
     CaslModule,
     ProgressesModule,
     WorksModule,
-    ReportModule
+    ReportModule,
+    LeaderBoardModule
     ],
   controllers: [AppController],
   providers: [AppService],

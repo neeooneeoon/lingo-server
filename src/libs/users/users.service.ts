@@ -12,7 +12,6 @@ import { WorkInfo } from 'src/libs/works/dto/work-info.dto';
 import { SaveLessonDto } from './dto/save-lesson.dto';
 import { BooksService } from 'src/libs/books/books.service';
 import { WorksService } from 'src/libs/works/works.service';
-import { LeaderBoardService } from 'src/libs/leaderBoard/leaderBoard.service';
 @Injectable()
 export class UsersService {
 
@@ -23,7 +22,6 @@ export class UsersService {
     private readonly progressService: ProgressesService,
     private readonly bookService: BooksService,
     private readonly workService: WorksService,
-    private readonly leaderBoardService: LeaderBoardService,
   ) { }
   async login() {
     const token = await this.athService.generateToken({ userId: "601215f185b09a6e0c44de50", role: "Member" });
@@ -249,6 +247,16 @@ export class UsersService {
         // await this.leaderBoardService.updateUserPoint(user, point)
         return "Save User Work";
       }
+    }
+    catch (e) {
+      throw new InternalServerErrorException(e)
+    }
+  }
+
+  async findUserByLeaderBoardChampion(userIds: Types.ObjectId[]) {
+    try {
+      const users = await this.userModel.find({ _id: { $in: userIds } });
+      return users;
     }
     catch (e) {
       throw new InternalServerErrorException(e)

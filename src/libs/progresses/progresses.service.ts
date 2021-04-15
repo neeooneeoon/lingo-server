@@ -17,16 +17,17 @@ export class ProgressesService {
     return this.progressModel.create({ userId: createProgressDto.userId, books: createProgressDto.books })
   }
 
-  findProgressByUserId(userId: string | Types.ObjectId) {
+  findProgressByUserId(userId: Types.ObjectId) {
     return this.progressModel.findOne({ userId: userId })
   }
 
   async getBookProgress(userId: string, book: BookDocument) {
     try {
-      let userProgress = await this.findProgressByUserId(userId);
+      let userProgress = await this.findProgressByUserId(Types.ObjectId(userId));
       if (!userProgress) {
         userProgress = await this.progressModel.create({ userId: userId, books: [] })
       }
+      console.log(userProgress._id)
       let bookProgress = userProgress.books.find(val => val.bookId == book._id);
       if (!bookProgress) {
         bookProgress = {
@@ -50,6 +51,7 @@ export class ProgressesService {
           }
         )
       }
+      console.log(bookProgress.doneLessons)
       const units = book.units.map(unit => {
         const unitProgress = bookProgress.units.find(unitProgress => unitProgress.unitId === unit._id);
         if (unitProgress)
