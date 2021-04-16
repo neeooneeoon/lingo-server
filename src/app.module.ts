@@ -32,7 +32,7 @@ import { LeaderBoardModule } from './libs/leaderBoard/leaderBoard.module';
     ProgressesModule,
     WorksModule,
     ReportModule,
-    LeaderBoardModule
+    // LeaderBoardModule
     ],
   controllers: [AppController],
   providers: [AppService],

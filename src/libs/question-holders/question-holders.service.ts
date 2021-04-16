@@ -6,7 +6,10 @@ import { Model } from 'mongoose';
 @Injectable()
 export class QuestionHoldersService {
   constructor(@InjectModel(QuestionHolder.name) private readonly questionHolderModel: Model<QuestionHolderDocument>) { }
-  findOne(bookId: string, unitId: string, level: number) {
+  findOne(bookId: string, unitId: string) {
+    return this.questionHolderModel.findOne({ bookId: bookId, unitId: unitId});
+  }
+  findOneByLevel(bookId: string, unitId: string, level: number) {
     return this.questionHolderModel.findOne({ bookId: bookId, unitId: unitId, level: level });
   }
   getQuestionPoint(question: Question): number {

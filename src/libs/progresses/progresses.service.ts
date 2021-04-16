@@ -1,18 +1,21 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateProgressDto } from './dto/create-progress.dto';
-import { Progress, ProgressDocument } from './schema/progress.schema';
+import { Progress, ProgressDocument, ProgressBook } from './schema/progress.schema';
 import { Types, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { BookDocument } from '../books/schema/book.schema';
 import { ResultMappingHelper } from 'src/helper/resultMapping.helper';
 import { LessonTree } from 'src/libs/books/dto/lesson-tree.dto';
 import { WorkInfo } from 'src/libs/works/dto/work-info.dto';
+import { BooksService } from 'src/libs/books/books.service';
 @Injectable()
 export class ProgressesService {
   constructor(
     @InjectModel(Progress.name) private readonly progressModel: Model<ProgressDocument>,
     private readonly resultMapping: ResultMappingHelper,
-    ) { }
+    @Inject(forwardRef(() => BooksService))
+    private readonly bookService: BooksService
+  ) { }
   async create(createProgressDto: CreateProgressDto) {
     return this.progressModel.create({ userId: createProgressDto.userId, books: createProgressDto.books })
   }
@@ -66,23 +69,46 @@ export class ProgressesService {
     }
   }
 
-  async saveProgress(userId: Types.ObjectId | string, lessonTree: LessonTree, workInfo: WorkInfo): Promise<boolean> {
+  async saveProgress(userId: string, lessonTree: LessonTree, workInfo: WorkInfo): Promise<boolean> {
     try {
       let hasLesson = false;
       let result = false;
-      const userProgress = await this.progressModel.findOne({ userId: userId });
-      if (!userProgress) {
-        throw new BadRequestException("Cant not use progress")
-      }
-      const userBook = userProgress.books.find(book => book.bookId == lessonTree.bookId)
+      const userProgress = await this.progressModel.findOne({ userId: Types.ObjectId(userId) });
+      if (!userProgress)
+        throw new Error("Can't find user progress");
+      let userBook = userProgress.books.find(book => book.bookId == lessonTree.bookId);
       if (!userBook) {
-        throw new BadRequestException("Can not find book")
+        const book = await this.bookService.findOne(lessonTree.bookId)
+        if (!book) {
+          throw new Error("Can not find book");
+        }
+        else {
+          const bookProgress: ProgressBook = {
+            bookId: lessonTree.bookId,
+            totalUnits: book.units.length,
+            score: 0,
+            level: 0,
+            doneQuestions: 0,
+            correctQuestions: 0,
+            doneLessons: 0,
+            totalLessons: book.totalLessons,
+            lastDid: new Date(),
+            units: []
+          };
+          await this.progressModel.findOneAndUpdate({ userId: userId }, {
+            $push: { books: bookProgress }
+          });
+          userBook = await userProgress.books.find(book => book.bookId == lessonTree.bookId);
+        }
       }
-      const userUnit = userBook.units.find(unit => unit.unitId == lessonTree.unitId)
+      // throw new Error(`Can't find userProgress ${lessonTree.bookId} of ${userId}`);
+
+      const userUnit = userBook.units.find(unit => unit.unitId == lessonTree.unitId);
       if (!userUnit) {
         const newUserUnit = {
           unitId: lessonTree.unitId,
           totalLevels: lessonTree.unitTotalLevels,
+          //* User
           passedLevels: 0,
           doneLessons: 1,
           doneQuestions: workInfo.doneQuestions,
@@ -97,8 +123,7 @@ export class ProgressesService {
           }]
         };
         userBook.units.push(newUserUnit);
-      }
-      else {
+      } else {
         const userLevel = userUnit.levels.find(level => level.levelIndex === lessonTree.levelIndex);
         if (!userLevel) {
           userUnit.levels.push({
@@ -108,8 +133,7 @@ export class ProgressesService {
             doneLessons: 1,
             lessons: [lessonTree.lessonIndex]
           });
-        }
-        else {
+        } else {
           /// when level exist find lesson
           const userLesson = userLevel.lessons.find(lesson => Number(lesson) === Number(lessonTree.lessonIndex));
           /// if lesson done exist and 
@@ -130,6 +154,7 @@ export class ProgressesService {
         }
         userUnit.correctQuestions += lessonTree.lessonTotalQuestions;
         userUnit.lastDid = workInfo.timeEnd;
+
         if (!lessonTree.isLastLesson && hasLesson === false) {
           userUnit.doneLessons++;
           userUnit.doneQuestions += workInfo.doneQuestions;
@@ -138,10 +163,12 @@ export class ProgressesService {
       userBook.correctQuestions += lessonTree.lessonTotalQuestions;
       userBook.lastDid = workInfo.timeEnd;
       userBook.score++;
+
       if (!lessonTree.isLastLesson && hasLesson === false) {
         userBook.doneLessons++;
         userBook.doneQuestions += workInfo.doneQuestions;
       }
+
       await this.progressModel.updateOne(
         {
           userId: userId
@@ -153,7 +180,7 @@ export class ProgressesService {
         {
           arrayFilters: [{ "book.bookId": lessonTree.bookId }]
         }
-      )
+      );
       return result;
     }
     catch (e) {

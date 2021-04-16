@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LeaderBoardSchema, LeaderBoard } from './schema/leaderBoard.schema';
 import { LeaderBoardService } from './leaderBoard.service';
@@ -11,7 +11,7 @@ import { AuthenticationModule } from 'src/authentication/authentication.module';
         MongooseModule.forFeature([
             { name: LeaderBoard.name, schema: LeaderBoardSchema }
         ]),
-        UsersModule,
+        forwardRef(() => UsersModule),
         AuthenticationModule
 
     ],

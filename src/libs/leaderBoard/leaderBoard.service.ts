@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { UserDocument } from '../users/schema/user.schema';
@@ -9,7 +9,7 @@ import { UsersService } from 'src/libs/users/users.service';
 export class LeaderBoardService {
     constructor(
         @InjectModel(LeaderBoard.name) private readonly leaderBoardModel: Model<LeaderBoardDocument>,
-         private readonly userService: UsersService
+        @Inject(forwardRef(() => UsersService)) private readonly userService: UsersService
     ) { }
 
     async getLeaderBoard(userId: string, rank: Rank) {

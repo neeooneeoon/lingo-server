@@ -131,7 +131,7 @@ export class BooksService {
           throw new Error(`Can't find lesson: ${path}`);
         }
       }
-      const questionHolder = await this.questionHolderService.findOne(request.bookId, request.unitId, request.levelIndex);
+      const questionHolder = await this.questionHolderService.findOneByLevel(request.bookId, request.unitId, request.levelIndex);
       const questions = questionHolder.questions;
 
       if (lesson.questionIds.length == 0) {
@@ -224,7 +224,7 @@ export class BooksService {
               question.choices = choices;
               resultWords.push(...errorWords);
             }
-            else if (question && question.group !== "word"){
+            else if (question && question.group !== "word") {
               if (question.type == 7) {
                 const sentence = sentences.find(sentence => sentence._id == question.focus);
                 question.choices = this.wordService.createFakeWordContent(question, sentence, words.map(word => word.content));
@@ -254,43 +254,42 @@ export class BooksService {
 
   async getLessonTree(request: RequestLesson): Promise<LessonTree> {
     try {
-      const book = await this.bookModel.findById(request.bookId);
+      const book = await this.bookModel.findOne({ _id: request.bookId });
       let checkIsLastLesson = false;
 
-      if (!book) {
-        throw new BadRequestException("Can not find book");
-      }
-      const unit = book.units.find(unit => unit._id === request.unitId);
-      if (!unit) {
-        throw new BadRequestException("Cant not find unit");
-      }
-      const level = unit.levels.find(level => level.levelIndex === request.levelIndex)
-      if (!level) {
-        throw new BadRequestException("Can not find level");
-      }
+      if (!book)
+        throw new Error(`Can't find book ${request.bookId}`);
+      const unit = book.units.find(val => val._id === request.unitId);
+      if (!unit)
+        throw new Error(`Can't find unit ${request.bookId}/${request.unitId}`);
+      const level = unit.levels.find(val => val.levelIndex === request.levelIndex);
+      if (!level)
+        throw new Error(`Can't find level ${request.bookId}/${request.unitId}/${request.levelIndex}`);
+
       let lesson: Lesson;
-      if (request.levelIndex && request.levelIndex === unit.levels.length - 1 && request.lessonIndex === level.lessons.length) {
+
+      if (request.levelIndex === unit.levels.length - 1 && request.lessonIndex === level.lessons.length) {
         checkIsLastLesson = true;
         lesson = level.lessons[level.lessons.length - 1];
+      } else {
+        lesson = level.lessons.find(val => val.lessonIndex === request.lessonIndex);
         if (!lesson) {
           const path = `${request.bookId}/${request.unitId}/${request.levelIndex}/${request.lessonIndex}`;
           throw new Error(`Can't find lesson: ${path}`);
         }
       }
-      else {
-        lesson = level.lessons[request.lessonIndex];
-      }
+
       return {
         isLastLesson: checkIsLastLesson,
         grade: book.grade,
         bookId: book._id,
         unitId: unit._id,
         levelIndex: level.levelIndex,
-        lessonIndex: lesson?.lessonIndex,
+        lessonIndex: lesson.lessonIndex,
         unitTotalLevels: unit.levels.length,
         levelTotalLessons: level.lessons.length,
         lessonTotalQuestions: lesson.totalQuestions,
-      }
+      };
     }
     catch (e) {
       throw new InternalServerErrorException(e)

@@ -22,7 +22,7 @@ export class WordsService {
     @InjectModel(MissedSpelling.name) private readonly missedSpellingModel: Model<MissedSpellingDocument>,
     private readonly sentenceService: SentencesService,
     private readonly extendHelper: ExtendHelper,
-    ) { }
+  ) { }
 
   findWords(wordIds: Set<string>) {
     return this.wordModel.find({ _id: { $in: Array.from(wordIds) } })
@@ -190,7 +190,7 @@ export class WordsService {
               if (typeof result.answer === "string") {
                 if ([2, 3, 4, 6, 6.6, 6.4, 6.6, 13, 13.4].includes(question.type))
                   return question.focus === result.answer;
-                const word = await this.wordModel.findById(question.focus)
+                const word = await this.wordModel.findById(question.focus);
                 if (question.type != 8)
                   return word.content.trim().toLowerCase() === result.answer.trim().toLowerCase();
                 return word.meaning.trim().toLowerCase() === result.answer.trim().toLowerCase();
@@ -260,7 +260,6 @@ export class WordsService {
               return true;
             }
         }
-
     }
     catch (e) {
       throw new InternalServerErrorException(e)
@@ -271,7 +270,7 @@ export class WordsService {
       const missed = await this.missedSpellingModel.find({ bookNId: bookNId, unitNId: unitNId })
       return missed;
     }
-    catch(e) {
+    catch (e) {
       throw new InternalServerErrorException(e)
     }
   }

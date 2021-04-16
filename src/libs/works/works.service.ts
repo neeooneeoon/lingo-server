@@ -18,7 +18,7 @@ export class WorksService {
     private readonly questionHolderService: QuestionHoldersService,
     private readonly wordService: WordsService,
   ) { }
-  
+
   findOne(userId: string | Types.ObjectId, bookId: string) {
     return this.workModel.findOne({ userId: userId, bookId: bookId })
   }
@@ -37,12 +37,12 @@ export class WorksService {
     }
   }
 
-  async findUserWorkIfNotExistThenCreateNew(bookId:string, userId:string): Promise<Work> {
+  async findUserWorkIfNotExistThenCreateNew(bookId: string, userId: string): Promise<Work> {
     const userWork = await this.workModel.findOne({ bookId: bookId, userId: userId });
     if (userWork) {
       return userWork;
     } else {
-      const units:Array<any> = [];
+      const units: Array<any> = [];
       const createWorkDto: CreateWorkDto = {
         userId: userId,
         bookId: bookId,
@@ -54,11 +54,15 @@ export class WorksService {
 
   async saveUserWork(user: UserDocument, lessonTree: LessonTree, workInfo: WorkInfo, results: Array<Result>): Promise<number> {
     try {
-      const { bookId, unitId, levelIndex, lessonIndex } = lessonTree;
-      const userWork = await this.workModel.findOne({ bookId: bookId, userId: user._id });
-      const questionHolder = await this.questionHolderService.findOne(bookId, unitId, levelIndex);
-      const userUnitWorkIndex = userWork.units.findIndex(work => work.unitId === unitId);
-      if (userUnitWorkIndex == -1) {
+      const bookId = lessonTree.bookId;
+      const unitId = lessonTree.unitId;
+      const levelIndex = lessonTree.levelIndex;
+      const lessonIndex = lessonTree.lessonIndex;
+
+      const userWork = await this.workModel.findOne({ userId: user._id, bookId: bookId });
+      const questionHolder = await this.questionHolderService.findOne(lessonTree.bookId, lessonTree.unitId);
+      const userUnitWorkIndex = userWork.units.findIndex(val => val.unitId === unitId);
+      if (userUnitWorkIndex === -1) {
         const userUnit: UnitWork = {
           incorrectList: [],
           unitId: lessonTree.unitId,
@@ -75,9 +79,10 @@ export class WorksService {
             }
           ],
           didList: [],
-        }
+        };
         userWork.units.push(userUnit);
-      } else if (userUnitWorkIndex !== -1) {
+      }
+      else if (userUnitWorkIndex !== -1) {
         const userUnitWork = userWork.units[userUnitWorkIndex];
         const userLevelWorkIndex = userUnitWork.levels.findIndex(val => val.levelIndex === levelIndex);
         if (userLevelWorkIndex === -1) {
@@ -87,8 +92,7 @@ export class WorksService {
             incorrectList: []
           };
           userWork.units[userUnitWorkIndex].levels.push(newUserLevelWork);
-        }
-        else {
+        } else {
           const userLevelWork = userUnitWork.levels[userLevelWorkIndex];
           const userLessonWorkIndex = userLevelWork.lessons.findIndex(val => val.lessonIndex === lessonIndex);
           if (userLessonWorkIndex === -1) {
@@ -97,37 +101,63 @@ export class WorksService {
           }
         }
       }
+
       const userUnitWork = userWork.units.find(val => val.unitId === unitId);
-      const incorrectList = userUnitWork.incorrectList;
+
+      const unitIncorrectList = userUnitWork.incorrectList;
       const didList = userUnitWork.didList;
+      const userLevelWork = userUnitWork.levels.find(val => val.levelIndex === levelIndex);
+      const levelIncorrectList = userLevelWork.incorrectList;
+
       let questionPoint = 0;
+
       if (results.length !== 0) {
         for (let i = 0; i < results.length; i++) {
-          if (!results[i])
+          if (!results[i]) {
             continue;
+          }
+
           const question = questionHolder.questions.find(val => val._id === results[i]._id);
           if (!question) {
             questionPoint += 1;
             continue;
           }
-          const isExist = incorrectList.find(val => val === results[i]._id);
+
           const check = await this.wordService.checkAnswer(results[i], question);
-          if (check === true) {
-            if (isExist && lessonTree.levelIndex == 5) {
-              didList.push(results[i]._id);
+          if (lessonTree.levelIndex === lessonTree.unitTotalLevels - 1) {
+            const isExist = unitIncorrectList.find(val => val === results[i]._id);
+            if (check === true) {
+              if (isExist) {
+                didList.push(results[i]._id);
+              }
+              questionPoint += this.questionHolderService.getQuestionPoint(question);
+              results[i].status = true;
+            } else {
+              results[i].status = false;
             }
-            questionPoint += this.questionHolderService.getQuestionPoint(question);
-            results[i].status = true;
           } else {
-            if (!isExist)
-              incorrectList.push(results[i]._id);
-            results[i].status = false;
+            if (check === true) {
+              questionPoint += this.questionHolderService.getQuestionPoint(question);
+              results[i].status = true;
+            } else {
+              if (!unitIncorrectList.find(val => val === results[i]._id)) {
+                unitIncorrectList.push(results[i]._id);
+              }
+              if (!levelIncorrectList.find(val => val === results[i]._id)) {
+                levelIncorrectList.push(results[i]._id);
+              }
+              results[i].status = false;
+            }
           }
         }
       }
-      userUnitWork.levels[levelIndex].lessons[lessonIndex]
+      const indexLevel = userUnitWork.levels.findIndex(level => level.levelIndex == levelIndex);
+      const indexLesson = userUnitWork.levels[indexLevel].lessons.findIndex(lesson => lesson.lessonIndex == lessonIndex);
+      userUnitWork.levels[indexLevel].lessons[indexLesson]
         .works.push({ results: results, timeStart: workInfo.timeStart, timeEnd: workInfo.timeEnd });
+
       await userWork.save();
+
       let bonusStreak = 0;
       const streak = user.streak;
       if (streak == 0)
