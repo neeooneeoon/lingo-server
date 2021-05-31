@@ -116,12 +116,12 @@ export class BooksService {
       if (!unit) {
         throw new HttpException("Unit cant not found", HttpStatus.BAD_REQUEST);
       }
-      const level = unit.levels.find(item => item.levelIndex == request.levelIndex);
+      const level = unit.levels.find(item => item.levelIndex === Number(request.levelIndex));
       if (!level) {
         throw new HttpException("Level can not found", HttpStatus.BAD_REQUEST);
       }
       let lesson: Lesson;
-      if (request.levelIndex === unit.levels.length - 1 && request.lessonIndex === level.lessons.length) {
+      if (request.levelIndex === unit.levels.length - 1 && Number(request.lessonIndex) === level.lessons.length) {
         lesson = level.lessons[level.lessons.length - 1];
       }
       else {
@@ -131,7 +131,7 @@ export class BooksService {
           throw new Error(`Can't find lesson: ${path}`);
         }
       }
-      const questionHolder = await this.questionHolderService.findOneByLevel(request.bookId, request.unitId, request.levelIndex);
+      const questionHolder = await this.questionHolderService.findOneByLevel(request.bookId, request.unitId, Number(request.levelIndex));
       const questions = questionHolder.questions;
 
       if (lesson.questionIds.length == 0) {
