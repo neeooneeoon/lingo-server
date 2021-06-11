@@ -1,16 +1,21 @@
 import { Injectable } from "@nestjs/common";
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import {  } from '@utils/'
-
-interface GeneratingInput {
-    _id: string;
-    role: 
+import { Role } from '@utils/enums';
+import { ConfigsService } from '@configs/configs.service';
+interface JwtPayload {
+    userId: string;
+    role: Role
 }
 
 @Injectable()
 export class AuthenticationService {
-    constructor(private jwtService: JwtService) {}
+    constructor(private jwtService: JwtService, private configsService: ConfigsService) { }
 
-    generateToken ()
+    generateToken(payload: JwtPayload) {
+        return this.jwtService.sign({user: payload}, { secret: this.configsService.get('TOKEN_SECRET'), expiresIn: 3600 });
+    }
+
+    generateRefreshToken(payload: JwtPayload) {
+        return this.jwtService.sign({user: payload}, { secret: this.configsService.get('TOKEN_SECRET'), expiresIn: 864000 });
+    }
 }

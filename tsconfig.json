@@ -31,10 +31,10 @@
         "src/entities"
       ],
       "@libs/*": [
-        "src/libs/*"
+        "src/dto/libs/*"
       ],
       "@libs": [
-        "src/libs"
+        "src/dto/libs"
       ],
       "@providers/*": [
         "src/providers/*"
@@ -47,7 +47,19 @@
       ],
       "@utils": [
         "src/utils"
-      ]
+      ],
+      "@helpers/*": [
+        "src/helpers/*"
+      ],
+      "@helpers": [
+        "src/helpers"
+      ],
+      "@dto/*": [
+        "src/dto/*"
+      ],
+      "@dto": [
+        "src/dto"
+      ],
     }
   }
 }
