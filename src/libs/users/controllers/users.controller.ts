@@ -1,14 +1,16 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { UserProfile } from '@libs/users/dto/userProfile.dto';
-import { Observable } from "rxjs";
+import { SuccessResponse } from '@utils/types';
+import { UsersService } from '@providers/users.service';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
+    constructor(private readonly usersService: UsersService) {}
     
     @Get('profile')
-    getUserProfile() {
+    getUserProfile(): Promise<SuccessResponse<UserProfile>> {
 
     }
 }
