@@ -1,34 +1,44 @@
 import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ConfigsService } from '@configs';
+import * as session from 'express-session';
+import * as bodyParser from 'body-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from "./app.module";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.setGlobalPrefix('api');
 
-  const config = new DocumentBuilder()
+  const configsService = app.get(ConfigsService);
+  const port = configsService.get('PORT');
+  const sessionSecret = configsService.get('SESSION_SECRET');
+
+  const openApiConfig = new DocumentBuilder()
     .addBearerAuth({
       type: 'http',
-      scheme: 'bearer',
+      scheme: 'Bearer',
       bearerFormat: 'JWT',
       in: 'header',
     })
-    .setTitle('Swagger SMLing')
-    .setDescription('The SMLing API description')
-    .setVersion('2.0.0')
-    .addTag('books')
+    .setTitle('Lingo Server API Document')
+    .setVersion('0.0.1')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, document);
-  await app.listen(process.env.PORT || 8080);
-  console.log('\nCOMPILE SUCCESS!');
-  console.log(
-    '\n' +
-      '🚀 Swagger UI running at ' +
-      '\u001b[' +
-      32 +
-      'm' +
-      `http://localhost:${process.env.PORT || 8080}/api-docs` +
-      '\u001b[0m',
+  const apiDocument = SwaggerModule.createDocument(app, openApiConfig);
+  SwaggerModule.setup('api-docs', app, apiDocument);
+
+  app.use(
+    session({
+      secret: sessionSecret,
+      resave: false,
+      saveUninitialized: false,
+    }),
   );
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
+
+  await app.listen(port);
+  console.log('\nCompile successfully!\n');
+  console.log(`🚀 Lingo Server already listening at http://localhost:${port}`);
 }
 bootstrap();

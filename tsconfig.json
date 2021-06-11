@@ -10,6 +10,44 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "@authentication/*": [
+        "src/authentication/*"
+      ],
+      "@authentication": [
+        "src/authentication"
+      ],
+      "@configs/*": [
+        "src/configs/*"
+      ],
+      "@configs": [
+        "src/configs"
+      ],
+      "@entities/*": [
+        "src/entities/*"
+      ],
+      "@entities": [
+        "src/entities"
+      ],
+      "@libs/*": [
+        "src/libs/*"
+      ],
+      "@libs": [
+        "src/libs"
+      ],
+      "@providers/*": [
+        "src/providers/*"
+      ],
+      "@providers": [
+        "src/providers"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+      "@utils": [
+        "src/utils"
+      ]
+    }
   }
 }
