@@ -31,10 +31,10 @@
         "src/entities"
       ],
       "@libs/*": [
-        "src/dto/libs/*"
+        "src/libs/*"
       ],
       "@libs": [
-        "src/dto/libs"
+        "src/libs"
       ],
       "@providers/*": [
         "src/providers/*"

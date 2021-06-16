@@ -3,8 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigsModule, ConfigsService } from '@configs';
-import { BooksModule } from 'src/dto/libs/books';
-import { UsersModule } from 'src/dto/libs/users';
+import { BooksModule } from '@libs/books';
+import { UsersModule } from '@libs/users';
 
 @Module({
   imports: [

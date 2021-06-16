@@ -1,6 +1,7 @@
 import { LocalStrategy } from './strategy/local.strategy';
 import { LocalAuthGuard } from './guard/localAuth.guard';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { GoogleStrategy } from './strategy/google.strategy';
 import { JwtAuthGuard } from './guard/jwtAuth.guard';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
@@ -21,6 +22,7 @@ import { AuthenticationService } from './authentication.service';
         JwtStrategy,
         LocalAuthGuard,
         LocalStrategy,
+        GoogleStrategy
     ],
     exports: [
         AuthenticationService,
@@ -28,6 +30,7 @@ import { AuthenticationService } from './authentication.service';
         JwtStrategy,
         LocalAuthGuard,
         LocalStrategy,
+        GoogleStrategy,
     ],
 })
 export class AuthenticationModule { }
