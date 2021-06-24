@@ -41,3 +41,9 @@ export enum QuestionTypeCode {
     S7 = "A1-W1S1-C",
     S15 = "A1-W1S1-W"
 }
+export enum ReportType {
+    Question = "Question",
+    Security = "Security",
+    System = "System",
+    Theme = "Theme"
+}
