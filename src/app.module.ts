@@ -6,6 +6,7 @@ import { ConfigsModule, ConfigsService } from '@configs';
 import { BooksModule } from '@libs/books';
 import { UsersModule } from '@libs/users';
 import { LeaderBoardsModule } from '@libs/leaderBoards';
+import { ReportsModule } from '@libs/reports';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { LeaderBoardsModule } from '@libs/leaderBoards';
     BooksModule,
     UsersModule,
     LeaderBoardsModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
