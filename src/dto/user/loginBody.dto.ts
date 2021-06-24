@@ -6,5 +6,5 @@ export class LoginBodyDto {
         required: true,
         description: "Access token"
     })
-    accessToken: string;
+    access_token: string;
 }

@@ -8,10 +8,38 @@ export class Progress {
     @Prop({ type: Types.ObjectId, unique: 1 })
     userId: Types.ObjectId;
 
-    @Prop({ type: [Object] })
+    @Prop({ type: [{
+        bookId: String,
+        totalUnits: Number,
+        score: Number,
+        level: Number,
+        doneQuestions: Number,
+        correctQuestions: Number,
+        totalLessons: Number,
+        doneLessons: Number,
+        lasDid: Date,
+        units: [{
+            unitId: String,
+            totalLevels: Number,
+            passedLevels: Number,
+            doneLessons: Number,
+            doneQuestions: Number,
+            correctQuestions: Number,
+            lasDid: Date,
+            levels: [{
+                levelIndex: Number,
+                totalLessons: Number,
+                doneLessons: Number,
+                passed: Boolean,
+                lessons: [Number]
+            }]
+        }]
+    }]})
     books: ProgressBook[]
 
 }
 
 export type ProgressDocument = Document & Progress;
 export const ProgressSchema = SchemaFactory.createForClass(Progress);
+
+ProgressSchema.index({userId: 1}, {unique: true});

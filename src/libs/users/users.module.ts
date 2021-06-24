@@ -2,12 +2,15 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthenticationModule } from '@authentication';
 import { User, UserSchema } from '@entities/user.entity';
-import { UsersService } from '@providers/users.service';
-import { GoogleService } from '@providers/google.service';
-import { ProgressesService } from '@providers/progresses.service';
+import { UsersService } from './providers/users.service';
+import { GoogleService } from './providers/google.service';
 import { GoogleController } from './controllers/google.controller';
+import { FacebookController } from "./controllers/facebook.controller";
+import { LoginController } from './controllers/login.controller';
 import { UserController } from './controllers/users.controller';
 import { UsersHelper } from '@helpers/users.helper';
+import { FacebookService } from './providers/facebook.service';
+import { BooksModule } from '@libs/books';
 
 @Module({
     imports: [
@@ -20,16 +23,22 @@ import { UsersHelper } from '@helpers/users.helper';
             ]
         ),
         AuthenticationModule,
+        BooksModule,
     ],
     controllers: [
         UserController,
         GoogleController,
+        FacebookController,
+        LoginController,
     ],
     providers: [
         UsersService,
         UsersHelper,
         GoogleService,
-        ProgressesService,
+        FacebookService
+    ],
+    exports: [
+        UsersService
     ]
 })
 export class UsersModule { };

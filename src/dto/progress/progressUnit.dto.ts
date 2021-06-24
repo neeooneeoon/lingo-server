@@ -8,5 +8,5 @@ export class ProgressUnit {
     doneQuestions: number;
     correctQuestions: number;
     lastDid: Date;
-    levels: ProgressLevel[]
+    levels: ProgressLevel[];
 }

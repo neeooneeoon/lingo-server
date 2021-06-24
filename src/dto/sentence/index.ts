@@ -1,0 +1,1 @@
+export { SentenceInLesson } from "./sentenceInLesson.dto";

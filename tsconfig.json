@@ -36,12 +36,6 @@
       "@libs": [
         "src/libs"
       ],
-      "@providers/*": [
-        "src/providers/*"
-      ],
-      "@providers": [
-        "src/providers"
-      ],
       "@utils/*": [
         "src/utils/*"
       ],

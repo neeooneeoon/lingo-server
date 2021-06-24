@@ -15,7 +15,7 @@ export class User {
     @Prop({ type: String, required: true, default: '' })
     avatar: string;
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: String, required: false, default: '' })
     familyName: string;
 
     @Prop({ type: String, required: true })
@@ -24,8 +24,8 @@ export class User {
     @Prop({ type: String, required: true })
     displayName: string;
 
-    @Prop({ type: String, required: false, default: '' })
-    birthday?: string;
+    @Prop({ type: Date, required: false, default: '' })
+    birthday?: Date;
     
     @Prop({ type: Number, required: false, default: 0 })
     grade?: number;

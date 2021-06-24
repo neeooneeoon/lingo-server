@@ -1,7 +1,21 @@
 import { GoogleProfile } from '@dto/user/googleProfile.dto';
+import { Injectable } from '@nestjs/common';
 import { google } from 'googleapis';
 
+@Injectable()
 export class GoogleService {
+
+    googleRedirect(req: any): any {
+        if (!req.user) {
+            const errorMessage = 'No user from google'
+            return errorMessage
+        }
+        return {
+            message: 'User information from google',
+            user: req.user
+        }
+    }
+    
     getUserData(accessToken: string): Promise<GoogleProfile> {
         return new Promise((resolve, reject) => {
             const OAuth2Client = new google.auth.OAuth2({});

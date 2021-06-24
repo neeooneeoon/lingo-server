@@ -5,9 +5,13 @@ import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+  }));
 
   const configsService = app.get(ConfigsService);
   const port = configsService.get('PORT');
@@ -38,6 +42,6 @@ async function bootstrap() {
 
   await app.listen(port);
   console.log('\nCompile successfully!\n');
-  console.log(`🚀 Lingo Server already listening at http://localhost:${port}`);
+  console.log(`🚀 Lingo Server is listening at http://localhost:${port}`);
 }
 bootstrap();
