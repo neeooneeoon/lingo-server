@@ -1,7 +1,7 @@
 import { WordInLesson } from "@dto/word/wordInLesson.dto";
 import { Word, WordDocument } from "@entities/word.entity";
 import { WordsHelper } from "@helpers/words.helper";
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 
@@ -24,6 +24,18 @@ export class WordsService {
                 return this.wordsHelper.mapWordToWordInLesson(word);
             })
             return result;
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
+
+    public async getWord(id: string): Promise<WordDocument> {
+        try {
+            const word = await this.wordModel.findById(id);
+            if (!word) {
+                throw new BadRequestException(`Can't find word ${id}`);
+            }
+            return word;
         } catch (error) {
             throw new InternalServerErrorException(error);
         }

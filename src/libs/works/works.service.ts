@@ -156,6 +156,11 @@ export class WorksService {
             const didList = unitWork.didList;
             const levelWork = unitWork.levels[levelWorkIndex];
             const levelIncorrectList = levelWork.incorrectList;
+
+            let questionPoint = 0;
+            if (results.length > 0) {
+                
+            }
             /**
              * Continue
              */
