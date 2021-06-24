@@ -158,49 +158,5 @@ export class AnswerService {
             throw new InternalServerErrorException(error);
         }
     }
-
-    public getQuestionPoint(question: QuestionDocument): number {
-        try {
-            if (
-                [
-                    QuestionTypeCode.W2, QuestionTypeCode.W3,
-                    QuestionTypeCode.W4, QuestionTypeCode.W6,
-                    QuestionTypeCode.W13
-                ].includes(question.code)
-            ) {
-                return 1;
-            }
-            if ([QuestionTypeCode.W9].includes(question.code)) {
-                return 2;
-            }
-            if ([QuestionTypeCode.W7, QuestionTypeCode.W11, QuestionTypeCode.W12].includes(question.code)) {
-                return 3;
-            }
-            if ([QuestionTypeCode.W8, QuestionTypeCode.W14].includes(question.code)) {
-                return 4;
-            }
-            if ([QuestionTypeCode.S10, QuestionTypeCode.S12, QuestionTypeCode.S2].includes(question.code)) {
-                return 2;
-            }
-            if (
-                [
-                    QuestionTypeCode.S1, QuestionTypeCode.S17,
-                    QuestionTypeCode.S7, QuestionTypeCode.S4
-                ].includes(question.code)
-            ) {
-                return 3;
-            }
-            if (
-                [
-                    QuestionTypeCode.S14, QuestionTypeCode.S15,
-                    QuestionTypeCode.S16, QuestionTypeCode.S18
-                ].includes(question.code)
-            ) {
-                return 4;
-            }
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
-    }
-
+    
 }

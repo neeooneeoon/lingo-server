@@ -1,5 +1,7 @@
 import {
     BadRequestException,
+    forwardRef,
+    Inject,
     Injectable,
     InternalServerErrorException
 } from "@nestjs/common";
@@ -11,8 +13,10 @@ import { GoogleService } from './google.service';
 import { ProgressesService } from "@libs/progresses/progresses.service";
 import { UsersHelper } from '@helpers/users.helper';
 import { Rank, Role } from '@utils/enums';
-import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto } from "@dto/user";
+import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto, UpdateUserStatusDto } from "@dto/user";
 import { FacebookService } from "./facebook.service";
+import { UpdateUserPointDto } from "@dto/user/updateUserPoint.dto";
+import { LeaderBoardsService } from "@libs/leaderBoards/leaderBoards.service";
 
 
 @Injectable()
@@ -24,6 +28,7 @@ export class UsersService {
         private googleService: GoogleService,
         private facebookService: FacebookService,
         private progressesService: ProgressesService,
+        @Inject(forwardRef(() => LeaderBoardsService)) private leaderBoardsService: LeaderBoardsService,
     ) { }
 
     public async findByIds(ids: Types.ObjectId[] | string[]): Promise<UserDocument[]> {
@@ -38,7 +43,7 @@ export class UsersService {
             throw new InternalServerErrorException(error);
         }
     }
-    
+
 
     public async getUserProfile(fetchAccount: FetchAccountInfo): Promise<UserLogin> {
         const {
@@ -171,7 +176,7 @@ export class UsersService {
         try {
             const updatedUser = await this.userModel.findByIdAndUpdate(
                 userId,
-                {...data},
+                { ...data },
                 { new: true }
             );
             return this.usersHelper.mapToUserProfile(updatedUser);
@@ -180,4 +185,68 @@ export class UsersService {
         }
     }
 
+    public async updateUserStatus(input: UpdateUserStatusDto): Promise<void> {
+        try {
+            const {
+                user,
+                workInfo,
+                isFinishLevel,
+                point
+            } = input;
+
+            let streak = user.streak;
+            let loginCount = user.loginCount;
+            const xp = user.xp;
+
+            const newActive = workInfo.timeStart;
+            const lastActive = user.lastActive;
+
+            const newActiveDay = Number(newActive.toLocaleDateString().split("/")[1]);
+            const lastActiveDay = Number(lastActive.toLocaleDateString().split("/")[1]);
+            const checker = newActiveDay - lastActiveDay;
+
+            if (checker === 1) {
+                streak++;
+                loginCount++;
+            }
+            else if (checker > 1) {
+                streak = 0;
+                loginCount++;
+            }
+            else if (checker === 0) {
+                if (streak === 0 && checker === 0) {
+                    streak++;
+                    loginCount++;
+                }
+            }
+
+            if (isFinishLevel) {
+                await this.userModel.updateOne(
+                    { _id: user._id },
+                    {
+                        streak: streak,
+                        lastActive: workInfo.timeStart,
+                        loginCount: loginCount,
+                        level: user.level + 1,
+                        score: user.score + 1,
+                        xp: xp + point
+                    }
+                )
+            }
+            else {
+                await this.userModel.updateOne(
+                    { _id: user._id },
+                    {
+                        streak: streak,
+                        lastActive: workInfo.timeStart,
+                        loginCount: loginCount,
+                        score: user.score + 1,
+                        xp: xp + point
+                    }
+                )
+            }
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
 }

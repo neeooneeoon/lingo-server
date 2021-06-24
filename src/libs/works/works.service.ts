@@ -2,20 +2,23 @@ import { Model, Types } from 'mongoose';
 import { Work, WorkDocument } from "@entities/work.entity";
 import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { QuestionDocument } from '@entities/question.entity';
 import { QuestionHoldersService } from '@libs/questionHolders/providers/questionHolders.service';
 import { UserDocument } from '@entities/user.entity';
 import { LessonTree } from '@dto/book';
 import { AnswerResult } from '@dto/lesson';
 import { LevelWork, UnitWork, WorkInfo } from '@dto/works';
 import { QuestionHolderDocument } from '@entities/questionHolder.entity';
+import { AnswerService } from '@libs/questionHolders/providers/answer.service';
+import { PointService } from '@libs/questionHolders/providers/point.service';
 
 @Injectable()
 export class WorksService {
-    
+
     constructor(
         @InjectModel(Work.name) private workModel: Model<WorkDocument>,
         private questionHoldersService: QuestionHoldersService,
+        private answerService: AnswerService,
+        private pointService: PointService,
     ) { }
 
     public async createUserWork(userId: Types.ObjectId | string, bookId: string): Promise<void> {
@@ -51,13 +54,15 @@ export class WorksService {
         }
     }
 
-    public async saveUserWork(user: UserDocument, lessonTree: LessonTree, workInfo: WorkInfo, results: AnswerResult[]):  Promise<number> {
+    public async saveUserWork(user: UserDocument, lessonTree: LessonTree, workInfo: WorkInfo, results: AnswerResult[]): Promise<number> {
         try {
             const {
                 bookId,
                 unitId,
                 levelIndex,
                 lessonIndex,
+                unitTotalLevels,
+                lessonTotalQuestions
             } = lessonTree;
 
             const userWorkPromise = this.getUserWork(user._id, bookId);
@@ -69,7 +74,7 @@ export class WorksService {
             let userWork: WorkDocument;
             let questionHolder: QuestionHolderDocument;
             await Promise.all([userWorkPromise, questionHolderPromise])
-                .then(([userWorkResult, questionHolderResult]) =>{
+                .then(([userWorkResult, questionHolderResult]) => {
                     userWork = userWorkResult;
                     questionHolder = questionHolderResult;
                 })
@@ -78,6 +83,7 @@ export class WorksService {
                 });
             let unitIndex = userWork.units.findIndex(item => item.unitId === unitId);
             let levelWorkIndex: number = 0;
+            let lessonWorkIndex: number = 0;
 
             if (unitIndex === -1) {
                 const newUnit: UnitWork = {
@@ -113,12 +119,13 @@ export class WorksService {
                 }
                 else {
                     const levelWork = unitWork.levels[levelWorkIndex];
-                    const lessonWorkIndex = levelWork.lessons.findIndex(item => item.lessonIndex === lessonIndex);
+                    lessonWorkIndex = levelWork.lessons.findIndex(item => item.lessonIndex === lessonIndex);
                     if (lessonWorkIndex === -1) {
                         userWork.units[unitIndex].levels[levelWorkIndex].lessons.push({
                             lessonIndex: lessonIndex,
                             works: []
                         });
+                        lessonWorkIndex = userWork.units[unitIndex].levels[levelWorkIndex].lessons.length - 1;
                     }
                 }
             }
@@ -130,12 +137,58 @@ export class WorksService {
 
             let questionPoint = 0;
             if (results.length > 0) {
-                
+                for (let i = 0; i < results.length; i++) {
+                    if (!results[i]) continue;
+                    const question = questionHolder.questions.find(item => item._id === results[i]._id);
+                    if (!question) {
+                        questionPoint += 1;
+                        continue;
+                    }
+
+                    const isCorrect = await this.answerService.checkAnswer(results[i], question);
+                    if (levelIndex == unitTotalLevels - 1) {
+                        const isExist = unitIncorrectList.find(item => item === results[i]._id);
+                        if (isCorrect) {
+                            if (isExist) {
+                                didList.push(results[i]._id);
+                            }
+                            questionPoint += this.pointService.getQuestionPoint(question);
+                            results[i].status = true;
+                        }
+                        else {
+                            results[i].status = false;
+                        }
+                    }
+                    else {
+                        if (isCorrect) {
+                            questionPoint += this.pointService.getQuestionPoint(question);
+                            results[i].status = true;
+                        }
+                        else {
+                            if (!unitIncorrectList.find(val => val === results[i]._id)) {
+                                unitIncorrectList.push(results[i]._id);
+                            }
+                            if (!levelIncorrectList.find(val => val === results[i]._id)) {
+                                levelIncorrectList.push(results[i]._id);
+                            }
+                            results[i].status = false;
+                        }
+                    }
+                }
             }
-            /**
-             * Continue
-             */
-            return 1;
+            unitWork.levels[levelWorkIndex].lessons[lessonWorkIndex].works.push({
+                results: results,
+                timeStart: workInfo.timeStart,
+                timeEnd: workInfo.timeEnd
+            })
+            await userWork.save();
+            const bonusStreak = this.pointService.getBonusStreak(user.streak);
+            const accuracy = lessonTotalQuestions / workInfo.doneQuestions;
+            questionPoint = Number.isNaN(accuracy) ? questionPoint : questionPoint * accuracy;
+            const bonusLevel = levelIndex;
+            const bonusLesson = lessonIndex / 2;
+            return Number.isNaN(Math.floor(questionPoint + bonusLevel + bonusStreak + bonusLesson)) ? 0 :
+                Math.floor(questionPoint + bonusLevel + bonusStreak + bonusLesson);
 
         } catch (error) {
             throw new InternalServerErrorException(error);

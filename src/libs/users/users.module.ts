@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthenticationModule } from '@authentication';
 import { User, UserSchema } from '@entities/user.entity';
@@ -11,7 +11,8 @@ import { UserController } from './controllers/users.controller';
 import { UsersHelper } from '@helpers/users.helper';
 import { FacebookService } from './providers/facebook.service';
 import { BooksModule } from '@libs/books';
-
+import { LeaderBoardsModule } from "@libs/leaderBoards";
+import { LeaderBoardsService } from "@libs/leaderBoards/leaderBoards.service";
 @Module({
     imports: [
         MongooseModule.forFeature(
@@ -24,6 +25,7 @@ import { BooksModule } from '@libs/books';
         ),
         AuthenticationModule,
         BooksModule,
+        forwardRef(() => LeaderBoardsModule)
     ],
     controllers: [
         UserController,
@@ -35,7 +37,7 @@ import { BooksModule } from '@libs/books';
         UsersService,
         UsersHelper,
         GoogleService,
-        FacebookService
+        FacebookService,
     ],
     exports: [
         UsersService

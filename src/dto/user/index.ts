@@ -6,3 +6,5 @@ export { LoginBodyDto } from './loginBody.dto';
 export { FetchAccountInfo } from './fetchAccount.dto';
 export { UpdateUserDto } from './updateUser.dto';
 export { SaveLessonDto } from "./saveLesson.dto";
+export { UpdateUserStatusDto } from "./updateUserStatus.dto";
+export {  } from "./updateUserPoint.dto";

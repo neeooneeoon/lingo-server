@@ -6,6 +6,7 @@ import { QuestionHoldersService } from "./providers/questionHolders.service";
 import { WordsModule } from "@libs/words";
 import { SentencesModule } from "@libs/sentences";
 import { AnswerService } from "./providers/answer.service";
+import { PointService } from "./providers/point.service";
 
 @Module({
     imports: [
@@ -20,10 +21,12 @@ import { AnswerService } from "./providers/answer.service";
     providers: [
         QuestionHoldersService,
         AnswerService,
+        PointService,
     ],
     exports: [
         QuestionHoldersService,
         AnswerService,
+        PointService,
     ]
 })
 export class QuestionHoldersModule {  };
