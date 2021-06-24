@@ -1,28 +1,20 @@
-import { QuestionHolder, QuestionHolderDocument } from "@entities/questionHolder.entity";
-import { Question, QuestionDocument } from "@entities/question.entity";
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { GetQuestionHolderInput, QuestionReducingInput, QuestionReducingOutput } from "@dto/questionHolder";
-import { WordsService } from "@libs/words/words.service";
-import { SentencesService } from "@libs/sentences/sentences.service";
-import { WordInLesson } from "@dto/word/wordInLesson.dto";
-import { SentenceInLesson } from "@dto/sentence";
-import { ListWorQuestionCodes, ListSentenceQuestionCodes } from "@utils/constants";
 import { AnswerResult } from "@dto/lesson";
+import { QuestionDocument } from "@entities/question.entity";
+import { SentencesService } from "@libs/sentences/sentences.service";
+import { WordsService } from "@libs/words/words.service";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { ListWorQuestionCodes } from "@utils/constants";
 import { QuestionTypeCode } from "@utils/enums";
 
 @Injectable()
-export class QuestionHoldersService {
+export class AnswerService {
 
     constructor(
-        @InjectModel(QuestionHolder.name) private questionHolderModel: Model<QuestionHolderDocument>,
-        @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
-        private wordsService: WordsService,
-        private sentencesService: SentencesService,
+        private readonly wordsService: WordsService,
+        private readonly sentencesService: SentencesService,
     ) { }
 
-    private checkMatchSplitSemantic(userAnswer: string[], correctAnswer: string[]): boolean {
+    public checkMatchSplitSemantic(userAnswer: string[], correctAnswer: string[]): boolean {
 
         const deepRegex = new RegExp(/[\!\.\:\;\~\`\_\?\,\”\’\‘\“\"\’\'\ \-]/g);
         const formattedUserAnswer = userAnswer.join('').toLowerCase().replace(deepRegex, '');
@@ -32,87 +24,7 @@ export class QuestionHoldersService {
 
     }
 
-    public async getQuestionHolder(input: GetQuestionHolderInput): Promise<QuestionHolderDocument> {
-        try {
-            const {
-                bookId,
-                unitId,
-                level
-            } = input;
-            const questionHolder = await this.questionHolderModel.findOne({
-                bookId: bookId,
-                unitId: unitId,
-                level: level
-            });
-            if (!questionHolder) {
-                throw new BadRequestException(`Can't not find question holder with ${input}`)
-            }
-            return questionHolder;
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
-    }
-
-    public async reduceByQuestionIds(input: QuestionReducingInput): Promise<QuestionReducingOutput> {
-        try {
-            const {
-                questions,
-                listAskingQuestionIds,
-                currentUnit
-            } = input;
-
-            const setWordIds: Set<string> = new Set<string>(currentUnit.wordIds);
-            const setSentenceIds: Set<string> = new Set<string>(currentUnit.sentenceIds);
-
-            for (const questionId of listAskingQuestionIds) {
-                const inspectedQuestion = questions.find(question => question._id == questionId);
-                if (inspectedQuestion) {
-                    const {
-                        code: questionCode,
-                        choices,
-                        focus: baseQuestionId
-                    } = inspectedQuestion;
-
-                    if (ListWorQuestionCodes.includes(questionCode)) {
-                        baseQuestionId ? setWordIds.add(baseQuestionId) : null;
-                        for (const choice of choices) {
-                            setWordIds.add(choice);
-                        }
-                    }
-                    else if (ListSentenceQuestionCodes.includes(questionCode)) {
-                        baseQuestionId ? setSentenceIds.add(baseQuestionId) : null;
-                        for (const choice of choices) {
-                            setSentenceIds.add(choice);
-                        }
-                    }
-                }
-            }
-
-            const wordsInLessonPromise = this.wordsService.findByIds([...setWordIds]);
-            const sentencesInLessonPromise = this.sentencesService.findByIds([...setSentenceIds]);
-            let wordsInLesson: WordInLesson[] = [];
-            let sentencesInLesson: SentenceInLesson[] = [];
-
-            await Promise.all([wordsInLessonPromise, sentencesInLessonPromise])
-                .then(([wordsResult, sentencesResult]) => {
-                    wordsInLesson = wordsResult;
-                    sentencesInLesson = sentencesResult;
-                })
-                .catch(error => {
-                    throw new InternalServerErrorException(error);
-                })
-
-            return {
-                wordsInLesson: wordsInLesson,
-                sentencesInLesson: sentencesInLesson
-            }
-
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
-    }
-
-    private async checkAnswerWordQuestion(result: AnswerResult, question: QuestionDocument): Promise<boolean> {
+    public async checkAnswerWordQuestion(result: AnswerResult, question: QuestionDocument): Promise<boolean> {
         try {
             let isCorrect: boolean = false;
             const {
@@ -163,7 +75,7 @@ export class QuestionHoldersService {
         }
     }
 
-    private async checkAnswerSentenceQuestion(result: AnswerResult, question: QuestionDocument): Promise<boolean> {
+    public async checkAnswerSentenceQuestion(result: AnswerResult, question: QuestionDocument): Promise<boolean> {
         try {
             let isCorrect: boolean = false;
             const {
@@ -242,6 +154,50 @@ export class QuestionHoldersService {
                 isCorrect = await this.checkAnswerSentenceQuestion(result, question);
             }
             return isCorrect;
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
+
+    public getQuestionPoint(question: QuestionDocument): number {
+        try {
+            if (
+                [
+                    QuestionTypeCode.W2, QuestionTypeCode.W3,
+                    QuestionTypeCode.W4, QuestionTypeCode.W6,
+                    QuestionTypeCode.W13
+                ].includes(question.code)
+            ) {
+                return 1;
+            }
+            if ([QuestionTypeCode.W9].includes(question.code)) {
+                return 2;
+            }
+            if ([QuestionTypeCode.W7, QuestionTypeCode.W11, QuestionTypeCode.W12].includes(question.code)) {
+                return 3;
+            }
+            if ([QuestionTypeCode.W8, QuestionTypeCode.W14].includes(question.code)) {
+                return 4;
+            }
+            if ([QuestionTypeCode.S10, QuestionTypeCode.S12, QuestionTypeCode.S2].includes(question.code)) {
+                return 2;
+            }
+            if (
+                [
+                    QuestionTypeCode.S1, QuestionTypeCode.S17,
+                    QuestionTypeCode.S7, QuestionTypeCode.S4
+                ].includes(question.code)
+            ) {
+                return 3;
+            }
+            if (
+                [
+                    QuestionTypeCode.S14, QuestionTypeCode.S15,
+                    QuestionTypeCode.S16, QuestionTypeCode.S18
+                ].includes(question.code)
+            ) {
+                return 4;
+            }
         } catch (error) {
             throw new InternalServerErrorException(error);
         }

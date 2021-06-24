@@ -7,7 +7,7 @@ import { BookGrade, GetLessonInput, GetLessonOutput, LessonTree } from "@dto/boo
 import { BooksHelper } from "@helpers/books.helper";
 import { WorksService } from "@libs/works/works.service";
 import { ProgressBookMapping } from "@dto/progress";
-import { QuestionHoldersService } from "@libs/questionHolders/questionHolders.service";
+import { QuestionHoldersService } from "@libs/questionHolders/providers/questionHolders.service";
 
 @Injectable()
 export class BooksService {
@@ -112,7 +112,7 @@ export class BooksService {
                 const incorrectList = userWorkLevel ? userWorkLevel.incorrectList : [];
 
                 const incorrectPercent = Math.floor(incorrectList.length / questions.length);
-                const questionsForLatestLesson = this.worksService.questionsLatestLesson(incorrectPercent, incorrectList, questions);
+                const questionsForLatestLesson = this.questionHoldersService.questionsLatestLesson(incorrectPercent, incorrectList, questions);
                 lesson.questionIds = questionsForLatestLesson;
             }
             else {

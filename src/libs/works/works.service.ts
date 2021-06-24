@@ -3,7 +3,7 @@ import { Work, WorkDocument } from "@entities/work.entity";
 import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { QuestionDocument } from '@entities/question.entity';
-import { QuestionHoldersService } from '@libs/questionHolders/questionHolders.service';
+import { QuestionHoldersService } from '@libs/questionHolders/providers/questionHolders.service';
 import { UserDocument } from '@entities/user.entity';
 import { LessonTree } from '@dto/book';
 import { AnswerResult } from '@dto/lesson';
@@ -49,35 +49,6 @@ export class WorksService {
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
-    }
-
-    public questionsLatestLesson(
-        incorrectPercent: number,
-        incorrectList: string[],
-        rootQuestions: QuestionDocument[]
-        ): Array<string> {
-        if (incorrectPercent < 20) {
-            return [];
-        }
-        else if (incorrectPercent < 40) {
-            const mediumQuestions = rootQuestions
-                .filter(q => q.rank == 2 || q.rank == 3)
-                .sort(() => 0.5 - Math.random())
-                .map(q => String(q._id));
-            return [...incorrectList, ...mediumQuestions].slice(0, 10);
-        }
-        else {
-            const hardQuestions = rootQuestions
-                .filter(q => q.rank == 1 || q.rank == 4)
-                .sort(() => 0.5 - Math.random())
-                .map(q => String(q._id))
-            return [...incorrectList, ...hardQuestions].slice(0, 10);
-        }
-    }
-
-    public async getUnitWork(userWork: WorkDocument, unitId: string) {
-        const index = userWork.units.findIndex(item => item.unitId === unitId);
-
     }
 
     public async saveUserWork(user: UserDocument, lessonTree: LessonTree, workInfo: WorkInfo, results: AnswerResult[]):  Promise<number> {
