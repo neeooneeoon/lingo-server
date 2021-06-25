@@ -1,9 +1,11 @@
 import {
     BadRequestException,
-    forwardRef,
     Inject,
     Injectable,
-    InternalServerErrorException
+    InternalServerErrorException,
+    UnauthorizedException,
+    forwardRef,
+    NotFoundException,
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
@@ -13,11 +15,14 @@ import { GoogleService } from './google.service';
 import { ProgressesService } from "@libs/progresses/progresses.service";
 import { UsersHelper } from '@helpers/users.helper';
 import { Rank, Role } from '@utils/enums';
-import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto, UpdateUserStatusDto } from "@dto/user";
+import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto, UpdateUserStatusDto, SaveLessonDto } from "@dto/user";
 import { FacebookService } from "./facebook.service";
-import { UpdateUserPointDto } from "@dto/user/updateUserPoint.dto";
+import { JwtPayLoad } from "@utils/types";
+import { AnswerResult } from "@dto/lesson";
+import { WorkInfo } from "@dto/works";
 import { LeaderBoardsService } from "@libs/leaderBoards/leaderBoards.service";
-
+import { BooksService } from "@libs/books/providers/books.service";
+import { WorksService } from "@libs/works/works.service";
 
 @Injectable()
 export class UsersService {
@@ -28,6 +33,8 @@ export class UsersService {
         private googleService: GoogleService,
         private facebookService: FacebookService,
         private progressesService: ProgressesService,
+        private booksService: BooksService,
+        private worksService: WorksService,
         @Inject(forwardRef(() => LeaderBoardsService)) private leaderBoardsService: LeaderBoardsService,
     ) { }
 
@@ -248,5 +255,62 @@ export class UsersService {
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
+    }
+
+    public async saveUserLesson(userCtx: JwtPayLoad, input: SaveLessonDto): Promise<string> {
+        const userProfile = await this.userModel.findById(userCtx.userId);
+        if (!userProfile) {
+            throw new UnauthorizedException('Not authorized');
+        }
+        const lessonResult: AnswerResult[] = input.results.map(result => ({ ...result, status: false }));
+        const {
+            doneQuestions,
+            timeEnd,
+            timeStart,
+            bookId,
+            unitId,
+            levelIndex,
+            lessonIndex
+        } = input;
+        const userWork: WorkInfo = {
+            doneQuestions: doneQuestions,
+            timeStart: new Date(timeStart),
+            timeEnd: new Date(timeEnd)
+        }
+
+        const lessonTree = await this.booksService.getLessonTree({
+            bookId: bookId,
+            unitId: unitId,
+            levelIndex: levelIndex,
+            lessonIndex: lessonIndex
+        });
+        if (!lessonTree) {
+            throw new NotFoundException(`Can't find lessonTree with ${input}`);
+        }
+        const saveUserProgressPromise = this.progressesService.saveUserProgress(userCtx.userId, lessonTree, userWork);
+        const saveUserWorkPromise = this.worksService.saveUserWork(userProfile, lessonTree, userWork, lessonResult);
+        
+        let isPassedLevel: boolean = false;
+        let point: number = 0;
+        await Promise.all([saveUserProgressPromise, saveUserWorkPromise])
+            .then(([promiseOneResult, promiseTwoResult]) => {
+                isPassedLevel = promiseOneResult;
+                point = promiseTwoResult;
+            })
+            .catch(error => {
+                throw new InternalServerErrorException(error);
+            })
+        const updateUserStatusPromise = this.updateUserStatus({
+            user: userProfile,
+            workInfo: userWork,
+            isFinishLevel: isPassedLevel,
+            point: point
+        });
+        const updateUserPointPromise = this.leaderBoardsService.updateUserPointDto(userProfile, point);
+        await Promise.all([updateUserStatusPromise, updateUserPointPromise])
+            .catch(error => {
+                throw new InternalServerErrorException(error);
+            });
+        return "save user work";
     }
 }

@@ -7,7 +7,7 @@ import { JwtPayLoad } from "@utils/types";
 import { ReportsService } from "./reports.service";
 
 @ApiTags('Reports')
-@Controller('api/report')
+@Controller()
 export class ReportsController {
 
     constructor(
@@ -15,7 +15,7 @@ export class ReportsController {
     ) { }
 
     @UseGuards(JwtAuthGuard)
-    @Post('sendReport')
+    @Post('api/system/report/question')
     @ApiBearerAuth()
     @ApiOperation({summary: "Báo cáo câu hỏi"})
     @ApiBody({type: CreateReportDto, required: true, description: "Thông tin báo cáo"})

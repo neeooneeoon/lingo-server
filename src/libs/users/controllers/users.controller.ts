@@ -1,64 +1,57 @@
-import { Body, Controller, Get, Put, UseGuards } from "@nestjs/common";
-import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import {
+    Body,
+    Controller,
+    Get,
+    Patch,
+    Put,
+    UseGuards,
+} from "@nestjs/common";
+import {
+    ApiTags,
+    ApiBearerAuth,
+    ApiConsumes,
+    ApiBody,
+    ApiOperation,
+} from "@nestjs/swagger";
 import { UserProfile, UpdateUserDto, SaveLessonDto } from '@dto/user';
 import { UsersService } from '../providers/users.service';
 import { JwtAuthGuard } from "@authentication/guard/jwtAuth.guard";
 import { UserCtx } from "@utils/decorators/custom.decorator";
 import { JwtPayLoad } from "@utils/types";
-import { WorkInfo } from "@dto/works";
-import { BooksService } from "@libs/books/providers/books.service";
-import { AnswerResult } from "@dto/lesson";
 
 @ApiTags('User')
 @Controller('api/user')
 export class UserController {
     constructor(
         private readonly usersService: UsersService,
-        private readonly booksService: BooksService,
-        ) {}
-    
+    ) { }
+
     @UseGuards(JwtAuthGuard)
     @Get('profile')
     @ApiBearerAuth()
-    @ApiOperation({summary: "Lấy thông tin người dùng"})
+    @ApiOperation({ summary: "Lấy thông tin người dùng" })
     @ApiConsumes('application/json')
     async getUserProfile(@UserCtx() user: JwtPayLoad): Promise<UserProfile> {
         return this.usersService.queryMe(user.userId)
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put('profile/edit')
+    @Patch('profile/edit')
     @ApiBearerAuth()
-    @ApiOperation({summary: "Sửa đổi hồ sơ người dùng"})
+    @ApiOperation({ summary: "Sửa đổi hồ sơ người dùng" })
     @ApiConsumes('application/json')
-    @ApiBody({type: UpdateUserDto, description: "Update Information"})
-    async updateUserProfile(@UserCtx() user: JwtPayLoad, @Body()body: UpdateUserDto): Promise<UserProfile> {
+    @ApiBody({ type: UpdateUserDto, description: "Update Information" })
+    async updateUserProfile(@UserCtx() user: JwtPayLoad, @Body() body: UpdateUserDto): Promise<UserProfile> {
         return this.usersService.updateUserProfile(user.userId, body)
     }
 
     @UseGuards(JwtAuthGuard)
     @Put('saveLesson')
     @ApiBearerAuth()
-    @ApiOperation({summary: "Lưu kết quả mỗi bài học"})
+    @ApiOperation({ summary: "Lưu kết quả mỗi bài học" })
     @ApiConsumes('application/json')
-    @ApiBody({type: SaveLessonDto, required: true, description: "Kết quả bài học"})
-    async saveUserLesson(@Body('input') input: SaveLessonDto, @UserCtx() user: JwtPayLoad): Promise<void> {
-        const lessonResult: AnswerResult[] = input.results.map(result => ({...result, status: false}));
-
-        const {
-            doneQuestions,
-            timeEnd,
-            timeStart,
-            bookId,
-            unitId,
-            levelIndex,
-            lessonIndex
-        } = input;
-
-        const userWork: WorkInfo = {
-            doneQuestions: doneQuestions,
-            timeStart: new Date(timeStart),
-            timeEnd: new Date(timeEnd)
-        }
+    @ApiBody({ type: SaveLessonDto, required: true, description: "Kết quả bài học" })
+    async saveUserLesson(@Body('input') input: SaveLessonDto, @UserCtx() user: JwtPayLoad): Promise<string> {
+        return this.usersService.saveUserLesson(user, input);
     }
 }
