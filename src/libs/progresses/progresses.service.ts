@@ -60,11 +60,10 @@ export class ProgressesService {
         const mappedUnits: ProgressUnitMapping[] = book.units.map(unit => {
             if (unit) {
                 const unitProgress = bookProgress.units.find(unitProgress => unitProgress.unitId === unit._id);
-                if (unitProgress) {
-                    return this.progressesHelper.combineUnitAndProgressUnit(unit, unitProgress);
-                }
+                return this.progressesHelper.combineUnitAndProgressUnit(unit, unitProgress);
             }
-        }).filter(unit => unit !== null);
+        }).filter(unit => unit);
+        console.log(mappedUnits)
         return this.progressesHelper.combineBookAndProgressBook(book, bookProgress, mappedUnits)
     }
 
