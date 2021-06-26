@@ -54,6 +54,7 @@ export class BooksService {
 
     public async getUnitsInBook(bookId: string, userId: string): Promise<ProgressBookMapping> {
         try {
+            console.log("getUnitsInBook", bookId);
             const book = await this.getBook(bookId);
             const instanceUserWork = await this.worksService.getUserWork(userId, bookId);
             if (!instanceUserWork) {
@@ -69,6 +70,7 @@ export class BooksService {
     }
 
     public async getDetailLesson(userId: string, input: GetLessonInput): Promise<GetLessonOutput> {
+        console.log("getDetailLesson", input);
         const {
             bookId,
             unitId,
@@ -97,7 +99,13 @@ export class BooksService {
         if (!lessons || lessons.length == 0) {
             throw new BadRequestException(`No lessons in level index ${levelIndex}`);
         }
-        let lesson = lessons.find(item => item.lessonIndex === lessonIndex);
+        let lesson: LessonDocument;
+        if (levelIndex == levels.length - 1 && lessonIndex == lessons.length) {
+            lesson = lessons[lessons.length - 1];
+        }
+        else {
+            lesson = lessons.find(item => item.lessonIndex === lessonIndex);
+        }
         if (!lesson) {
             throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
         }
@@ -114,11 +122,27 @@ export class BooksService {
             const userWorkUnit = userWork?.units?.find(item => item.unitId === unitId);
             if (lessonIndex === lessons.length - 1) {
                 const userWorkLevel = userWorkUnit?.levels?.find(item => item.levelIndex === levelIndex);
+                // if (!userWorkLevel) {
+                //     throw new InternalServerErrorException()
+                // }
                 const incorrectList = userWorkLevel ? userWorkLevel.incorrectList : [];
 
                 const incorrectPercent = Math.floor(incorrectList.length / questions.length) * 100;
+                console.log(incorrectPercent);
                 const questionsForLatestLesson = this.questionHoldersService.questionsLatestLesson(incorrectPercent, incorrectList, questions);
                 lesson.questionIds = questionsForLatestLesson;
+                if (questionsForLatestLesson.length === 0) {
+                    const setIndexes = new Set<number>();
+                    let counter = lesson.questionIds.length;
+                    while (lesson.questionIds.length < 7 && counter < questions.length) {
+                        const index = Math.floor(Math.random() * questions.length);
+                        if (!setIndexes.has(index)) {
+                            lesson.questionIds.push(String(questions[index]._id));
+                            setIndexes.add(index);
+                            counter++;
+                        }
+                    }
+                }
             }
             else {
                 const incorrectList = userWorkUnit?.incorrectList;
@@ -145,6 +169,7 @@ export class BooksService {
                     const index = Math.floor(Math.random() * questions.length);
                     if (!setIndexes.has(index)) {
                         lesson.questionIds.push(String(questions[index]._id));
+                        setIndexes.add(index);
                         counter++;
                     }
                 }
@@ -171,6 +196,7 @@ export class BooksService {
                 levelIndex,
                 lessonIndex
             } = input;
+            let isLastLesson = false;
 
             const book = await this.getBook(bookId);
             const units = book.units;
@@ -193,13 +219,20 @@ export class BooksService {
             if (!lessons || lessons.length === 0) {
                 throw new BadRequestException(`No lesson in ${levelIndex}`);
             }
-            const lesson = lessons.find(item => item.lessonIndex === lessonIndex);
+            let lesson: LessonDocument;
+            if (levelIndex == unit.levels.length - 1 && lessonIndex == lessons.length) {
+                isLastLesson = true;
+                lesson = lessons[lessons.length - 1];
+            }
+            else {
+                lesson = lessons.find(item => item.lessonIndex === lessonIndex);
+            }
             if (!lesson) {
                 throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
             }
-            
+            console.log(isLastLesson);
             return {
-                isLastLesson: lessonIndex === level.lessons.length - 1,
+                isLastLesson: isLastLesson,
                 grade: book.grade,
                 bookId: book._id,
                 unitId: unit._id,

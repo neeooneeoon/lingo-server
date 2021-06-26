@@ -100,15 +100,7 @@ export class ProgressesService {
                     lastDid: new Date(),
                     units: []
                 };
-                userProgress = await this.progressModel.findOneAndUpdate(
-                    { userId: userId },
-                    {
-                        $push: {
-                            books: newProgressBook
-                        }
-                    },
-                    { new: true }
-                );
+                userProgress.books.push(progressBook);
                 progressBook = newProgressBook;
             }
             let progressUnit = progressBook.units.find(item => item.unitId === lessonTree.unitId);
@@ -117,8 +109,8 @@ export class ProgressesService {
                     unitId: unitId,
                     totalLevels: unitTotalLevels,
                     passedLevels: 0,
+                    doneLessons: 1,
                     doneQuestions: workInfo.doneQuestions,
-                    doneLessons: 0,
                     correctQuestions: lessonTotalQuestions,
                     lastDid: workInfo.timeEnd,
                     levels: [{
@@ -147,8 +139,8 @@ export class ProgressesService {
                     const userLesson = progressLevel.lessons.find(item => Number(item) === Number(lessonIndex));
                     if (!userLesson) {
                         progressLevel.lessons.push(lessonIndex);
-                        progressLevel.passed = progressLevel.lessons.length === progressLevel.totalLessons;
-                        if (progressLevel.passed) {
+                        progressLevel.passed = progressLevel.lessons.length == progressLevel.totalLessons;
+                        if (progressLevel.passed === true) {
                             progressUnit.passedLevels++;
                             progressBook.level++;
                             result = true;
@@ -163,11 +155,11 @@ export class ProgressesService {
                 progressUnit.lastDid = workInfo.timeEnd;
 
                 if (!isLastLesson && !hasLesson) {
-                    progressUnit.doneLessons ++;
+                    progressUnit.doneLessons++;
                     progressUnit.doneQuestions += workInfo.doneQuestions;
                 }
             }
-            progressBook.correctQuestions =+ lessonTotalQuestions;
+            progressBook.correctQuestions = + lessonTotalQuestions;
             progressBook.lastDid = workInfo.timeEnd;
             progressBook.score++;
 
@@ -176,18 +168,6 @@ export class ProgressesService {
                 progressBook.doneQuestions += workInfo.doneQuestions;
             }
             await userProgress.save();
-            // await this.progressModel.updateOne(
-            //     {userId: userId},
-            //     {
-            //         $set:{
-            //             "books.$[book]": progressBook
-            //         },
-            //         lastDid: workInfo.timeEnd
-            //     },
-            //     {
-            //         arrayFilters: [{"book.bookId": bookId}]
-            //     }
-            // )
             return result;
         } catch (error) {
             throw new InternalServerErrorException(error);

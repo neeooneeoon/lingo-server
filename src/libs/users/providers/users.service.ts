@@ -221,7 +221,7 @@ export class UsersService {
                 loginCount++;
             }
             else if (checker === 0) {
-                if (streak === 0 && checker === 0) {
+                if (streak === 0 && loginCount === 0) {
                     streak++;
                     loginCount++;
                 }
