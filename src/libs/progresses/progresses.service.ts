@@ -55,22 +55,16 @@ export class ProgressesService {
             };
             userProgress.books.push(bookProgress);
             await userProgress.save();
-            // await this.progressModel.updateOne(
-            //     { userId: userId },
-            //     {
-            //         $push: {
-            //             books: bookProgress
-            //         }
-            //     },
-            // );
         }
 
         const mappedUnits: ProgressUnitMapping[] = book.units.map(unit => {
             if (unit) {
                 const unitProgress = bookProgress.units.find(unitProgress => unitProgress.unitId === unit._id);
-                return this.progressesHelper.combineUnitAndProgressUnit(unit, unitProgress);
+                if (unitProgress) {
+                    return this.progressesHelper.combineUnitAndProgressUnit(unit, unitProgress);
+                }
             }
-        }).filter(unit => unit);
+        }).filter(unit => unit !== null);
         return this.progressesHelper.combineBookAndProgressBook(book, bookProgress, mappedUnits)
     }
 

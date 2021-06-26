@@ -80,7 +80,7 @@ export class BooksService {
         if (!units || units.length == 0) {
             throw new BadRequestException(`No unit in book ${bookId}`);
         }
-        const unit = units.find(item => item._id === unitId);
+        const unit = units.find(item => item._id == unitId);
         if (!unit) {
             throw new BadRequestException(`No unit ${unit} in book ${bookId}`);
         }
@@ -107,22 +107,22 @@ export class BooksService {
             unitId: unitId,
             level: levelIndex
         });
-        const questions = questionHolder.questions;
+        const questions = questionHolder?.questions;
 
-        if (lesson.questionIds.length == 0) {
+        if (lesson?.questionIds?.length == 0 && questions.length !== 0) {
             const userWork = await this.worksService.getUserWork(userId, bookId);
-            const userWorkUnit = userWork.units.find(item => item.unitId === unitId);
+            const userWorkUnit = userWork?.units?.find(item => item.unitId === unitId);
             if (lessonIndex === lessons.length - 1) {
-                const userWorkLevel = userWorkUnit.levels.find(item => item.levelIndex === levelIndex);
+                const userWorkLevel = userWorkUnit?.levels?.find(item => item.levelIndex === levelIndex);
                 const incorrectList = userWorkLevel ? userWorkLevel.incorrectList : [];
 
-                const incorrectPercent = Math.floor(incorrectList.length / questions.length);
+                const incorrectPercent = Math.floor(incorrectList.length / questions.length) * 100;
                 const questionsForLatestLesson = this.questionHoldersService.questionsLatestLesson(incorrectPercent, incorrectList, questions);
                 lesson.questionIds = questionsForLatestLesson;
             }
             else {
-                const incorrectList = userWorkUnit.incorrectList;
-                const didList = userWorkUnit.didList;
+                const incorrectList = userWorkUnit?.incorrectList;
+                const didList = userWorkUnit?.didList;
                 const leftOver = incorrectList.filter(q => didList.indexOf(q) === -1);
                 if (leftOver.length <= 7) {
                     lesson.questionIds.push(...leftOver);

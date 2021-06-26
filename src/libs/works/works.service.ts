@@ -41,7 +41,6 @@ export class WorksService {
 
     public async getUserWork(userId: string, bookId: string): Promise<WorkDocument | undefined> {
         try {
-            console.log(userId, bookId)
             const userWork = await this.workModel.findOne({
                 bookId: bookId,
                 userId: Types.ObjectId(userId)
