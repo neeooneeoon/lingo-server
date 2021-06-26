@@ -54,7 +54,6 @@ export class BooksService {
 
     public async getUnitsInBook(bookId: string, userId: string): Promise<ProgressBookMapping> {
         try {
-            console.log("getUnitsInBook", bookId);
             const book = await this.getBook(bookId);
             const instanceUserWork = await this.worksService.getUserWork(userId, bookId);
             if (!instanceUserWork) {
@@ -64,13 +63,11 @@ export class BooksService {
             return bookProgress;
             
         } catch (error) {
-            console.log(error)
             throw new InternalServerErrorException(error);
         }
     }
 
     public async getDetailLesson(userId: string, input: GetLessonInput): Promise<GetLessonOutput> {
-        console.log("getDetailLesson", input);
         const {
             bookId,
             unitId,
@@ -122,13 +119,9 @@ export class BooksService {
             const userWorkUnit = userWork?.units?.find(item => item.unitId === unitId);
             if (lessonIndex === lessons.length - 1) {
                 const userWorkLevel = userWorkUnit?.levels?.find(item => item.levelIndex === levelIndex);
-                // if (!userWorkLevel) {
-                //     throw new InternalServerErrorException()
-                // }
                 const incorrectList = userWorkLevel ? userWorkLevel.incorrectList : [];
 
                 const incorrectPercent = Math.floor(incorrectList.length / questions.length) * 100;
-                console.log(incorrectPercent);
                 const questionsForLatestLesson = this.questionHoldersService.questionsLatestLesson(incorrectPercent, incorrectList, questions);
                 lesson.questionIds = questionsForLatestLesson;
                 if (questionsForLatestLesson.length === 0) {
@@ -230,7 +223,6 @@ export class BooksService {
             if (!lesson) {
                 throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
             }
-            console.log(isLastLesson);
             return {
                 isLastLesson: isLastLesson,
                 grade: book.grade,

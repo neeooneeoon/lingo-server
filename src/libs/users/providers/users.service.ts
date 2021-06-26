@@ -294,7 +294,6 @@ export class UsersService {
         let point: number = 0;
         await Promise.all([saveUserProgressPromise, saveUserWorkPromise])
             .then(([promiseOneResult, promiseTwoResult]) => {
-                console.log(promiseOneResult, promiseTwoResult)
                 isPassedLevel = promiseOneResult;
                 point = promiseTwoResult;
             })

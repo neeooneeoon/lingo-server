@@ -19,7 +19,7 @@ export class ReportsController {
     @ApiBearerAuth()
     @ApiOperation({summary: "Báo cáo câu hỏi"})
     @ApiBody({type: CreateReportDto, required: true, description: "Thông tin báo cáo"})
-    public async sendReport(@Body('body') body: CreateReportDto, @UserCtx()user: JwtPayLoad) {
+    public async sendReport(@Body() body: CreateReportDto, @UserCtx()user: JwtPayLoad) {
         return this.reportsService.create(user.userId, body);
     }
 
