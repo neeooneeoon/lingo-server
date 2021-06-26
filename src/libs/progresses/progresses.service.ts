@@ -63,7 +63,6 @@ export class ProgressesService {
                 return this.progressesHelper.combineUnitAndProgressUnit(unit, unitProgress);
             }
         }).filter(unit => unit);
-        console.log(mappedUnits)
         return this.progressesHelper.combineBookAndProgressBook(book, bookProgress, mappedUnits)
     }
 
