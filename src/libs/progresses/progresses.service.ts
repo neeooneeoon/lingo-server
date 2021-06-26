@@ -20,22 +20,22 @@ export class ProgressesService {
     async createUserProgress(input: CreateUserProgressDto): Promise<ProgressDocument> {
         const { userId, books } = input;
         return this.progressModel.create({
-            userId: userId,
+            userId: Types.ObjectId(String(userId)),
             books: books,
         });
     }
 
-    async getUserProgress(userId: Types.ObjectId | string): Promise<ProgressDocument> {
-        return this.progressModel.findOne({ userId: userId });
+    async getUserProgress(userId: string): Promise<ProgressDocument> {
+        return this.progressModel.findOne({ userId: Types.ObjectId(userId) });
     }
 
     async getBookProgress(
-        userId: Types.ObjectId | string, book: BookDocument
+        userId: string, book: BookDocument
     ): Promise<ProgressBookMapping> {
         let userProgress = await this.getUserProgress(userId);
         if (!userProgress) {
             userProgress = await this.createUserProgress({
-                userId: userId,
+                userId: Types.ObjectId(userId),
                 books: []
             });
         }
@@ -53,14 +53,16 @@ export class ProgressesService {
                 level: 0,
                 lastDid: new Date()
             };
-            await this.progressModel.updateOne(
-                { userId: userId },
-                {
-                    $push: {
-                        books: bookProgress
-                    }
-                }
-            );
+            userProgress.books.push(bookProgress);
+            await userProgress.save();
+            // await this.progressModel.updateOne(
+            //     { userId: userId },
+            //     {
+            //         $push: {
+            //             books: bookProgress
+            //         }
+            //     },
+            // );
         }
 
         const mappedUnits: ProgressUnitMapping[] = book.units.map(unit => {
@@ -72,7 +74,7 @@ export class ProgressesService {
         return this.progressesHelper.combineBookAndProgressBook(book, bookProgress, mappedUnits)
     }
 
-    public async saveUserProgress(userId: Types.ObjectId | string, lessonTree: LessonTree, workInfo: WorkInfo): Promise<boolean> {
+    public async saveUserProgress(userId: string, lessonTree: LessonTree, workInfo: WorkInfo): Promise<boolean> {
         try {
             let hasLesson = false;
             let result = false;
@@ -181,19 +183,19 @@ export class ProgressesService {
                 progressBook.doneLessons++;
                 progressBook.doneQuestions += workInfo.doneQuestions;
             }
-
-            await this.progressModel.updateOne(
-                {userId: userId},
-                {
-                    $set:{
-                        "books.$[book]": progressBook
-                    },
-                    lastDid: workInfo.timeEnd
-                },
-                {
-                    arrayFilters: [{"book.bookId": bookId}]
-                }
-            )
+            await userProgress.save();
+            // await this.progressModel.updateOne(
+            //     {userId: userId},
+            //     {
+            //         $set:{
+            //             "books.$[book]": progressBook
+            //         },
+            //         lastDid: workInfo.timeEnd
+            //     },
+            //     {
+            //         arrayFilters: [{"book.bookId": bookId}]
+            //     }
+            // )
             return result;
         } catch (error) {
             throw new InternalServerErrorException(error);

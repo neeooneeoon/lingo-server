@@ -12,4 +12,5 @@ export class QuestionReducingInput {
 export class QuestionReducingOutput {
     wordsInLesson: WordInLesson[];
     sentencesInLesson: SentenceInLesson[];
+    listQuestions: any [];
 }

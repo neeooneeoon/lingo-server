@@ -51,7 +51,7 @@ export class UserController {
     @ApiOperation({ summary: "Lưu kết quả mỗi bài học" })
     @ApiConsumes('application/json')
     @ApiBody({ type: SaveLessonDto, required: true, description: "Kết quả bài học" })
-    async saveUserLesson(@Body('input') input: SaveLessonDto, @UserCtx() user: JwtPayLoad): Promise<string> {
+    async saveUserLesson(@Body() input: SaveLessonDto, @UserCtx() user: JwtPayLoad): Promise<string> {
         return this.usersService.saveUserLesson(user, input);
     }
 }

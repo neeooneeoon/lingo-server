@@ -262,7 +262,7 @@ export class UsersService {
         if (!userProfile) {
             throw new UnauthorizedException('Not authorized');
         }
-        const lessonResult: AnswerResult[] = input.results.map(result => ({ ...result, status: false }));
+        const lessonResult: AnswerResult[] = input.results.map(result => ({...result, status: false}));
         const {
             doneQuestions,
             timeEnd,
@@ -294,6 +294,7 @@ export class UsersService {
         let point: number = 0;
         await Promise.all([saveUserProgressPromise, saveUserWorkPromise])
             .then(([promiseOneResult, promiseTwoResult]) => {
+                console.log(promiseOneResult, promiseTwoResult)
                 isPassedLevel = promiseOneResult;
                 point = promiseTwoResult;
             })

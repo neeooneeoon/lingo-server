@@ -10,7 +10,7 @@ export class GetLessonInput {
 }
 
 export class GetLessonOutput {
-    lesson: LessonDocument;
+    lesson: Partial<LessonDocument>;
     words: WordInLesson[];
     sentences: SentenceInLesson[];
 }

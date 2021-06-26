@@ -17,11 +17,9 @@ export class SaveLessonDto {
   unitId: string;
 
   @ApiProperty({ type: Number })
-  @IsInt()
   levelIndex: number;
 
   @ApiProperty({ type: Number })
-  @IsInt()
   lessonIndex: number;
 
   @ApiProperty({ type: String, format: 'date-time' })

@@ -8,7 +8,7 @@ export class AuthenticationService {
     constructor(private jwtService: JwtService, private configsService: ConfigsService) { }
 
     generateToken(payload: JwtPayLoad) {
-        return this.jwtService.sign({user: payload}, { secret: this.configsService.get('TOKEN_SECRET'), expiresIn: 3600 });
+        return this.jwtService.sign({user: payload}, { secret: this.configsService.get('TOKEN_SECRET'), expiresIn: 864000 });
     }
 
     generateRefreshToken(payload: JwtPayLoad) {

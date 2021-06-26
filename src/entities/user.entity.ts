@@ -4,7 +4,6 @@ import { Rank, Role } from '@utils/enums';
 
 @Schema({ timestamps: true })
 export class User {
-    _id: Types.ObjectId;
     
     @Prop({ type: String, required: false, default: '' })
     facebookId?: string;

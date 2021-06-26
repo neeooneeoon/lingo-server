@@ -21,15 +21,15 @@ export class WorksService {
         private pointService: PointService,
     ) { }
 
-    public async createUserWork(userId: Types.ObjectId | string, bookId: string): Promise<void> {
+    public async createUserWork(userId: string, bookId: string): Promise<void> {
         try {
             const userWork = await this.workModel.findOne({
-                userId: userId,
+                userId: Types.ObjectId(userId),
                 bookId: bookId
             });
             if (!userWork) {
                 await this.workModel.create({
-                    userId: userId,
+                    userId: Types.ObjectId(userId),
                     bookId: bookId,
                     units: []
                 });
@@ -39,15 +39,13 @@ export class WorksService {
         }
     }
 
-    public async getUserWork(userId: string | Types.ObjectId, bookId: string): Promise<WorkDocument> {
+    public async getUserWork(userId: string, bookId: string): Promise<WorkDocument | undefined> {
         try {
+            console.log(userId, bookId)
             const userWork = await this.workModel.findOne({
                 bookId: bookId,
-                userId: userId
+                userId: Types.ObjectId(userId)
             });
-            if (!userWork) {
-                throw new BadRequestException(`Can't not find user-work ${userId}-${bookId}`);
-            }
             return userWork;
         } catch (error) {
             throw new InternalServerErrorException(error);

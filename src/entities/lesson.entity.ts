@@ -12,6 +12,9 @@ export class Lesson {
 
     @Prop({type: [String], required: true, default: []})
     questionIds: string[];
+
+    @Prop({type: [Object], required: true, immutable: false})
+    questions: any;
 }
 
 export const LessonSchema = SchemaFactory.createForClass(Lesson);

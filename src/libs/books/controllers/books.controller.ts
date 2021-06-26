@@ -94,7 +94,7 @@ export class BooksController {
       bookId: bookId,
       unitId: unitId,
       levelIndex: levelIndex,
-      lessonIndex: levelIndex
+      lessonIndex: lessonIndex
     }
     return this.booksService.getDetailLesson(user.userId, input)
   }

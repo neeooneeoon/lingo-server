@@ -9,6 +9,7 @@ import { SentencesService } from "@libs/sentences/sentences.service";
 import { WordInLesson } from "@dto/word/wordInLesson.dto";
 import { SentenceInLesson } from "@dto/sentence";
 import { ListWorQuestionCodes, ListSentenceQuestionCodes } from "@utils/constants";
+import { QuestionsHelper } from "@helpers/questionsHelper";
 
 @Injectable()
 export class QuestionHoldersService {
@@ -17,6 +18,7 @@ export class QuestionHoldersService {
         @InjectModel(QuestionHolder.name) private questionHolderModel: Model<QuestionHolderDocument>,
         private wordsService: WordsService,
         private sentencesService: SentencesService,
+        private questionsHelper: QuestionsHelper,
     ) { }
 
     private checkMatchSplitSemantic(userAnswer: string[], correctAnswer: string[]): boolean {
@@ -60,6 +62,7 @@ export class QuestionHoldersService {
 
             const setWordIds: Set<string> = new Set<string>(currentUnit.wordIds);
             const setSentenceIds: Set<string> = new Set<string>(currentUnit.sentenceIds);
+            const listQuestions: any[] = []
 
             for (const questionId of listAskingQuestionIds) {
                 const inspectedQuestion = questions.find(question => question._id == questionId);
@@ -82,6 +85,8 @@ export class QuestionHoldersService {
                             setSentenceIds.add(choice);
                         }
                     }
+                    const questionOutput = this.questionsHelper.getQuestionOutPut(inspectedQuestion);
+                    listQuestions.push(questionOutput);
                 }
             }
 
@@ -101,7 +106,8 @@ export class QuestionHoldersService {
 
             return {
                 wordsInLesson: wordsInLesson,
-                sentencesInLesson: sentencesInLesson
+                sentencesInLesson: sentencesInLesson,
+                listQuestions: listQuestions
             }
 
         } catch (error) {

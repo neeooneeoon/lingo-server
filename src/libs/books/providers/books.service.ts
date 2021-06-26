@@ -8,6 +8,7 @@ import { BooksHelper } from "@helpers/books.helper";
 import { WorksService } from "@libs/works/works.service";
 import { ProgressBookMapping } from "@dto/progress";
 import { QuestionHoldersService } from "@libs/questionHolders/providers/questionHolders.service";
+import { LessonDocument } from "@entities/lesson.entity";
 
 @Injectable()
 export class BooksService {
@@ -32,7 +33,7 @@ export class BooksService {
         }
     }
 
-    public async getBooksByGrade(grade: number, userId: Types.ObjectId | string): Promise<BookGrade[]> {
+    public async getBooksByGrade(grade: number, userId: string): Promise<BookGrade[]> {
         try {
             const books = (await this.bookModel.find({ grade: grade }))
                 .sort((bookOne, bookTwo) => bookOne.nId - bookTwo.nId);
@@ -51,19 +52,23 @@ export class BooksService {
     }
 
 
-    public async getUnitsInBook(bookId: string, userId: Types.ObjectId | string): Promise<ProgressBookMapping> {
+    public async getUnitsInBook(bookId: string, userId: string): Promise<ProgressBookMapping> {
         try {
             const book = await this.getBook(bookId);
-            await this.worksService.createUserWork(userId, bookId);
+            const instanceUserWork = await this.worksService.getUserWork(userId, bookId);
+            if (!instanceUserWork) {
+                await this.worksService.createUserWork(userId, bookId);
+            }
             const bookProgress = await this.progressesService.getBookProgress(userId, book);
             return bookProgress;
             
         } catch (error) {
+            console.log(error)
             throw new InternalServerErrorException(error);
         }
     }
 
-    public async getDetailLesson(userId: Types.ObjectId | string, input: GetLessonInput): Promise<GetLessonOutput> {
+    public async getDetailLesson(userId: string, input: GetLessonInput): Promise<GetLessonOutput> {
         const {
             bookId,
             unitId,
@@ -150,8 +155,9 @@ export class BooksService {
             questions: questions,
             listAskingQuestionIds: lesson.questionIds
         });
+        
         return {
-            lesson: lesson,
+            lesson: {...lesson.toJSON(), questions: reducingOutput.listQuestions},
             words: reducingOutput.wordsInLesson,
             sentences: reducingOutput.sentencesInLesson,
         }
