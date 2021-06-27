@@ -1,6 +1,8 @@
 import { Following, FollowingSchema } from "@entities/following.entity";
-import { Module } from "@nestjs/common";
+import { UsersModule } from "@libs/users";
+import { forwardRef, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
+import { FollowingsController } from "./followings.controller";
 import { FollowingsService } from "./followings.service";
 
 @Module({
@@ -8,9 +10,13 @@ import { FollowingsService } from "./followings.service";
         MongooseModule.forFeature([
             {name: Following.name, schema: FollowingSchema}
         ]),
+        forwardRef(() => UsersModule)
     ],
     providers: [
         FollowingsService,
+    ],
+    controllers: [
+        FollowingsController
     ],
     exports: [
         FollowingsService,

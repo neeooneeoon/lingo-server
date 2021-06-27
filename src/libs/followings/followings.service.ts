@@ -1,12 +1,14 @@
-import { Model, NativeError, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Following, FollowingDocument } from "@entities/following.entity";
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import { UsersService } from '@libs/users/providers/users.service';
 
 @Injectable()
 export class FollowingsService {
     constructor(
         @InjectModel(Following.name) private followingModel: Model<FollowingDocument>,
+        @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     ) { }
 
     public async createEmptyFollowing(userId: string): Promise<FollowingDocument> {
@@ -20,37 +22,37 @@ export class FollowingsService {
         }
     }
 
-    public async getListFollowing(userId: string): Promise<FollowingDocument> {
+    public async findOne(currentUser: Types.ObjectId): Promise<FollowingDocument> {
         try {
-            const userFollowing = await this.followingModel.findOne({
-                user: Types.ObjectId(userId)
+            const instance = await this.followingModel.findOne({
+                user: currentUser
             });
-            if (!userFollowing) {
-                throw new BadRequestException(`Can't find following instance with ${userId}`);
+            if (!instance) {
+                throw new NotFoundException('Not found');
             }
-            return userFollowing;
+            return instance
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
     }
 
-    public async startFollowing(userId: Types.ObjectId, followingId: Types.ObjectId) {
+    public async startFollow(currentUser: Types.ObjectId, followUser: Types.ObjectId): Promise<FollowingDocument> {
         try {
-            if (userId.equals(followingId)) {
+            if (currentUser.equals(followUser)) {
                 throw new BadRequestException('You can not follow yourself');
             }
-            const instanceFollowing = await this.followingModel.findOne({
-                user: userId
-            });
-            if (!instanceFollowing) {
-                throw new BadRequestException(`Can't find followings ${userId}`);
+            const instanceFollowing = await this.findOne(currentUser);
+            const existsUser = await this.usersService.queryMe(followUser);
+
+            if (!existsUser) {
+                throw new BadRequestException(`Can't not find user with ${followUser}`);
             }
-            if (instanceFollowing.listFollowing.includes(followingId)) {
+            if (instanceFollowing.listFollowing.includes(followUser)) {
                 throw new BadRequestException('Already following this user');
             }
             return await this.followingModel.findOneAndUpdate(
-                { user: userId },
-                { $push: { listFollowing: followingId } },
+                { user: currentUser },
+                { $push: { listFollowing: followUser } },
                 {new: true}
             ).populate('listFollowing', ['displayName', 'xp', 'avatar'])
 
@@ -58,4 +60,17 @@ export class FollowingsService {
             throw new InternalServerErrorException(error);
         }
     }
+
+    public async unFollow(currentUser: Types.ObjectId, followedUser: Types.ObjectId): Promise<FollowingDocument> {
+        try {
+            return await this.followingModel.findOneAndUpdate(
+                { user: currentUser },
+                { $pullAll: { listFollowing: [followedUser] } },
+                { new: true }
+            ).populate('listFollowing', ['displayName', 'xp', 'avatar'])
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
+
 }
