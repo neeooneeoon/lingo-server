@@ -12,7 +12,9 @@ import { UsersHelper } from '@helpers/users.helper';
 import { FacebookService } from './providers/facebook.service';
 import { BooksModule } from '@libs/books';
 import { LeaderBoardsModule } from "@libs/leaderBoards";
-import { LeaderBoardsService } from "@libs/leaderBoards/leaderBoards.service";
+import { FollowingsModule } from '@libs/followings';
+import { UserFollowingController } from './controllers/userFollowing.controller';
+import { UserFollowingService } from './providers/userFollowing.service';
 @Module({
     imports: [
         MongooseModule.forFeature(
@@ -25,19 +27,22 @@ import { LeaderBoardsService } from "@libs/leaderBoards/leaderBoards.service";
         ),
         AuthenticationModule,
         BooksModule,
-        forwardRef(() => LeaderBoardsModule)
+        forwardRef(() => LeaderBoardsModule),
+        FollowingsModule,
     ],
     controllers: [
         UserController,
         GoogleController,
         FacebookController,
         LoginController,
+        UserFollowingController,
     ],
     providers: [
         UsersService,
         UsersHelper,
         GoogleService,
         FacebookService,
+        UserFollowingService
     ],
     exports: [
         UsersService

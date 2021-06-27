@@ -5,7 +5,7 @@ import { Types, Document } from "mongoose";
 @Schema()
 export class Report {
 
-    @Prop({type: Types.ObjectId, required: true, ref: 'User'})
+    @Prop({type: Types.ObjectId, required: true})
     userId: Types.ObjectId;
 
     @Prop({type: [String], required: true, default: []})

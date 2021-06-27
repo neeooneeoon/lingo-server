@@ -7,6 +7,7 @@ import { BooksModule } from '@libs/books';
 import { UsersModule } from '@libs/users';
 import { LeaderBoardsModule } from '@libs/leaderBoards';
 import { ReportsModule } from '@libs/reports';
+import { FollowingsModule } from '@libs/followings';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ReportsModule } from '@libs/reports';
     UsersModule,
     LeaderBoardsModule,
     ReportsModule,
+    FollowingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

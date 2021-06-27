@@ -7,7 +7,7 @@ export class Sentence {
     @Prop({type: String})
     _id: string;
 
-    @Prop({type: String, required: true, default: '', ref: "Word"})
+    @Prop({type: String, required: true, default: '',})
     baseId: string;
 
     @Prop({type: Number, required: true})

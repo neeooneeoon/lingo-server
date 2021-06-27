@@ -23,6 +23,7 @@ import { WorkInfo } from "@dto/works";
 import { LeaderBoardsService } from "@libs/leaderBoards/leaderBoards.service";
 import { BooksService } from "@libs/books/providers/books.service";
 import { WorksService } from "@libs/works/works.service";
+import { FollowingsService } from "@libs/followings/followings.service";
 
 @Injectable()
 export class UsersService {
@@ -36,6 +37,7 @@ export class UsersService {
         private booksService: BooksService,
         private worksService: WorksService,
         @Inject(forwardRef(() => LeaderBoardsService)) private leaderBoardsService: LeaderBoardsService,
+        private followingsService: FollowingsService,
     ) { }
 
     public async findByIds(ids: Types.ObjectId[] | string[]): Promise<UserDocument[]> {
@@ -85,10 +87,15 @@ export class UsersService {
                 loginCount: 0, streak: 0,
                 lastActive: new Date()
             });
-            await this.progressesService.createUserProgress({
+            const createUserProgressPromise = this.progressesService.createUserProgress({
                 userId: newUser._id,
                 books: []
             });
+            const createEmptyFollowingPromise = this.followingsService.createEmptyFollowing(String(newUser._id));
+            await Promise.all([createUserProgressPromise, createEmptyFollowingPromise])
+                .catch(error => {
+                    throw new InternalServerErrorException(error)
+                })
             const userProfile = this.usersHelper.mapToUserProfile(newUser);
             const token = this.authService.generateToken({
                 userId: newUser._id,

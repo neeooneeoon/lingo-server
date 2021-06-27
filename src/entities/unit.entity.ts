@@ -35,10 +35,10 @@ export class Unit {
     @Prop({type: String, required: false, default: ""})
     tips: string;
 
-    @Prop({type: [String], required: true, default: [], ref: "Word"})
+    @Prop({type: [String], required: true, default: []})
     wordIds: string[];
 
-    @Prop({type: [String], required: true, default: [], ref: "Sentence"})
+    @Prop({type: [String], required: true, default: []})
     sentenceIds: string[];
 
     @Prop({type: [{
