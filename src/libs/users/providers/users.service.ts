@@ -315,4 +315,23 @@ export class UsersService {
             });
         return "save user work";
     }
+    public async searchUser(search: string): Promise<UserDocument[]> {
+        try {
+            search = search.trim();
+            if(!search) {
+                throw new BadRequestException('Can not find');
+            }
+            const users = await this.userModel.find({$or:[ 
+                {displayName: { $regex: '.*' + search + '.*' }}, 
+                {email: { $regex: '.*' + search + '.*' }}
+              ]});
+            const result = [];
+            for(const user of users) {
+                result.push(this.usersHelper.mapToSearchUserProfile(user));
+            }
+            return result;
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
 }

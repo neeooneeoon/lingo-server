@@ -3,6 +3,7 @@ import {
     Controller,
     Get,
     Patch,
+    Query,
     Put,
     UseGuards,
 } from "@nestjs/common";
@@ -12,12 +13,15 @@ import {
     ApiConsumes,
     ApiBody,
     ApiOperation,
+    ApiQuery,
 } from "@nestjs/swagger";
 import { UserProfile, UpdateUserDto, SaveLessonDto } from '@dto/user';
 import { UsersService } from '../providers/users.service';
 import { JwtAuthGuard } from "@authentication/guard/jwtAuth.guard";
 import { UserCtx } from "@utils/decorators/custom.decorator";
 import { JwtPayLoad } from "@utils/types";
+
+
 
 @ApiTags('User')
 @Controller('api/user')
@@ -53,5 +57,15 @@ export class UserController {
     @ApiBody({ type: SaveLessonDto, required: true, description: "Kết quả bài học" })
     async saveUserLesson(@Body() input: SaveLessonDto, @UserCtx() user: JwtPayLoad): Promise<string> {
         return this.usersService.saveUserLesson(user, input);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('search')
+    @ApiBearerAuth()
+    @ApiOperation({summary: "TÌm kiếm người dùng theo email hoặc tên hiển thị"})
+    @ApiConsumes('application/json')
+    @ApiQuery({type: String, name: "search", required: true})
+    async searchUser(@Query('search') search: string) {
+        return this.usersService.searchUser(search);
     }
 }
