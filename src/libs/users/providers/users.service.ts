@@ -23,7 +23,7 @@ import { WorkInfo } from "@dto/works";
 import { LeaderBoardsService } from "@libs/leaderBoards/leaderBoards.service";
 import { BooksService } from "@libs/books/providers/books.service";
 import { WorksService } from "@libs/works/works.service";
-import { FollowingsService } from "@libs/followings/followings.service";
+import { FollowingsService } from "@libs/followings/providers/followings.service";
 
 @Injectable()
 export class UsersService {

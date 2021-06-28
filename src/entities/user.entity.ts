@@ -59,3 +59,10 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 export type UserDocument = User & Document;
+
+UserSchema.virtual('followings', {
+    ref: 'Following',
+    localField: '_id',
+    foreignField: 'listFollowing',
+    justOne: false
+})

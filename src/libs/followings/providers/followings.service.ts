@@ -47,14 +47,17 @@ export class FollowingsService {
             if (!existsUser) {
                 throw new BadRequestException(`Can't not find user with ${followUser}`);
             }
-            if (instanceFollowing.listFollowing.includes(followUser)) {
+            const listUserFollowing = instanceFollowing.listFollowing.map(item => item.user);
+            if (listUserFollowing.includes(followUser)) {
                 throw new BadRequestException('Already following this user');
             }
             return await this.followingModel.findOneAndUpdate(
                 { user: currentUser },
-                { $push: { listFollowing: followUser } },
+                { $push: { listFollowing: {followUser: followUser, tag: ''} } },
                 {new: true}
-            ).populate('listFollowing', ['displayName', 'xp', 'avatar'])
+            )
+            .populate('listFollowing.followUser', ['displayName', 'xp', 'avatar'])
+            .populate('listFollowing.tag', [''])
 
         } catch (error) {
             throw new InternalServerErrorException(error);

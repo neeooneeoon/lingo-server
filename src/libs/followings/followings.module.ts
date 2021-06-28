@@ -3,12 +3,15 @@ import { UsersModule } from "@libs/users";
 import { forwardRef, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { FollowingsController } from "./followings.controller";
-import { FollowingsService } from "./followings.service";
+import { FollowingsService } from "./providers/followings.service";
+import { Tag, TagSchema } from "@entities/tag.entity";
+import { TagsController } from "./tags.controller";
 
 @Module({
     imports: [
         MongooseModule.forFeature([
-            {name: Following.name, schema: FollowingSchema}
+            {name: Following.name, schema: FollowingSchema},
+            {name: Tag.name, schema: TagSchema}
         ]),
         forwardRef(() => UsersModule)
     ],
@@ -16,7 +19,8 @@ import { FollowingsService } from "./followings.service";
         FollowingsService,
     ],
     controllers: [
-        FollowingsController
+        FollowingsController,
+        TagsController,
     ],
     exports: [
         FollowingsService,

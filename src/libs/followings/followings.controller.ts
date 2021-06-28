@@ -5,7 +5,7 @@ import { Body, Controller, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { UserCtx } from "@utils/decorators/custom.decorator";
 import { JwtPayLoad } from "@utils/types";
-import { FollowingsService } from "./followings.service";
+import { FollowingsService } from "./providers/followings.service";
 
 @ApiBearerAuth()
 @ApiTags('Followings')
