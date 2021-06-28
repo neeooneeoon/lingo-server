@@ -17,7 +17,6 @@ export class TagsService {
             });
             return listTags;
         } catch (error) {
-            console.log(error)
             throw new InternalServerErrorException(error);
         }
     }
@@ -27,7 +26,8 @@ export class TagsService {
             const newTag = await this.tagModel.create({
                 user: Types.ObjectId(userId),
                 name: input.name,
-                color: input.color
+                color: input.color,
+                _id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
             });
             if (!newTag) {
                 throw new InternalServerErrorException(`Can't creat new tag for ${userId}`);
@@ -35,7 +35,6 @@ export class TagsService {
             return;
 
         } catch (error) {
-            console.log(error)
             throw new InternalServerErrorException(error);
         }
     }

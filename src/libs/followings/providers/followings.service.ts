@@ -16,14 +16,11 @@ export class FollowingsService {
             const listFollowings = await this.followingModel.find({
                 user: currentUser
             })
-            .populate('followUser', ['displayName', 'avatar', 'xp']);
-            const result = listFollowings.map(item => {
-                if (item.tag) {
-                    return item.populate('tag');
-                }
-                return item;
-            });
-            return result;
+                .select('-__v')
+                .populate('followUser', ['displayName', 'avatar', 'xp'])
+                .populate('tag', ['color', 'name']);
+
+            return listFollowings;
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
@@ -34,11 +31,11 @@ export class FollowingsService {
             if (currentUser === followUser) {
                 throw new BadRequestException('You can not follow yourself');
             }
-
-            const listFollowings = (await this.followingModel.find({
-                user: currentUser
-            })).map(item => item.user);
-            if (!listFollowings || !listFollowings.includes(Types.ObjectId(followUser))) {
+            const listFollowings = await this.followingModel.find({
+                user: Types.ObjectId(currentUser)
+            });
+            const followingIds = listFollowings.map(item => item.followUser.toHexString());
+            if (!followingIds || !followingIds.includes(followUser)) {
                 const existsUser = await this.usersService.queryMe(followUser);
                 if (!existsUser) {
                     throw new BadRequestException(`Can't find user ${followUser}`);
@@ -47,7 +44,7 @@ export class FollowingsService {
                     const addingResult = await this.followingModel.create({
                         user: Types.ObjectId(currentUser),
                         followUser: Types.ObjectId(followUser),
-                        tag: tagId ? Types.ObjectId(tagId) : ''
+                        tag: tagId ? tagId : ''
                     });
                     if (!addingResult) {
                         throw new BadRequestException('Error');
@@ -55,22 +52,27 @@ export class FollowingsService {
                     return 'Follow success';
                 }
             }
+            else if (followingIds && followingIds.includes(followUser)) {
+                throw new BadRequestException('Already follow this user');
+            }
 
         } catch (error) {
-            console.log(error)
             throw new InternalServerErrorException(error);
         }
     }
 
-    public async unFollow(currentUser: Types.ObjectId, followedUser: Types.ObjectId): Promise<FollowingDocument> {
+    public async unFollow(currentUser: string, followedUser: string): Promise<void> {
         try {
-            return await this.followingModel.findOneAndUpdate(
-                { user: currentUser },
-                { $pullAll: { listFollowing: [followedUser] } },
-                { new: true }
-            )
-            .populate('followUser', ['displayName', 'xp', 'avatar'])
-            .populate('listFollowing.tag', ['name', 'color']);
+            const result = await this.followingModel.deleteOne({
+                user: Types.ObjectId(currentUser),
+                followUser: Types.ObjectId(followedUser)
+            });
+            if (result.deletedCount === 1) {
+                return;
+            }
+            else {
+                throw new InternalServerErrorException('Error');
+            }
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
