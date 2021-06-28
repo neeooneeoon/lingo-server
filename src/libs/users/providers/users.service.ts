@@ -87,15 +87,10 @@ export class UsersService {
                 loginCount: 0, streak: 0,
                 lastActive: new Date()
             });
-            const createUserProgressPromise = this.progressesService.createUserProgress({
+            await this.progressesService.createUserProgress({
                 userId: newUser._id,
                 books: []
             });
-            const createEmptyFollowingPromise = this.followingsService.createEmptyFollowing(String(newUser._id));
-            await Promise.all([createUserProgressPromise, createEmptyFollowingPromise])
-                .catch(error => {
-                    throw new InternalServerErrorException(error)
-                })
             const userProfile = this.usersHelper.mapToUserProfile(newUser);
             const token = this.authService.generateToken({
                 userId: newUser._id,
@@ -269,7 +264,7 @@ export class UsersService {
         if (!userProfile) {
             throw new UnauthorizedException('Not authorized');
         }
-        const lessonResult: AnswerResult[] = input.results.map(result => ({...result, status: false}));
+        const lessonResult: AnswerResult[] = input.results.map(result => ({ ...result, status: false }));
         const {
             doneQuestions,
             timeEnd,
@@ -296,7 +291,7 @@ export class UsersService {
         }
         const saveUserProgressPromise = this.progressesService.saveUserProgress(userCtx.userId, lessonTree, userWork);
         const saveUserWorkPromise = this.worksService.saveUserWork(userProfile, lessonTree, userWork, lessonResult);
-        
+
         let isPassedLevel: boolean = false;
         let point: number = 0;
         await Promise.all([saveUserProgressPromise, saveUserWorkPromise])

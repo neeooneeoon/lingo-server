@@ -1,4 +1,3 @@
-import { FollowingUser } from "@dto/following/followingUser.dto";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
 
@@ -8,22 +7,12 @@ export class Following {
     @Prop({ type: Types.ObjectId, required: true })
     user: Types.ObjectId;
 
-    @Prop({
-        type: [{
-            followUser: {
-                type: Types.ObjectId,
-                required: true,
-                ref: 'User',
-            },
-            tag: {
-                type: String,
-                required: true,
-                ref: 'Tag',
-                default: ''
-            }
-        }], default: []
-    })
-    listFollowing: FollowingUser[];
+    @Prop({type: Types.ObjectId, required: true, ref: 'User'})
+    followUser: Types.ObjectId;
+
+    @Prop({type: Types.ObjectId, required: false, default: null, ref: 'Tag'})
+    tag: Types.ObjectId;
+    
 
 }
 
@@ -31,6 +20,6 @@ export const FollowingSchema = SchemaFactory.createForClass(Following);
 export type FollowingDocument = Document & Following;
 
 FollowingSchema.index(
-    { user: 1 },
+    { user: 1, followUser: 1 },
     { unique: true }
 )

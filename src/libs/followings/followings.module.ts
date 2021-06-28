@@ -2,10 +2,11 @@ import { Following, FollowingSchema } from "@entities/following.entity";
 import { UsersModule } from "@libs/users";
 import { forwardRef, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { FollowingsController } from "./followings.controller";
+import { FollowingsController } from "./controllers/followings.controller";
 import { FollowingsService } from "./providers/followings.service";
 import { Tag, TagSchema } from "@entities/tag.entity";
-import { TagsController } from "./tags.controller";
+import { TagsController } from "./controllers/tags.controller";
+import { TagsService } from "./providers/tags.service";
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { TagsController } from "./tags.controller";
     ],
     providers: [
         FollowingsService,
+        TagsService,
     ],
     controllers: [
         FollowingsController,
@@ -24,6 +26,7 @@ import { TagsController } from "./tags.controller";
     ],
     exports: [
         FollowingsService,
+        TagsService,
     ]
 })
 

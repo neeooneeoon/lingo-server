@@ -1,6 +1,6 @@
 import { Model, Types } from 'mongoose';
 import { Following, FollowingDocument } from "@entities/following.entity";
-import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { UsersService } from '@libs/users/providers/users.service';
 
@@ -11,55 +11,53 @@ export class FollowingsService {
         @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     ) { }
 
-    public async createEmptyFollowing(userId: string): Promise<FollowingDocument> {
+    public async getListFollowings(currentUser: Types.ObjectId) {
         try {
-            return this.followingModel.create({
-                user: Types.ObjectId(userId),
-                listFollowing: []
-            });
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
-    }
-
-    public async findOne(currentUser: Types.ObjectId): Promise<FollowingDocument> {
-        try {
-            const instance = await this.followingModel.findOne({
+            const listFollowings = await this.followingModel.find({
                 user: currentUser
+            })
+            .populate('followUser', ['displayName', 'avatar', 'xp']);
+            const result = listFollowings.map(item => {
+                if (item.tag) {
+                    return item.populate('tag');
+                }
+                return item;
             });
-            if (!instance) {
-                throw new NotFoundException('Not found');
-            }
-            return instance
+            return result;
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
     }
 
-    public async startFollow(currentUser: Types.ObjectId, followUser: Types.ObjectId): Promise<FollowingDocument> {
+    public async startFollow(currentUser: string, followUser: string, tagId?: string): Promise<string> {
         try {
-            if (currentUser.equals(followUser)) {
+            if (currentUser === followUser) {
                 throw new BadRequestException('You can not follow yourself');
             }
-            const instanceFollowing = await this.findOne(currentUser);
-            const existsUser = await this.usersService.queryMe(followUser);
 
-            if (!existsUser) {
-                throw new BadRequestException(`Can't not find user with ${followUser}`);
+            const listFollowings = (await this.followingModel.find({
+                user: currentUser
+            })).map(item => item.user);
+            if (!listFollowings || !listFollowings.includes(Types.ObjectId(followUser))) {
+                const existsUser = await this.usersService.queryMe(followUser);
+                if (!existsUser) {
+                    throw new BadRequestException(`Can't find user ${followUser}`);
+                }
+                else {
+                    const addingResult = await this.followingModel.create({
+                        user: Types.ObjectId(currentUser),
+                        followUser: Types.ObjectId(followUser),
+                        tag: tagId ? Types.ObjectId(tagId) : ''
+                    });
+                    if (!addingResult) {
+                        throw new BadRequestException('Error');
+                    }
+                    return 'Follow success';
+                }
             }
-            const listUserFollowing = instanceFollowing.listFollowing.map(item => item.user);
-            if (listUserFollowing.includes(followUser)) {
-                throw new BadRequestException('Already following this user');
-            }
-            return await this.followingModel.findOneAndUpdate(
-                { user: currentUser },
-                { $push: { listFollowing: {followUser: followUser, tag: ''} } },
-                {new: true}
-            )
-            .populate('listFollowing.followUser', ['displayName', 'xp', 'avatar'])
-            .populate('listFollowing.tag', [''])
 
         } catch (error) {
+            console.log(error)
             throw new InternalServerErrorException(error);
         }
     }
@@ -70,7 +68,9 @@ export class FollowingsService {
                 { user: currentUser },
                 { $pullAll: { listFollowing: [followedUser] } },
                 { new: true }
-            ).populate('listFollowing', ['displayName', 'xp', 'avatar'])
+            )
+            .populate('followUser', ['displayName', 'xp', 'avatar'])
+            .populate('listFollowing.tag', ['name', 'color']);
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
