@@ -68,4 +68,5 @@ export class UserController {
     async searchUser(@Query('search') search: string) {
         return this.usersService.searchUser(search);
     }
+    
 }
