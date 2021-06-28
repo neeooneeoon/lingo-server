@@ -1,6 +1,6 @@
 import { CreateTagDto } from "@dto/following";
 import { Tag, TagDocument } from "@entities/tag.entity";
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 
@@ -38,5 +38,37 @@ export class TagsService {
             throw new InternalServerErrorException(error);
         }
     }
+    public async removeTag(id: string): Promise<void> {
+        try {
+            id = id.trim();
+            if(!id){
+                throw new BadRequestException("Can not find")
+            }
+            await this.tagModel.deleteOne({ _id: id });  
+            return; 
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
+    public async editTag(id: string, tagName: string): Promise<TagDocument> {
+        try {
+            id = id.trim();
+            tagName = tagName.trim();
+            if(!id) {
+                throw new BadRequestException("Can not find");
+            }
+            if(!tagName) {
+                throw new BadRequestException("Name field not entered");
+            }
+            const tag = await this.tagModel.findOneAndUpdate({_id:id}, {name:tagName}, {new: true});
+            if(!tag) {
+                throw new BadRequestException("Can not find");
+            }
+            return tag;
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
+
 
 }

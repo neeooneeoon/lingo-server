@@ -1,4 +1,4 @@
-import { UserDocument } from '@entities/user.entity';
+import {  UserDocument } from '@entities/user.entity';
 import { UserProfile } from '@dto/user/userProfile.dto';
 
 export class UsersHelper {
@@ -15,6 +15,13 @@ export class UsersHelper {
             grade: user.grade,
             xp: user.xp,
             rank: user.rank,
+        }
+    }
+    public mapToSearchUserProfile(user: UserDocument): Partial<UserProfile>{
+        return {
+            email: user.email,
+            avatar: user.avatar,
+            displayName: user.displayName
         }
     }
 }
