@@ -7,6 +7,7 @@ import { FollowingsService } from "./providers/followings.service";
 import { Tag, TagSchema } from "@entities/tag.entity";
 import { TagsController } from "./controllers/tags.controller";
 import { TagsService } from "./providers/tags.service";
+import { FollowingsHelper } from "@helpers/followings.helper";
 
 @Module({
     imports: [
@@ -14,11 +15,12 @@ import { TagsService } from "./providers/tags.service";
             {name: Following.name, schema: FollowingSchema},
             {name: Tag.name, schema: TagSchema}
         ]),
-        forwardRef(() => UsersModule)
+        forwardRef(() => UsersModule),
     ],
     providers: [
         FollowingsService,
         TagsService,
+        FollowingsHelper,
     ],
     controllers: [
         FollowingsController,

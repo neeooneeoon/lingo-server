@@ -15,7 +15,7 @@ import { GoogleService } from './google.service';
 import { ProgressesService } from "@libs/progresses/progresses.service";
 import { UsersHelper } from '@helpers/users.helper';
 import { Rank, Role } from '@utils/enums';
-import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto, UpdateUserStatusDto, SaveLessonDto } from "@dto/user";
+import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto, UpdateUserStatusDto, SaveLessonDto, SearchUser } from "@dto/user";
 import { FacebookService } from "./facebook.service";
 import { JwtPayLoad } from "@utils/types";
 import { AnswerResult } from "@dto/lesson";
@@ -164,7 +164,7 @@ export class UsersService {
                 givenName: facebookProfile.first_name,
                 familyName: facebookProfile.last_name,
                 displayName: facebookProfile.name,
-                avatar: facebookProfile.picture.data.url
+                avatar: `http://graph.facebook.com/${facebookProfile.id}/picture?type=square`
             });
         }
     }
@@ -315,20 +315,24 @@ export class UsersService {
             });
         return "save user work";
     }
-    public async searchUser(search: string): Promise<UserDocument[]> {
+    public async searchUser(search: string, userId: string)  {
         try {
             search = search.trim();
-            if(!search) {
+            if (!search) {
                 throw new BadRequestException('Can not find');
             }
-            const users = await this.userModel.find({$or:[ 
-                {displayName: { $regex: '.*' + search + '.*' }}, 
-                {email: { $regex: '.*' + search + '.*' }}
-              ]});
-            const result = [];
-            for(const user of users) {
-                result.push(this.usersHelper.mapToSearchUserProfile(user));
-            }
+            const listFollowings = await this.followingsService.followings(userId);
+            const listUserId = listFollowings.map(item => String(item.followUser));
+            const users = await this.userModel.find({
+                $or: [
+                    { displayName: { $regex: '.*' + search + '.*' } },
+                    { email: { $regex: '.*' + search + '.*' } }
+                ],
+                _id: {
+                    $ne: userId
+                }
+            });
+            const result = this.usersHelper.mapToFollowingResult(listUserId, users);
             return result;
         } catch (error) {
             throw new InternalServerErrorException(error);

@@ -65,8 +65,8 @@ export class UserController {
     @ApiOperation({summary: "TÌm kiếm người dùng theo email hoặc tên hiển thị"})
     @ApiConsumes('application/json')
     @ApiQuery({type: String, name: "search", required: true})
-    async searchUser(@Query('search') search: string) {
-        return this.usersService.searchUser(search);
+    async searchUser(@Query('search') search: string, @UserCtx()user: JwtPayLoad) {
+        return this.usersService.searchUser(search, user.userId);
     }
     
 }

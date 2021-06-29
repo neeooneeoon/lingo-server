@@ -10,6 +10,15 @@ export class TagsService {
         @InjectModel(Tag.name) private tagModel: Model<TagDocument>
     ) { }
 
+    public async findTag(userId: string, tagId: string): Promise<TagDocument> {
+        try {
+            const tag = await this.tagModel.findById(tagId);
+            return tag;
+        } catch (error) {
+            throw new BadRequestException()
+        }
+    }
+
     public async viewTags(userId: string): Promise<TagDocument[]> {
         try {
             let listTags = await this.tagModel.find({
