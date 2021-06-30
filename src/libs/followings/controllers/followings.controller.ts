@@ -1,8 +1,7 @@
-import { Types } from 'mongoose';
 import { JwtAuthGuard } from "@authentication/guard/jwtAuth.guard";
-import { AddFollowingDto, AssignTagDto } from "@dto/following";
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
+import { AddFollowingDto, AssignTagDto, ViewFollowingsDto } from "@dto/following";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { UserCtx } from "@utils/decorators/custom.decorator";
 import { JwtPayLoad } from "@utils/types";
 import { FollowingsService } from "../providers/followings.service";
@@ -37,15 +36,16 @@ export class FollowingsController {
 
     @Get('/')
     @ApiOperation({summary: 'Get followings'})
-    async viewFollowings(@UserCtx() user: JwtPayLoad) {
-        return this.followingsService.getListFollowings(user.userId);
+    @ApiQuery({type: ViewFollowingsDto, name: 'tagId', required: true})
+    async viewFollowings(@Query('tagId') tagId: string,  @UserCtx() user: JwtPayLoad) {
+        return this.followingsService.getListFollowings(user.userId, tagId);
     }
 
     @Put('assignTag')
     @ApiOperation({summary: 'Găn thẻ người theo dõi'})
     @ApiBody({type: AssignTagDto, required: true})
-    async assignTag(@Body()body: AssignTagDto) {
-        console.log(body)
+    async assignTag(@Body()body: AssignTagDto, @UserCtx() user: JwtPayLoad) {
+        return this.followingsService.addTagToFollowingUser(user.userId, body.followingId, body.tagId);
     }
 
 }

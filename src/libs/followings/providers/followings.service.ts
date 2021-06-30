@@ -6,7 +6,6 @@ import { UsersService } from '@libs/users/providers/users.service';
 import { TagsService } from './tags.service';
 import { TagDocument } from '@entities/tag.entity';
 import { UserProfile } from '@dto/user';
-import { FollowingsHelper } from '@helpers/followings.helper';
 
 @Injectable()
 export class FollowingsService {
@@ -14,13 +13,24 @@ export class FollowingsService {
         @InjectModel(Following.name) private followingModel: Model<FollowingDocument>,
         @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
         private readonly tagsService: TagsService,
-        private readonly followingsHelper: FollowingsHelper,
     ) { }
 
-    public async getListFollowings(currentUser: string) {
+    public async getListFollowings(currentUser: string, tagId: string) {
         try {
+            const formattedTagId = tagId.trim();
+            if (formattedTagId === 'all' || formattedTagId === 'ALL') {
+                const listFollowings = await this.followingModel.find({
+                    user: Types.ObjectId(currentUser),
+                })
+                    .select('-__v')
+                    .populate('followUser', ['displayName', 'avatar', 'xp'])
+                    .populate('tag', ['color', 'name']);
+
+                return listFollowings;
+            }
             const listFollowings = await this.followingModel.find({
-                user: Types.ObjectId(currentUser)
+                user: Types.ObjectId(currentUser),
+                tag: { $in: [tagId] }
             })
                 .select('-__v')
                 .populate('followUser', ['displayName', 'avatar', 'xp'])
@@ -57,17 +67,19 @@ export class FollowingsService {
                 if (!existsUser) {
                     throw new BadRequestException(`Can't find user ${followUser}`);
                 }
-                else {
-                    const addingResult = await this.followingModel.create({
-                        user: Types.ObjectId(currentUser),
-                        followUser: Types.ObjectId(followUser),
-                        tag: tagId ? tagId : ''
-                    });
-                    if (!addingResult) {
-                        throw new BadRequestException('Error');
-                    }
-                    return 'Follow success';
+                let existsTag: TagDocument;
+                if (tagId) {
+                    existsTag = await this.tagsService.findTag(currentUser, tagId);
                 }
+                const addingResult = await this.followingModel.create({
+                    user: Types.ObjectId(currentUser),
+                    followUser: Types.ObjectId(followUser),
+                    tag: existsTag ? existsTag._id : ''
+                });
+                if (!addingResult) {
+                    throw new BadRequestException('Follow failed');
+                }
+                return 'Follow success';
             }
             else if (followingIds && followingIds.includes(followUser)) {
                 throw new BadRequestException('Already follow this user');
@@ -95,20 +107,24 @@ export class FollowingsService {
         }
     }
 
-    public async addTagToFollowingUser(currentUser: string, followUser: string, tagId: string) {
+    public async addTagToFollowingUser(currentUser: string, followId: string, tagId: string): Promise<string> {
         try {
-            const findTagPromise = this.tagsService.findTag(currentUser, tagId);
-            const verifyUserPromise = this.usersService.queryMe(followUser);
-
-            let tagResult: TagDocument;
-            let followUserResult: UserProfile;
-
-            await Promise.all([findTagPromise, verifyUserPromise])
-                .then(([resultOne, resultTwo]) => {
-                    if (!resultOne) {
-                        throw new NotFoundException(`Can't find tag with ${tagId}`);
+            const tag = await this.tagsService.findTag(currentUser, tagId);
+            const result = await this.followingModel.updateOne(
+                {
+                    user: Types.ObjectId(currentUser),
+                    _id: Types.ObjectId(followId),
+                },
+                {
+                    $set: {
+                        tag: tag._id
                     }
-                })
+                }
+            )
+            if (result.nModified === 1) {
+                return 'Assign tag success';
+            }
+            throw new BadRequestException('Assign tag failed');
         } catch (error) {
             throw new InternalServerErrorException(error);
         }

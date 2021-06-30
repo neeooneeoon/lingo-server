@@ -1,6 +1,6 @@
 import { CreateTagDto } from "@dto/following";
 import { Tag, TagDocument } from "@entities/tag.entity";
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 
@@ -10,9 +10,15 @@ export class TagsService {
         @InjectModel(Tag.name) private tagModel: Model<TagDocument>
     ) { }
 
-    public async findTag(userId: string, tagId: string): Promise<TagDocument> {
+    public async findTag(currentUser: string, tagId: string): Promise<TagDocument | undefined> {
         try {
-            const tag = await this.tagModel.findById(tagId);
+            const tag = await this.tagModel.findOne({
+                user: Types.ObjectId(currentUser),
+                _id: tagId
+            });
+            if (!tag) {
+                throw new NotFoundException(`Can't find user-tag${tagId}`);
+            }
             return tag;
         } catch (error) {
             throw new BadRequestException()

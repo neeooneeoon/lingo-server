@@ -34,7 +34,6 @@ export class TagsController {
     @ApiOperation({ summary: 'Remove tag' })
     @ApiParam({ type: String, name: 'id', required: true })
     async removeTag(@Param('id') id: string) {
-        console.log(id);
         return this.tagsService.removeTag(id);
     }
 
