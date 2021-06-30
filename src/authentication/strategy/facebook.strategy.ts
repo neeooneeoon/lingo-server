@@ -8,7 +8,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
         super({
             clientID: process.env.FACEBOOK_CLIENT_ID,
             clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-            callbackURL: process.env.FACEBOOK_CALLBACK,
+            callbackURL: process.env.NODE_ENV  == "production" ? 'https://lingo-api.saokhuee.com/facebook/redirect' : process.env.FACEBOOK_CALLBACK,
             scope: "email",
             profileFields: ["emails", "name"],
         });
