@@ -1,10 +1,10 @@
 import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 import { Rank, Role } from '@utils/enums';
 
 @Schema({ timestamps: true })
 export class User {
-    
+
     @Prop({ type: String, required: false, default: '' })
     facebookId?: string;
 
