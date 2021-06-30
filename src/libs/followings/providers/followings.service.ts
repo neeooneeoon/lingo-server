@@ -109,23 +109,43 @@ export class FollowingsService {
 
     public async addTagToFollowingUser(currentUser: string, followId: string, tagId: string): Promise<string> {
         try {
-            const tag = await this.tagsService.findTag(currentUser, tagId);
-            const result = await this.followingModel.updateOne(
-                {
-                    user: Types.ObjectId(currentUser),
-                    _id: Types.ObjectId(followId),
-                },
-                {
-                    $set: {
-                        tag: tag._id
+            const formattedTagId = tagId.trim();
+            if (formattedTagId) {
+                const tag = await this.tagsService.findTag(currentUser, formattedTagId);
+                const result = await this.followingModel.updateOne(
+                    {
+                        user: Types.ObjectId(currentUser),
+                        _id: Types.ObjectId(followId),
+                    },
+                    {
+                        $set: {
+                            tag: tag._id
+                        }
                     }
+                )
+                if (result.nModified === 1) {
+                    return 'Assign tag success';
                 }
-            )
-            if (result.nModified === 1) {
-                return 'Assign tag success';
+            }
+            else {
+                const result = await this.followingModel.updateOne(
+                    {
+                        user: Types.ObjectId(currentUser),
+                        _id: Types.ObjectId(followId),
+                    },
+                    {
+                        $set: {
+                            tag: ''
+                        }
+                    }
+                )
+                if (result.nModified === 1) {
+                    return 'Assign tag success';
+                }
             }
             throw new BadRequestException('Assign tag failed');
         } catch (error) {
+            console.log(error)
             throw new InternalServerErrorException(error);
         }
     }
