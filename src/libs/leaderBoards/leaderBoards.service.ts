@@ -127,7 +127,8 @@ export class LeaderBoardsService {
                         displayName: item.displayName,
                         avatar: item.avatar,
                         userId: item._id,
-                        totalScore: item.score
+                        totalScore: item.score,
+                        isCurrentUser: false
                     })
                 }
                 break;
@@ -159,10 +160,12 @@ export class LeaderBoardsService {
             let temp: Types.ObjectId = (tempArr[0].user as unknown as UserDocument)._id;
 
             let totalScore: number = 0;
+            let prevUser: UserDocument;
             for (let i: number = 0; i < tempArr.length; i++) {
                 let item = tempArr[i];
                 const user = item.user as unknown as UserDocument;
                 if (user) {
+                    prevUser = user;
                     if (user._id.toHexString() == temp.toHexString()) {
                         totalScore += item.score;
                     }
@@ -175,7 +178,8 @@ export class LeaderBoardsService {
                                 displayName: user.displayName,
                                 avatar: user.avatar,
                                 userId: temp,
-                                totalScore: totalScore
+                                totalScore: totalScore,
+                                isCurrentUser: false
                             }
                         );
                         totalScore = 0;
@@ -183,26 +187,18 @@ export class LeaderBoardsService {
                         i--;
                     }
                 }
-                // else {
-                //     if (item.user.toString() == temp.toString()) {
-
-                //         totalScore += item.score;
-                //     }
-                //     else {
-                //         scoreArr.push(
-                //             {
-                //                 orderNumber: 0,
-                //                 displayName: null,
-                //                 avatar: null,
-                //                 userId: temp,
-                //                 totalScore: totalScore
-                //             }
-                //         );
-                //         totalScore = 0;
-                //         temp = item.user;
-                //         i--;
-                //     }
-                // }
+                if(i==tempArr.length-1&&prevUser) {
+                    scoreArr.push(
+                        {
+                            orderNumber: 0,
+                            displayName: prevUser.displayName,
+                            avatar: prevUser.avatar,
+                            userId: temp,
+                            totalScore: totalScore,
+                            isCurrentUser: false
+                        }
+                    )
+                }
             }
             scoreArr.sort(function compareFn(firstEl, secondEl) {
                 if (firstEl.totalScore < secondEl.totalScore) return 1;
@@ -210,23 +206,35 @@ export class LeaderBoardsService {
                 return 0;
             })
         }
-        
+        if(scoreArr.length==0) {
+            console.log("yes");
+            
+            return scoreArr;
+        }
+
+        // lấy ra top rank, số lượng cao nhất là 9
         if (scoreArr.length < top_length) top_length = scoreArr.length;
         let result: UserRank[] = [];
         let isInTop = false;
         for (let i = 0; i < top_length; i++) {
             const item = scoreArr[i];
-            if (item.userId.toHexString() == userId) isInTop = true;
+            if (item.userId.toHexString() == userId) {
+                isInTop = true;
+                item.isCurrentUser = true;
+            }
+
             result.push(
                 {
                     orderNumber: i + 1,
                     displayName: item.displayName,
                     avatar: item.avatar,
                     userId: item.userId,
-                    totalScore: item.totalScore
+                    totalScore: item.totalScore,
+                    isCurrentUser: item.isCurrentUser
                 }
             );
         }
+        //user hiện tại không trong top thì bỏ một người ra rồi thêm user hiện tại vào
         if (isInTop == false) {
             result.pop();
             for (let i = 0; i < scoreArr.length; i++) {
@@ -238,7 +246,8 @@ export class LeaderBoardsService {
                             orderNumber: i + 1,
                             avatar: item.avatar,
                             displayName: item.displayName,
-                            totalScore: item.totalScore
+                            totalScore: item.totalScore,
+                            isCurrentUser: true
                         }
                     )
                     break;
