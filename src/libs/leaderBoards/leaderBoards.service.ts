@@ -1,17 +1,23 @@
 import { LeaderBoard, LeaderBoardDocument } from "@entities/leaderBoard.entity";
-import { forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { UsersService } from "@libs/users/providers/users.service";
 import { Rank } from "@utils/enums";
-import { UserDocument } from '@entities/user.entity';
+import { User, UserDocument } from '@entities/user.entity';
+import * as dayjs from 'dayjs';
+import { ScoreStatistic, ScoreStatisticDocument } from "@entities/scoreStatistic.entity";
+import { UserRank } from "@dto/leaderBoard/userRank.dto";
+import { isNotEmpty } from "class-validator";
 
 @Injectable()
 export class LeaderBoardsService {
 
     constructor(
         @InjectModel(LeaderBoard.name) private leaderBoardModel: Model<LeaderBoardDocument>,
-        @Inject(forwardRef(() => UsersService)) private usersService: UsersService
+        @InjectModel(ScoreStatistic.name) private scoreStatisticModel: Model<ScoreStatisticDocument>,
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
+        @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     ) { }
 
     public async getLeaderBoard(userId: Types.ObjectId | string, rank: Rank): Promise<Partial<LeaderBoardDocument>> {
@@ -92,6 +98,178 @@ export class LeaderBoardsService {
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
+    }
+    public async getRanksByTime(userId: string, timeSelect: string): Promise<UserRank[]> {
+        let top_length = 9;
+        timeSelect = timeSelect.trim();
+        if (!timeSelect) {
+            throw new BadRequestException('timeSelect not entered');
+        }
+        let startTime: string;
+        let scoreArr: UserRank[] = [];
+        //Chọn các option, với option all time select luôn score trong bảng user
+        switch (timeSelect) {
+            case 'This week':
+                startTime = dayjs().startOf('week').format();
+                break;
+            case 'This month':
+                startTime = dayjs().startOf('month').format();
+                break;
+            case 'All time':
+                const userRankList = await this.userModel.find({}).sort({ score: -1 }).select({ score: 1, displayName: 1, avatar: 1 });
+                if (!userRankList) {
+                    throw new BadRequestException("Can not find");
+                }
+                for (let i = 0; i < userRankList.length; i++) {
+                    const item = userRankList[i];
+                    scoreArr.push({
+                        orderNumber: i + 1,
+                        displayName: item.displayName,
+                        avatar: item.avatar,
+                        userId: item._id,
+                        totalScore: item.score
+                    })
+                }
+                break;
+            default:
+                break;
+        }
+        const endTime = dayjs().format();
+        // Tổng hợp điểm trong khoảng thời gian starttime-> endtime
+        if (timeSelect != 'All time') {
+
+            const tempArr = await this.scoreStatisticModel.find(
+                {
+                    createdAt: {
+                        $gte: new Date(startTime),
+                        $lte: new Date(endTime)
+                    }
+                }
+            ).populate('user', ['displayName', 'avatar']);
+            
+            if (!scoreArr) {
+                throw new BadRequestException('Can not find');
+            }
+            tempArr.sort(function comapareFn(firstEl, secondEl) {
+                if (firstEl.user < secondEl.user) return -1;
+                if (firstEl.user > secondEl.user) return 1;
+                return 0;
+            });
+
+            let temp: Types.ObjectId = (tempArr[0].user as unknown as UserDocument)._id;
+
+            let totalScore: number = 0;
+            for (let i: number = 0; i < tempArr.length; i++) {
+                let item = tempArr[i];
+                const user = item.user as unknown as UserDocument;
+                if (user) {
+                    if (user._id.toHexString() == temp.toHexString()) {
+                        totalScore += item.score;
+                    }
+                    else {
+                        console.log(totalScore);
+                        
+                        scoreArr.push(
+                            {
+                                orderNumber: 0,
+                                displayName: user.displayName,
+                                avatar: user.avatar,
+                                userId: temp,
+                                totalScore: totalScore
+                            }
+                        );
+                        totalScore = 0;
+                        temp = (tempArr[0].user as unknown as UserDocument)._id;
+                        i--;
+                    }
+                }
+                // else {
+                //     if (item.user.toString() == temp.toString()) {
+
+                //         totalScore += item.score;
+                //     }
+                //     else {
+                //         scoreArr.push(
+                //             {
+                //                 orderNumber: 0,
+                //                 displayName: null,
+                //                 avatar: null,
+                //                 userId: temp,
+                //                 totalScore: totalScore
+                //             }
+                //         );
+                //         totalScore = 0;
+                //         temp = item.user;
+                //         i--;
+                //     }
+                // }
+            }
+            scoreArr.sort(function compareFn(firstEl, secondEl) {
+                if (firstEl.totalScore < secondEl.totalScore) return 1;
+                if (firstEl.totalScore > secondEl.totalScore) return -1;
+                return 0;
+            })
+        }
+        
+        if (scoreArr.length < top_length) top_length = scoreArr.length;
+        let result: UserRank[] = [];
+        let isInTop = false;
+        for (let i = 0; i < top_length; i++) {
+            const item = scoreArr[i];
+            if (item.userId.toHexString() == userId) isInTop = true;
+            result.push(
+                {
+                    orderNumber: i + 1,
+                    displayName: item.displayName,
+                    avatar: item.avatar,
+                    userId: item.userId,
+                    totalScore: item.totalScore
+                }
+            );
+        }
+        if (isInTop == false) {
+            result.pop();
+            for (let i = 0; i < scoreArr.length; i++) {
+                const item = scoreArr[i];
+                if (item.userId.toHexString() == userId) {
+                    result.push(
+                        {
+                            userId: item.userId,
+                            orderNumber: i + 1,
+                            avatar: item.avatar,
+                            displayName: item.displayName,
+                            totalScore: item.totalScore
+                        }
+                    )
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+    public async generateRank(): Promise<void> {
+        const my_id = "60d98e34b4383d196cbca392";
+        let userId = my_id;
+        const step = 5;
+        let count = 0;
+        for (let i = 0; i < 40; i++) {
+            const score = Math.floor(Math.random() * 100);
+            if (count < step) {
+                count++;
+                new this.scoreStatisticModel({ user: new Types.ObjectId(userId), score: score }).save();
+            }
+            else {
+                userId = this.generateObjectId();
+                count = 0;
+            }
+        }
+        return;
+    }
+    generateObjectId() {
+        var timestamp = (new Date().getTime() / 1000 | 0).toString(16);
+        return timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function () {
+            return (Math.random() * 16 | 0).toString(16);
+        }).toLowerCase();
     }
 
 }
