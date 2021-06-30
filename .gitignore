@@ -35,3 +35,5 @@ lerna-debug.log*
 
 # Enviroment configs
 .env
+yarn.lock
+package-json.lock
