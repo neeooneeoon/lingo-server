@@ -32,8 +32,13 @@ export class LeaderBoardsController {
         return this.leaderBoardsService.getRanksByTime(user.userId, timeSelect);
     }
 
-    @Post('/generate/rank-data')
-    async generateRank(): Promise<any>{
-        return this.leaderBoardsService.generateRank();
-    }
+    // @Post('/generate/rank-data')
+    // async generateRank(): Promise<any>{
+    //     return this.leaderBoardsService.generateRank();
+    // }
+
+    // @Post('/add-user')
+    // async addUser(): Promise<any> {
+    //     return this.leaderBoardsService.addUser();
+    // }
 }

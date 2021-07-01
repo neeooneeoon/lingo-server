@@ -138,7 +138,6 @@ export class LeaderBoardsService {
         const endTime = dayjs().format();
         // Tổng hợp điểm trong khoảng thời gian starttime-> endtime
         if (timeSelect != 'All time') {
-
             const tempArr = await this.scoreStatisticModel.find(
                 {
                     createdAt: {
@@ -147,7 +146,7 @@ export class LeaderBoardsService {
                     }
                 }
             ).populate('user', ['displayName', 'avatar']);
-            
+
             if (!scoreArr) {
                 throw new BadRequestException('Can not find');
             }
@@ -157,21 +156,25 @@ export class LeaderBoardsService {
                 return 0;
             });
 
-            let temp: Types.ObjectId = (tempArr[0].user as unknown as UserDocument)._id;
-
+            let temp: Types.ObjectId;
+            for (const item of tempArr) {
+                const user = item.user as unknown as UserDocument;
+                if (user) {
+                    temp = user._id;
+                    break;
+                }
+            }
             let totalScore: number = 0;
             let prevUser: UserDocument;
             for (let i: number = 0; i < tempArr.length; i++) {
                 let item = tempArr[i];
                 const user = item.user as unknown as UserDocument;
-                if (user) {
+                if (user && temp) {
                     prevUser = user;
                     if (user._id.toHexString() == temp.toHexString()) {
                         totalScore += item.score;
                     }
                     else {
-                        console.log(totalScore);
-                        
                         scoreArr.push(
                             {
                                 orderNumber: 0,
@@ -183,11 +186,11 @@ export class LeaderBoardsService {
                             }
                         );
                         totalScore = 0;
-                        temp = (tempArr[0].user as unknown as UserDocument)._id;
+                        temp = user._id;
                         i--;
                     }
                 }
-                if(i==tempArr.length-1&&prevUser) {
+                if (i == tempArr.length - 1 && prevUser) {
                     scoreArr.push(
                         {
                             orderNumber: 0,
@@ -206,9 +209,7 @@ export class LeaderBoardsService {
                 return 0;
             })
         }
-        if(scoreArr.length==0) {
-            console.log("yes");
-            
+        if (scoreArr.length == 0) {
             return scoreArr;
         }
 
@@ -256,29 +257,55 @@ export class LeaderBoardsService {
         }
         return result;
     }
-    public async generateRank(): Promise<void> {
-        const my_id = "60d98e34b4383d196cbca392";
-        let userId = my_id;
-        const step = 5;
-        let count = 0;
-        for (let i = 0; i < 40; i++) {
-            const score = Math.floor(Math.random() * 100);
-            if (count < step) {
-                count++;
-                new this.scoreStatisticModel({ user: new Types.ObjectId(userId), score: score }).save();
-            }
-            else {
-                userId = this.generateObjectId();
-                count = 0;
-            }
-        }
-        return;
-    }
-    generateObjectId() {
-        var timestamp = (new Date().getTime() / 1000 | 0).toString(16);
-        return timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function () {
-            return (Math.random() * 16 | 0).toString(16);
-        }).toLowerCase();
-    }
+    // public async generateRank(): Promise<void> {
+    //     const my_id = "60d98e34b4383d196cbca392";
+    //     let userId = my_id;
+    //     const step = 5;
+    //     let count = 0;
+    //     for (let i = 0; i < 40; i++) {
+    //         const score = Math.floor(Math.random() * 100);
+    //         if (count < step) {
+    //             count++;
+    //             new this.scoreStatisticModel({ user: new Types.ObjectId(userId), score: score }).save();
+    //         }
+    //         else {
+    //             userId = this.generateObjectId();
+    //             count = 0;
+    //         }
+    //     }
+    //     return;
+    // }
+    // public async addUser(): Promise<void> {
+    //     const array_u = [...new Set(await this.userModel.find({}))];
+    //     for(const item of array_u) {
+    //         console.log(item._id);
+
+    //         // await new this.userModel({
+    //         //     streak:3,
+    //         //     loginCount:15,
+    //         //     score: Math.floor(Math.random()*1000),
+    //         //     level: 5,
+    //         //     role: "Member",
+    //         //     language: "vi",
+    //         //     grade: 0,
+    //         //     birthday: null,
+    //         //     familyName: "Hế lồ",
+    //         //     avatar: "avatar url",
+    //         //     facebookId: "sdfsdf",
+    //         //     email: "hello@gmail.com",
+    //         //     givenName: "Hê lô",
+    //         //     displayName: "helo",
+    //         //     xp: 55,
+    //         //     rank: "None",
+    //         //     lastActive: new Date('1970-01-01T00:00:00.000+00:00')
+    //         // }).save()
+    //     }
+    // }
+    // generateObjectId() {
+    //     var timestamp = (new Date().getTime() / 1000 | 0).toString(16);
+    //     return timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function () {
+    //         return (Math.random() * 16 | 0).toString(16);
+    //     }).toLowerCase();
+    // }
 
 }
