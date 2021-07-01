@@ -107,15 +107,14 @@ export class LeaderBoardsService {
         }
         let startTime: string;
         let scoreArr: UserRank[] = [];
-        //Chọn các option, với option all time select luôn score trong bảng user
         switch (timeSelect) {
-            case 'This week':
+            case 'week':
                 startTime = dayjs().startOf('week').format();
                 break;
-            case 'This month':
+            case 'month':
                 startTime = dayjs().startOf('month').format();
                 break;
-            case 'All time':
+            case 'all':
                 const userRankList = await this.userModel.find({}).sort({ score: -1 }).select({ score: 1, displayName: 1, avatar: 1 });
                 if (!userRankList) {
                     throw new BadRequestException("Can not find");
@@ -136,8 +135,7 @@ export class LeaderBoardsService {
                 break;
         }
         const endTime = dayjs().format();
-        // Tổng hợp điểm trong khoảng thời gian starttime-> endtime
-        if (timeSelect != 'All time') {
+        if (timeSelect != 'all') {
             const tempArr = await this.scoreStatisticModel.find(
                 {
                     createdAt: {
@@ -213,7 +211,6 @@ export class LeaderBoardsService {
             return scoreArr;
         }
 
-        // lấy ra top rank, số lượng cao nhất là 9
         if (scoreArr.length < top_length) top_length = scoreArr.length;
         let result: UserRank[] = [];
         let isInTop = false;
@@ -235,7 +232,6 @@ export class LeaderBoardsService {
                 }
             );
         }
-        //user hiện tại không trong top thì bỏ một người ra rồi thêm user hiện tại vào
         if (isInTop == false) {
             result.pop();
             for (let i = 0; i < scoreArr.length; i++) {

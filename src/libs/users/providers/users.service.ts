@@ -330,6 +330,9 @@ export class UsersService {
                 ],
                 _id: {
                     $ne: userId
+                },
+                role: {
+                    $ne: Role.Admin
                 }
             });
             const result = this.usersHelper.mapToFollowingResult(listUserId, users);

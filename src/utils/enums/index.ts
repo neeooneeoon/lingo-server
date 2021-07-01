@@ -7,6 +7,12 @@ export enum Rank {
     None = "None"
 };
 
+export enum RankingByTime {
+    week = "week",
+    month = "month",
+    all = "all"
+}
+
 export enum Role {
     Member = "Member",
     Admin = "Admin"

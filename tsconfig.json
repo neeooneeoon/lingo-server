@@ -60,6 +60,12 @@
       ],
       "@middlewares": [
         "src/middlewares"
+      ],
+      "@admin/*": [
+        "src/admin/*"
+      ],
+      "@admin": [
+        "src/admin"
       ]
     }
   }

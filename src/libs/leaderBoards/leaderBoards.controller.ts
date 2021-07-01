@@ -1,12 +1,10 @@
 import { JwtAuthGuard } from "@authentication/guard/jwtAuth.guard";
-import { UserRank } from "@dto/leaderBoard/userRank.dto";
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { UserCtx } from "@utils/decorators/custom.decorator";
-import { Rank } from "@utils/enums";
+import { Rank, RankingByTime } from "@utils/enums";
 import { JwtPayLoad } from "@utils/types";
 import { LeaderBoardsService } from "./leaderBoards.service";
-
 @ApiBearerAuth()
 @ApiTags('LeaderBoards')
 @Controller('api/leaderboard')
@@ -27,8 +25,8 @@ export class LeaderBoardsController {
     @UseGuards(JwtAuthGuard)
     @Get('ranking/bytime')
     @ApiOperation({summary: "Lấy danh sách xếp hạng theo thời gian tuần, tháng"})
-    @ApiQuery({type: String, name: 'timeSelect'})
-    async getRanksByTime(@Query('timeSelect') timeSelect: string, @UserCtx()user: JwtPayLoad) {
+    @ApiQuery({type: String, name: 'time', enum: RankingByTime})
+    async getRanksByTime(@Query('time') timeSelect: string, @UserCtx()user: JwtPayLoad) {
         return this.leaderBoardsService.getRanksByTime(user.userId, timeSelect);
     }
 
