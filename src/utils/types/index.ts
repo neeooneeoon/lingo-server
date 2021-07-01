@@ -1,6 +1,6 @@
 import { Role } from '@utils/enums';
 
-export type JwtPayLoad = {
+export class JwtPayLoad {
     userId: string;
     role: Role;
 }
