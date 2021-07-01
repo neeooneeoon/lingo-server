@@ -24,11 +24,13 @@ import { LeaderBoardsService } from "@libs/leaderBoards/leaderBoards.service";
 import { BooksService } from "@libs/books/providers/books.service";
 import { WorksService } from "@libs/works/works.service";
 import { FollowingsService } from "@libs/followings/providers/followings.service";
+import { ScoreStatistic, ScoreStatisticDocument } from "@entities/scoreStatistic.entity";
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+        @InjectModel(ScoreStatistic.name) private scoreStatisticModel: Model<ScoreStatisticDocument>,
         private readonly usersHelper: UsersHelper,
         private authService: AuthenticationService,
         private googleService: GoogleService,
@@ -302,6 +304,7 @@ export class UsersService {
             .catch(error => {
                 throw new InternalServerErrorException(error);
             })
+        await new this.scoreStatisticModel({ score: point, user: new Types.ObjectId(userCtx.userId) }).save();
         const updateUserStatusPromise = this.updateUserStatus({
             user: userProfile,
             workInfo: userWork,
@@ -315,7 +318,7 @@ export class UsersService {
             });
         return "save user work";
     }
-    public async searchUser(search: string, userId: string)  {
+    public async searchUser(search: string, userId: string) {
         try {
             search = search.trim();
             if (!search) {
