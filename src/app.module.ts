@@ -9,6 +9,7 @@ import { LeaderBoardsModule } from '@libs/leaderBoards';
 import { ReportsModule } from '@libs/reports';
 import { FollowingsModule } from '@libs/followings';
 import { CaslModule } from '@middlewares/casl/casl.module';
+import { AdminModules } from '@admin/admin.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CaslModule } from '@middlewares/casl/casl.module';
     ReportsModule,
     FollowingsModule,
     CaslModule,
+    AdminModules
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -54,7 +54,11 @@ export class User {
     lastActive?: Date;
 
     @Prop({ type: Number, required: false })
-    xp?: number
+    xp?: number;
+
+    @Prop({ type: String, required: false })
+    password?: string;
+
 };
 
 export const UserSchema = SchemaFactory.createForClass(User);
