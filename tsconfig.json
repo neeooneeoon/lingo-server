@@ -55,6 +55,12 @@
       "@dto": [
         "src/dto"
       ],
+      "@middlewares/*": [
+        "src/middlewares/*"
+      ],
+      "@middlewares": [
+        "src/middlewares"
+      ]
     }
   }
 }

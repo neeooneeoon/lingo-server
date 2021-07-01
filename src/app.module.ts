@@ -8,6 +8,7 @@ import { UsersModule } from '@libs/users';
 import { LeaderBoardsModule } from '@libs/leaderBoards';
 import { ReportsModule } from '@libs/reports';
 import { FollowingsModule } from '@libs/followings';
+import { CaslModule } from '@middlewares/casl/casl.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { FollowingsModule } from '@libs/followings';
     LeaderBoardsModule,
     ReportsModule,
     FollowingsModule,
+    CaslModule,
   ],
   controllers: [AppController],
   providers: [AppService],
