@@ -25,6 +25,7 @@ import { BooksService } from "@libs/books/providers/books.service";
 import { WorksService } from "@libs/works/works.service";
 import { FollowingsService } from "@libs/followings/providers/followings.service";
 import { ScoreStatistic, ScoreStatisticDocument } from "@entities/scoreStatistic.entity";
+import { UserRank } from "@dto/leaderBoard/userRank.dto";
 
 @Injectable()
 export class UsersService {
@@ -343,5 +344,25 @@ export class UsersService {
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
+    }
+
+    public async getAlltimeUserXpList(): Promise<UserRank[]> {
+        const userRankList = await this.userModel.find({}).sort({ xp: -1 }).select({ xp: 1, displayName: 1, avatar: 1 });
+        let xpArr: UserRank[] = [];
+        if (!userRankList) {
+            throw new BadRequestException("Can not find users");
+        }
+        for (let i = 0; i < userRankList.length; i++) {
+            const item = userRankList[i];
+            xpArr.push({
+                orderNumber: i + 1,
+                displayName: item.displayName,
+                avatar: item.avatar,
+                userId: item._id,
+                xp: item.xp,
+                isCurrentUser: false
+            })
+        }
+        return xpArr;
     }
 }

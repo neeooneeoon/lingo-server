@@ -1,4 +1,5 @@
 import { JwtAuthGuard } from "@authentication/guard/jwtAuth.guard";
+import { ScoreStatisticsService } from "@libs/scoreStatistics/scoreStatistics.service";
 import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { UserCtx } from "@utils/decorators/custom.decorator";
@@ -12,6 +13,7 @@ export class LeaderBoardsController {
 
     constructor(
         private leaderBoardsService: LeaderBoardsService,
+        private scoreStatisticsService: ScoreStatisticsService
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -27,7 +29,7 @@ export class LeaderBoardsController {
     @ApiOperation({summary: "Lấy danh sách xếp hạng theo thời gian tuần, tháng"})
     @ApiQuery({type: String, name: 'time', enum: RankingByTime})
     async getRanksByTime(@Query('time') timeSelect: string, @UserCtx()user: JwtPayLoad) {
-        return this.leaderBoardsService.getRanksByTime(user.userId, timeSelect);
+        return this.scoreStatisticsService.getRankByTime(user.userId, timeSelect)
     }
 
     // @Post('/generate/rank-data')

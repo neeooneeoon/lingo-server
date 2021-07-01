@@ -1,6 +1,7 @@
 import { LeaderBoard, LeaderBoardSchema } from "@entities/leaderBoard.entity";
 import { ScoreStatistic, ScoreStatisticShema } from "@entities/scoreStatistic.entity";
 import { User, UserSchema } from "@entities/user.entity";
+import { ScoreStatisticsModule } from "@libs/scoreStatistics/scoreStatistics.module";
 import { UsersModule } from "@libs/users";
 import { forwardRef, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
@@ -14,7 +15,8 @@ import { LeaderBoardsService } from "./leaderBoards.service";
             {name: ScoreStatistic.name, schema: ScoreStatisticShema},
             {name: User.name, schema: UserSchema}
         ]),
-        forwardRef(() => UsersModule)
+        forwardRef(() => UsersModule),
+        ScoreStatisticsModule
     ],
     controllers: [
         LeaderBoardsController,

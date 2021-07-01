@@ -7,7 +7,7 @@ import { ProgressesModule } from "@libs/progresses";
 import { BooksHelper } from "@helpers/books.helper";
 import { WorksModule } from "@libs/works";
 import { QuestionHoldersModule } from "@libs/questionHolders";
-import { AuthenticationModule } from "@authentication/authentication.module";
+
 
 @Module({
     imports: [
