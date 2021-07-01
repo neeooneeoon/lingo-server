@@ -25,7 +25,9 @@ export class ProgressesHelper {
                     userLevel: currentLevel,
                     userLesson: currentLesson,
                     grammar: unit.grammar,
-                    tips: unit.tips
+                    tips: unit.tips,
+                    blueImage: unit.blueImage,
+                    normalImage: unit.normalImage,
                 }
             }
             else {
@@ -40,7 +42,9 @@ export class ProgressesHelper {
                     userLevel: 0,
                     userLesson: 0,
                     grammar: unit.grammar,
-                    tips: unit.tips
+                    tips: unit.tips,
+                    blueImage: unit.blueImage,
+                    normalImage: unit.normalImage,
                 };
             }
         }

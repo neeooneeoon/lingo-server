@@ -10,4 +10,6 @@ export class ProgressUnitMapping {
     userLesson: number;
     grammar: string;
     tips: string;
+    normalImage: string;
+    blueImage: string;
 }

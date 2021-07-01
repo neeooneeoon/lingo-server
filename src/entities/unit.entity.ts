@@ -35,6 +35,12 @@ export class Unit {
     @Prop({type: String, required: false, default: ""})
     tips: string;
 
+    @Prop({type: String, required: true, default: ''})
+    normalImage: string;
+
+    @Prop({type: String, required: true, default: ''})
+    blueImage: string;
+
     @Prop({type: [String], required: true, default: []})
     wordIds: string[];
 
