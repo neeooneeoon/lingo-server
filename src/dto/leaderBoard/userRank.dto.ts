@@ -6,5 +6,5 @@ export class UserRank {
     displayName: string;
     avatar: string;
     userId: Types.ObjectId;
-    totalScore: number;
+    xp: number;
 }

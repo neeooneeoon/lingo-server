@@ -9,7 +9,7 @@ export class ScoreStatistic {
     user: Types.ObjectId;
 
     @Prop({ type: Number, require: true, default: 0 })
-    score: number;
+    xp: number;
 
     @Prop({ type: Date })
     createdAt: Date;

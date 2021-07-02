@@ -1,14 +1,12 @@
 import { LeaderBoard, LeaderBoardDocument } from "@entities/leaderBoard.entity";
-import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { UsersService } from "@libs/users/providers/users.service";
 import { Rank } from "@utils/enums";
 import { User, UserDocument } from '@entities/user.entity';
-import * as dayjs from 'dayjs';
 import { ScoreStatistic, ScoreStatisticDocument } from "@entities/scoreStatistic.entity";
-import { UserRank } from "@dto/leaderBoard/userRank.dto";
-import { isNotEmpty } from "class-validator";
+
 
 @Injectable()
 export class LeaderBoardsService {
@@ -99,160 +97,7 @@ export class LeaderBoardsService {
             throw new InternalServerErrorException(error);
         }
     }
-    public async getRanksByTime(userId: string, timeSelect: string): Promise<UserRank[]> {
-        let top_length = 9;
-        timeSelect = timeSelect.trim();
-        if (!timeSelect) {
-            throw new BadRequestException('timeSelect not entered');
-        }
-        let startTime: string;
-        let scoreArr: UserRank[] = [];
-        switch (timeSelect) {
-            case 'week':
-                startTime = dayjs().startOf('week').format();
-                break;
-            case 'month':
-                startTime = dayjs().startOf('month').format();
-                break;
-            case 'all':
-                const userRankList = await this.userModel.find({}).sort({ score: -1 }).select({ score: 1, displayName: 1, avatar: 1 });
-                if (!userRankList) {
-                    throw new BadRequestException("Can not find");
-                }
-                for (let i = 0; i < userRankList.length; i++) {
-                    const item = userRankList[i];
-                    scoreArr.push({
-                        orderNumber: i + 1,
-                        displayName: item.displayName,
-                        avatar: item.avatar,
-                        userId: item._id,
-                        totalScore: item.score,
-                        isCurrentUser: false
-                    })
-                }
-                break;
-            default:
-                break;
-        }
-        const endTime = dayjs().format();
-        if (timeSelect != 'all') {
-            const tempArr = await this.scoreStatisticModel.find(
-                {
-                    createdAt: {
-                        $gte: new Date(startTime),
-                        $lte: new Date(endTime)
-                    }
-                }
-            ).populate('user', ['displayName', 'avatar']);
 
-            if (!scoreArr) {
-                throw new BadRequestException('Can not find');
-            }
-            tempArr.sort(function comapareFn(firstEl, secondEl) {
-                if (firstEl.user < secondEl.user) return -1;
-                if (firstEl.user > secondEl.user) return 1;
-                return 0;
-            });
-
-            let temp: Types.ObjectId;
-            for (const item of tempArr) {
-                const user = item.user as unknown as UserDocument;
-                if (user) {
-                    temp = user._id;
-                    break;
-                }
-            }
-            let totalScore: number = 0;
-            let prevUser: UserDocument;
-            for (let i: number = 0; i < tempArr.length; i++) {
-                let item = tempArr[i];
-                const user = item.user as unknown as UserDocument;
-                if (user && temp) {
-                    prevUser = user;
-                    if (user._id.toHexString() == temp.toHexString()) {
-                        totalScore += item.score;
-                    }
-                    else {
-                        scoreArr.push(
-                            {
-                                orderNumber: 0,
-                                displayName: user.displayName,
-                                avatar: user.avatar,
-                                userId: temp,
-                                totalScore: totalScore,
-                                isCurrentUser: false
-                            }
-                        );
-                        totalScore = 0;
-                        temp = user._id;
-                        i--;
-                    }
-                }
-                if (i == tempArr.length - 1 && prevUser) {
-                    scoreArr.push(
-                        {
-                            orderNumber: 0,
-                            displayName: prevUser.displayName,
-                            avatar: prevUser.avatar,
-                            userId: temp,
-                            totalScore: totalScore,
-                            isCurrentUser: false
-                        }
-                    )
-                }
-            }
-            scoreArr.sort(function compareFn(firstEl, secondEl) {
-                if (firstEl.totalScore < secondEl.totalScore) return 1;
-                if (firstEl.totalScore > secondEl.totalScore) return -1;
-                return 0;
-            })
-        }
-        if (scoreArr.length == 0) {
-            return scoreArr;
-        }
-
-        if (scoreArr.length < top_length) top_length = scoreArr.length;
-        let result: UserRank[] = [];
-        let isInTop = false;
-        for (let i = 0; i < top_length; i++) {
-            const item = scoreArr[i];
-            if (item.userId.toHexString() == userId) {
-                isInTop = true;
-                item.isCurrentUser = true;
-            }
-
-            result.push(
-                {
-                    orderNumber: i + 1,
-                    displayName: item.displayName,
-                    avatar: item.avatar,
-                    userId: item.userId,
-                    totalScore: item.totalScore,
-                    isCurrentUser: item.isCurrentUser
-                }
-            );
-        }
-        if (isInTop == false) {
-            result.pop();
-            for (let i = 0; i < scoreArr.length; i++) {
-                const item = scoreArr[i];
-                if (item.userId.toHexString() == userId) {
-                    result.push(
-                        {
-                            userId: item.userId,
-                            orderNumber: i + 1,
-                            avatar: item.avatar,
-                            displayName: item.displayName,
-                            totalScore: item.totalScore,
-                            isCurrentUser: true
-                        }
-                    )
-                    break;
-                }
-            }
-        }
-        return result;
-    }
     // public async generateRank(): Promise<void> {
     //     const my_id = "60d98e34b4383d196cbca392";
     //     let userId = my_id;
