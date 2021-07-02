@@ -305,7 +305,7 @@ export class UsersService {
             .catch(error => {
                 throw new InternalServerErrorException(error);
             })
-        await new this.scoreStatisticModel({ xp: point, user: new Types.ObjectId(userCtx.userId) }).save();
+        await new this.scoreStatisticModel({ xp: 15, user: new Types.ObjectId(userCtx.userId) }).save();
         const updateUserStatusPromise = this.updateUserStatus({
             user: userProfile,
             workInfo: userWork,
@@ -347,7 +347,7 @@ export class UsersService {
     }
 
     public async getAllTimeUserXpList(): Promise<UserRank[]> {
-        const userRankList = await this.userModel.find({}).sort({ xp: -1 }).select({ xp: 1, displayName: 1, avatar: 1 });
+        const userRankList = await this.userModel.find({role: {$ne: Role.Admin}}).sort({ xp: -1 }).select({ xp: 1, displayName: 1, avatar: 1 });
         let xpArr: UserRank[] = [];
         if (!userRankList) {
             throw new BadRequestException("Can not find users");
