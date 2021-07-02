@@ -15,5 +15,5 @@ export class ScoreStatistic {
     createdAt: Date;
 }
 
-export const ScoreStatisticShema = SchemaFactory.createForClass(ScoreStatistic);
+export const ScoreStatisticSchema = SchemaFactory.createForClass(ScoreStatistic);
 export type ScoreStatisticDocument = Document & ScoreStatistic;
