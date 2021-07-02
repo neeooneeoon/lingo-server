@@ -55,11 +55,11 @@ export class AdminService {
             else {
                 const verifyAdmin = existsAdmin.find(item => item.email == 'admin@lingo.com');
                 if (!verifyAdmin) {
-                    throw new BadRequestException('Error')
+                    throw new BadRequestException('Error not found')
                 }
                 const isMatch = await bcrypt.compare(typedPassword, verifyAdmin.password);
-                if (isMatch) {
-                    throw new BadRequestException('Error');
+                if (!isMatch) {
+                    throw new BadRequestException('Error not match');
                 }
                 const token = this.authService.generateToken({
                     userId: verifyAdmin._id,
