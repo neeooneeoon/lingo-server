@@ -346,7 +346,7 @@ export class UsersService {
         }
     }
 
-    public async getAlltimeUserXpList(): Promise<UserRank[]> {
+    public async getAllTimeUserXpList(): Promise<UserRank[]> {
         const userRankList = await this.userModel.find({}).sort({ xp: -1 }).select({ xp: 1, displayName: 1, avatar: 1 });
         let xpArr: UserRank[] = [];
         if (!userRankList) {
