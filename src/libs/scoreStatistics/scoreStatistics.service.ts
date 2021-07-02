@@ -5,7 +5,7 @@ import { UsersService } from "@libs/users/providers/users.service";
 import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import * as dayjs from 'dayjs';
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 
 
 
@@ -14,10 +14,10 @@ export class ScoreStatisticsService {
     constructor(
         @InjectModel(ScoreStatistic.name) private scoreStatisticModel: Model<ScoreStatisticDocument>,
         @Inject(forwardRef(() => UsersService)) private usersService: UsersService
-    ){}
-    
+    ) { }
+
     public async getRankByTime(userId: string, timeSelect: string): Promise<UserRank[]> {
-        let top_length = 9;
+        let topLength = 9;
         timeSelect = timeSelect.trim();
         if (!timeSelect) {
             throw new BadRequestException('timeSelect not entered');
@@ -32,7 +32,7 @@ export class ScoreStatisticsService {
                 startTime = dayjs().startOf('month').format();
                 break;
             case 'all':
-                xpArr = await this.usersService.getAlltimeUserXpList();
+                xpArr = await this.usersService.getAllTimeUserXpList();
                 break;
             default:
                 break;
@@ -48,16 +48,16 @@ export class ScoreStatisticsService {
                 }
             ).populate('user', ['displayName', 'avatar']);
 
-            if (!xpArr) {
+            if (!tempArr) {
                 throw new BadRequestException('Can not find');
             }
-            tempArr.sort(function comapareFn(firstEl, secondEl) {
+            tempArr.sort(function compareFn(firstEl, secondEl) {
                 if (firstEl.user < secondEl.user) return -1;
                 if (firstEl.user > secondEl.user) return 1;
                 return 0;
             });
-            
-            
+
+
             let prevUser: UserDocument;
             for (const item of tempArr) {
                 const user = item.user as unknown as UserDocument;
@@ -66,7 +66,7 @@ export class ScoreStatisticsService {
                     break;
                 }
             }
-            
+
             let totalXp: number = 0;
             for (let i: number = 0; i < tempArr.length; i++) {
                 let item = tempArr[i];
@@ -110,32 +110,54 @@ export class ScoreStatisticsService {
                 return 0;
             })
         }
+        const userResult = await this.usersService.queryMe(userId);
         if (xpArr.length == 0) {
+            xpArr.push(
+                {
+                    orderNumber: 1,
+                    displayName: userResult.displayName,
+                    avatar: userResult.avatar,
+                    userId: new Types.ObjectId(userId),
+                    xp: userResult.xp,
+                    isCurrentUser: true
+                }
+            );
             return xpArr;
         }
 
-        if (xpArr.length < top_length) top_length = xpArr.length;
+        if (xpArr.length < topLength) topLength = xpArr.length;
         let isInTop = false;
-        for (let i = 0; i < top_length; i++) {
+        for (let i = 0; i < topLength; i++) {
             const item = xpArr[i];
             if (item.userId.toHexString() == userId) {
                 isInTop = true;
                 item.isCurrentUser = true;
             }
-            item.orderNumber = i+1;   
+            item.orderNumber = i + 1;
         }
         if (isInTop == false) {
             let lastUser: UserRank;
             for (let i = 0; i < xpArr.length; i++) {
                 const item = xpArr[i];
                 if (item.userId.toHexString() == userId) {
-                    item.orderNumber = i+1;
+                    item.orderNumber = i + 1;
                     item.isCurrentUser = true;
                     lastUser = item;
                     break;
                 }
             }
-            if(xpArr.length>=9) xpArr = xpArr.slice(0, 8); 
+            if (!lastUser) {
+                lastUser = {
+                    orderNumber: xpArr.length + 1,
+                    displayName: userResult.displayName,
+                    avatar: userResult.avatar,
+                    userId: new Types.ObjectId(userId),
+                    xp: userResult.xp,
+                    isCurrentUser: true
+                }
+            }
+
+            xpArr = xpArr.slice(0, 8);
             xpArr.push(lastUser);
         }
         return xpArr.slice(0, 9);
