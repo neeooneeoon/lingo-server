@@ -305,7 +305,7 @@ export class UsersService {
             .catch(error => {
                 throw new InternalServerErrorException(error);
             })
-        await new this.scoreStatisticModel({ score: point, user: new Types.ObjectId(userCtx.userId) }).save();
+        await new this.scoreStatisticModel({ xp: point, user: new Types.ObjectId(userCtx.userId) }).save();
         const updateUserStatusPromise = this.updateUserStatus({
             user: userProfile,
             workInfo: userWork,

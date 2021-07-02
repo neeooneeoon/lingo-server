@@ -1,5 +1,5 @@
 import { LeaderBoard, LeaderBoardSchema } from "@entities/leaderBoard.entity";
-import { ScoreStatistic, ScoreStatisticShema } from "@entities/scoreStatistic.entity";
+import { ScoreStatistic, ScoreStatisticSchema } from "@entities/scoreStatistic.entity";
 import { User, UserSchema } from "@entities/user.entity";
 import { ScoreStatisticsModule } from "@libs/scoreStatistics/scoreStatistics.module";
 import { UsersModule } from "@libs/users";
@@ -12,7 +12,7 @@ import { LeaderBoardsService } from "./leaderBoards.service";
     imports: [
         MongooseModule.forFeature([
             {name: LeaderBoard.name, schema: LeaderBoardSchema},
-            {name: ScoreStatistic.name, schema: ScoreStatisticShema},
+            {name: ScoreStatistic.name, schema: ScoreStatisticSchema},
             {name: User.name, schema: UserSchema}
         ]),
         forwardRef(() => UsersModule),

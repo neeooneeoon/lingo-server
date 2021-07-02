@@ -13,7 +13,7 @@ import { FacebookService } from './providers/facebook.service';
 import { BooksModule } from '@libs/books';
 import { LeaderBoardsModule } from "@libs/leaderBoards";
 import { FollowingsModule } from '@libs/followings';
-import { ScoreStatistic, ScoreStatisticShema } from '@entities/scoreStatistic.entity';
+import { ScoreStatistic, ScoreStatisticSchema } from '@entities/scoreStatistic.entity';
 import { ScoreStatisticsModule } from '@libs/scoreStatistics/scoreStatistics.module';
 
 @Module({
@@ -26,7 +26,7 @@ import { ScoreStatisticsModule } from '@libs/scoreStatistics/scoreStatistics.mod
                 },
                 {
                     name: ScoreStatistic.name,
-                    schema: ScoreStatisticShema
+                    schema: ScoreStatisticSchema
                 }
             ]
         ),
