@@ -2,7 +2,7 @@ import { ProgressBook } from '@dto/progress/progressBook.dto';
 import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-@Schema()
+@Schema({timestamps: true})
 export class Progress {
 
     @Prop({ type: Types.ObjectId, unique: 1 })
