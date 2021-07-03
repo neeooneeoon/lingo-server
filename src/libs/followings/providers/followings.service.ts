@@ -15,26 +15,30 @@ export class FollowingsService {
         private readonly tagsService: TagsService,
     ) { }
 
-    public async getListFollowings(currentUser: string, tagId: string) {
+    public async getListFollowings(currentUser: string, tagIds: string[]) {
         try {
-            const formattedTagId = tagId.trim();
-            if (formattedTagId === 'all' || formattedTagId === 'ALL') {
+            const formattedTagIds = tagIds.map(item => item.trim());
+            if (formattedTagIds.includes('all') || formattedTagIds.includes('ALL')) {
                 const listFollowings = await this.followingModel.find({
                     user: Types.ObjectId(currentUser),
                 })
                     .select('-__v')
                     .populate('followUser', ['displayName', 'avatar', 'xp'])
-                    .populate('tag', ['color', 'name']);
+                    .populate('tags', ['color', 'name']);
 
                 return listFollowings;
             }
             const listFollowings = await this.followingModel.find({
                 user: Types.ObjectId(currentUser),
-                tag: { $in: [tagId] }
+                tags: {
+                    $elemMatch: {
+                        $in: formattedTagIds
+                    }
+                }
             })
                 .select('-__v')
                 .populate('followUser', ['displayName', 'avatar', 'xp'])
-                .populate('tag', ['color', 'name']);
+                .populate('tags', ['color', 'name']);
 
             return listFollowings;
         } catch (error) {
@@ -111,6 +115,33 @@ export class FollowingsService {
         try {
             const formattedTagId = tagId.trim();
             if (formattedTagId) {
+                const following = await this.followingModel.findOne({
+                    user: Types.ObjectId(currentUser),
+                    _id: Types.ObjectId(followId)
+                })
+
+                const assignedTags = following.tags;
+                if (!following) {
+                    throw new BadRequestException(`Can't find following`);
+                }
+                if (assignedTags.includes(tagId) === true) {
+                    const updateResult = await this.followingModel.updateOne(
+                        {
+                            _id: Types.ObjectId(followId)
+                        },
+                        {
+                            $pullAll: {
+                                tags: [tagId]
+                            }
+                        }
+                    )
+                    if (updateResult.nModified === 1) {
+                        return 'Un-assign tag success';
+                    }
+                }
+                else if (assignedTags.length >= 3) {
+                    throw new BadRequestException('Chỉ được gán tối đa 3 thẻ cho một người dùng')
+                }
                 const tag = await this.tagsService.findTag(currentUser, formattedTagId);
                 const result = await this.followingModel.updateOne(
                     {
@@ -118,8 +149,8 @@ export class FollowingsService {
                         _id: Types.ObjectId(followId),
                     },
                     {
-                        $set: {
-                            tag: tag._id
+                        $push: {
+                            tags: tag._id
                         }
                     }
                 )

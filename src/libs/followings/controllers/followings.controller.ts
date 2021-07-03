@@ -36,9 +36,9 @@ export class FollowingsController {
 
     @Get('/')
     @ApiOperation({summary: 'Get followings'})
-    @ApiQuery({type: ViewFollowingsDto, name: 'tagId', required: true})
-    async viewFollowings(@Query('tagId') tagId: string,  @UserCtx() user: JwtPayLoad) {
-        return this.followingsService.getListFollowings(user.userId, tagId);
+    @ApiQuery({type: ViewFollowingsDto, name: 'tagIds', required: true})
+    async viewFollowings(@Query('tagIds') tagIds: string[],  @UserCtx() user: JwtPayLoad) {
+        return this.followingsService.getListFollowings(user.userId, tagIds);
     }
 
     @Put('assignTag')

@@ -10,9 +10,12 @@ export class Following {
     @Prop({type: Types.ObjectId, required: true, ref: 'User'})
     followUser: Types.ObjectId;
 
-    @Prop({type: String, required: false, default: '', ref: 'Tag'})
-    tag: string;
-    
+    @Prop({type: [{
+        type: String,
+        required: false,
+        ref: 'Tag'
+    }], default: []})
+    tags: string[];
 
 }
 
