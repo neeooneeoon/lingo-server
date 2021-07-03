@@ -8,12 +8,14 @@ import { SentencesModule } from "@libs/sentences";
 import { AnswerService } from "./providers/answer.service";
 import { PointService } from "./providers/point.service";
 import { QuestionsHelper } from "@helpers/questionsHelper";
+import { Unit, UnitSchema } from "@entities/unit.entity";
 
 @Module({
     imports: [
         MongooseModule.forFeature([
             {name: Question.name, schema: QuestionSchema},
             {name: QuestionHolder.name, schema: QuestionHolderSchema},
+            {name: Unit.name, schema: UnitSchema}
         ]),
         WordsModule,
         SentencesModule

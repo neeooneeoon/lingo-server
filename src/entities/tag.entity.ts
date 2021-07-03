@@ -19,4 +19,3 @@ export class Tag {
 
 export const TagSchema = SchemaFactory.createForClass(Tag);
 export type TagDocument = Document & Tag;
-TagSchema.index({_id: 1}, {unique: true})

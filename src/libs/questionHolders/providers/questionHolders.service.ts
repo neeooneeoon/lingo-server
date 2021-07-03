@@ -1,5 +1,5 @@
 import { QuestionHolder, QuestionHolderDocument } from "@entities/questionHolder.entity";
-import { Question, QuestionDocument } from "@entities/question.entity";
+import { QuestionDocument } from "@entities/question.entity";
 import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
@@ -10,12 +10,14 @@ import { WordInLesson } from "@dto/word/wordInLesson.dto";
 import { SentenceInLesson } from "@dto/sentence";
 import { ListWorQuestionCodes, ListSentenceQuestionCodes } from "@utils/constants";
 import { QuestionsHelper } from "@helpers/questionsHelper";
+import { Unit, UnitDocument } from "@entities/unit.entity";
 
 @Injectable()
 export class QuestionHoldersService {
 
     constructor(
         @InjectModel(QuestionHolder.name) private questionHolderModel: Model<QuestionHolderDocument>,
+        @InjectModel(Unit.name) private unitModel: Model<UnitDocument>,
         private wordsService: WordsService,
         private sentencesService: SentencesService,
         private questionsHelper: QuestionsHelper,
@@ -139,5 +141,84 @@ export class QuestionHoldersService {
         }
     }
 
+    public async getQuestionsInLevel(bookId: string, unitId: string, levelIndex: number) {
+        try {
+            const findQuestionHolderPromise = this.questionHolderModel.findOne({
+                bookId: bookId,
+                unitId: unitId,
+                level: levelIndex
+            });
+            const findUnitPromise = this.unitModel.findById(unitId);
+            let questionHolder: QuestionHolderDocument;
+            let unit: UnitDocument;
+
+            await Promise.all([findQuestionHolderPromise, findUnitPromise])
+                .then(([questionHolderResult, unitResult]) => {
+                    questionHolder = questionHolderResult;
+                    unit = unitResult;
+                })
+                .catch(error => {
+                    throw new BadRequestException(error);
+                })
+            if (!questionHolder || questionHolder.questions.length === 0) {
+                throw new BadRequestException(`Can't find questions in path /${bookId}/${unitId}/${levelIndex}`);
+            }
+            if (!unit) {
+                throw new BadRequestException(`Can't fine unit ${unitId}`);
+            }
+            const multipleChoiceQuestions = this.multipleChoiceQuestions(questionHolder.questions);
+            const questionIds = multipleChoiceQuestions.map(question => question._id);
+            const questionsInLevel = await this.reduceByQuestionIds({
+                currentUnit: unit,
+                questions: multipleChoiceQuestions,
+                listAskingQuestionIds: questionIds
+            });
+            return questionsInLevel;
+        } catch (error) {
+            throw new BadRequestException(error);
+        }
+    }
+
+    public multipleChoiceQuestions(questions: QuestionDocument[]): QuestionDocument[] {
+
+        const multipleChoiceQuestions = questions.filter(question => question.choices && question.choices.length > 0);
+        if (multipleChoiceQuestions.length === 0) {
+            throw new BadRequestException('Not multiple choice question in this level');
+        }
+        return multipleChoiceQuestions
+        // const wordQuestions: QuestionDocument[] = [];
+        // const listWordIds: string[] = [];
+        // const sentenceQuestions: QuestionDocument[] = [];
+        // const listSentenceId: string[] = [];
+
+        // questions.map(question => {
+        //     if (question.choices?.length > 0) {
+        //         if (ListWorQuestionCodes.includes(question.code)) {
+        //             wordQuestions.push(question);
+        //             listWordIds.push(question.focus, ...question.focus);
+        //         }
+        //         else {
+        //             sentenceQuestions.push(question);
+        //             listSentenceId.push(question.focus, ...question.focus);
+        //         }
+        //     }
+        // })
+        // if (wordQuestions.length === 0 && sentenceQuestions.length === 0) {
+        //     throw new BadRequestException('No multiple-choice questions in this level');
+        // }
+        // let listWords: WordInLesson[] = [];
+        // let listSentences: SentenceInLesson[] = [];
+
+        // await Promise.all([this.wordsService.findByIds(listWordIds), this.sentencesService.findByIds(listSentenceId)])
+        //     .then(([wordsResult, sentencesResult]) => {
+        //         listWords = wordsResult;
+        //         listSentences = sentencesResult;
+        //     })
+        //     .catch(error => {
+        //         throw new BadRequestException(error);
+        //     });
+        
+        
+    }
 
 }

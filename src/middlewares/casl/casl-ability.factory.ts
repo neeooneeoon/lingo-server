@@ -20,7 +20,7 @@ export class CaslAbilityFactory {
             can(Action.Manage, 'all');
         }
         else {
-            cannot(Action.Read, 'all')
+            cannot(Action.Manage, 'all')
         }
         return build();
     }

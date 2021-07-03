@@ -5,18 +5,20 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { AdminController } from "./admin.controller";
 import { AdminService } from "./admin.service";
+import { ManagementsModule } from "./managements/managements.module";
 
 @Module({
     imports:[
         MongooseModule.forFeature([
             {name: User.name, schema: UserSchema}
         ]),
-        AuthenticationModule
+        AuthenticationModule,
+        ManagementsModule
     ],
     controllers: [AdminController],
     providers: [
         AdminService,
         UsersHelper
-    ]
+    ],
 })
 export class AdminModules {  }
