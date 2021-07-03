@@ -1,10 +1,10 @@
-import { QuestionHoldersModule } from "@libs/questionHolders";
+import { BooksModule } from "@libs/books";
 import { Module } from "@nestjs/common";
 import { QuestionsController } from "./controllers/questions.controller";
 
 @Module({
     imports: [
-        QuestionHoldersModule
+        BooksModule
     ],
     controllers: [QuestionsController],
     exports: [],

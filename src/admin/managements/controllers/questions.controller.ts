@@ -1,10 +1,11 @@
-import { QuestionHoldersService } from '@libs/questionHolders/providers/questionHolders.service';
 import { JwtAuthGuard } from "@authentication/guard/jwtAuth.guard";
+import { BookPrivateService } from "@libs/books/private/private.service";
+import { BooksService } from "@libs/books/providers/books.service";
 import { UserPermission } from "@middlewares/policy/permissions/user.permission";
 import { CheckPolicies } from "@middlewares/policy/policy.decorator";
 import { PoliciesGuard } from "@middlewares/policy/policy.guard";
-import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiParam, ApiTags } from "@nestjs/swagger";
+import { Controller, Get, Param, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { Action } from "@utils/enums";
 
 
@@ -15,7 +16,7 @@ import { Action } from "@utils/enums";
 export class QuestionsController {
 
     constructor(
-        private questionsService: QuestionHoldersService
+        private bookPrivateService: BookPrivateService
     ) { }
 
     @CheckPolicies(new UserPermission(Action.Manage))
@@ -23,12 +24,13 @@ export class QuestionsController {
     @ApiParam({type: String, name: 'bookId', required: true})
     @ApiParam({type: String, required: true, name: 'unitId'})
     @ApiParam({type: Number, name: 'levelIndex', required: true})
+    @ApiOperation({summary: 'Câu hỏi trong level'})
     getQuestion(
         @Param('bookId') bookId: string,
         @Param('unitId') unitId: string,
         @Param('levelIndex') levelIndex: number
     ) {
-        return this.questionsService.getQuestionsInLevel(bookId, unitId, levelIndex);
+        return this.bookPrivateService.getQuestionsInLevel(bookId, unitId, levelIndex);
     }
 
 }

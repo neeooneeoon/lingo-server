@@ -15,7 +15,6 @@ export class CaslAbilityFactory {
         const { can, cannot, build } = new AbilityBuilder<
             Ability<[Action, Subjects]>
         >(Ability as AbilityClass<AppAbility>);
-        console.log(user)
         if (user.role === Role.Admin) {
             can(Action.Manage, 'all');
         }

@@ -45,8 +45,6 @@ export class FollowingsController {
     @ApiOperation({summary: 'Găn thẻ người theo dõi'})
     @ApiBody({type: AssignTagDto, required: true})
     async assignTag(@Body()body: AssignTagDto, @UserCtx() user: JwtPayLoad) {
-        console.log(body);
-        console.log(user);
         return this.followingsService.addTagToFollowingUser(user.userId, body.followingId, body.tagId);
     }
 

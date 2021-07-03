@@ -7,6 +7,7 @@ import { ProgressesModule } from "@libs/progresses";
 import { BooksHelper } from "@helpers/books.helper";
 import { WorksModule } from "@libs/works";
 import { QuestionHoldersModule } from "@libs/questionHolders";
+import { BookPrivateService } from "./private/private.service";
 
 
 @Module({
@@ -20,13 +21,15 @@ import { QuestionHoldersModule } from "@libs/questionHolders";
     ],
     providers: [
         BooksService,
-        BooksHelper
+        BooksHelper,
+        BookPrivateService,
     ],
     controllers: [BooksController],
     exports: [
         BooksService,
         WorksModule,
         ProgressesModule,
+        BookPrivateService,
     ]
 })
 export class BooksModule {}

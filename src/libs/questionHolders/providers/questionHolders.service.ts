@@ -23,16 +23,6 @@ export class QuestionHoldersService {
         private questionsHelper: QuestionsHelper,
     ) { }
 
-    private checkMatchSplitSemantic(userAnswer: string[], correctAnswer: string[]): boolean {
-
-        const deepRegex = new RegExp(/[\!\.\:\;\~\`\_\?\,\”\’\‘\“\"\’\'\ \-]/g);
-        const formattedUserAnswer = userAnswer.join('').toLowerCase().replace(deepRegex, '');
-        const formattedCorrectAnswer = correctAnswer.join('').toLowerCase().replace(deepRegex, '');
-
-        return formattedUserAnswer === formattedCorrectAnswer;
-
-    }
-
     public async getQuestionHolder(input: GetQuestionHolderInput): Promise<QuestionHolderDocument> {
         try {
             const {
@@ -180,45 +170,11 @@ export class QuestionHoldersService {
     }
 
     public multipleChoiceQuestions(questions: QuestionDocument[]): QuestionDocument[] {
-
         const multipleChoiceQuestions = questions.filter(question => question.choices && question.choices.length > 0);
         if (multipleChoiceQuestions.length === 0) {
             throw new BadRequestException('Not multiple choice question in this level');
         }
         return multipleChoiceQuestions
-        // const wordQuestions: QuestionDocument[] = [];
-        // const listWordIds: string[] = [];
-        // const sentenceQuestions: QuestionDocument[] = [];
-        // const listSentenceId: string[] = [];
-
-        // questions.map(question => {
-        //     if (question.choices?.length > 0) {
-        //         if (ListWorQuestionCodes.includes(question.code)) {
-        //             wordQuestions.push(question);
-        //             listWordIds.push(question.focus, ...question.focus);
-        //         }
-        //         else {
-        //             sentenceQuestions.push(question);
-        //             listSentenceId.push(question.focus, ...question.focus);
-        //         }
-        //     }
-        // })
-        // if (wordQuestions.length === 0 && sentenceQuestions.length === 0) {
-        //     throw new BadRequestException('No multiple-choice questions in this level');
-        // }
-        // let listWords: WordInLesson[] = [];
-        // let listSentences: SentenceInLesson[] = [];
-
-        // await Promise.all([this.wordsService.findByIds(listWordIds), this.sentencesService.findByIds(listSentenceId)])
-        //     .then(([wordsResult, sentencesResult]) => {
-        //         listWords = wordsResult;
-        //         listSentences = sentencesResult;
-        //     })
-        //     .catch(error => {
-        //         throw new BadRequestException(error);
-        //     });
-        
-        
     }
 
 }
