@@ -6,6 +6,7 @@ import {
     Query,
     Put,
     UseGuards,
+    Param,
 } from "@nestjs/common";
 import {
     ApiTags,
@@ -14,6 +15,7 @@ import {
     ApiBody,
     ApiOperation,
     ApiQuery,
+    ApiParam,
 } from "@nestjs/swagger";
 import { UserProfile, UpdateUserDto, SaveLessonDto } from '@dto/user';
 import { UsersService } from '../providers/users.service';
@@ -67,6 +69,15 @@ export class UserController {
     @ApiQuery({type: String, name: "search", required: true})
     async searchUser(@Query('search') search: string, @UserCtx()user: JwtPayLoad) {
         return this.usersService.searchUser(search, user.userId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('viewProfile/:userId')
+    @ApiBearerAuth()
+    @ApiOperation({summary: 'Xem thông tin người dùng bất kỳ'})
+    @ApiConsumes('application/json')
+    @ApiParam({type: String, name: 'userId', required: true, description: 'Id người dùng'})
+    viewUserProfile(@Param('userId') userId: string) {
     }
     
 }

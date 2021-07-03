@@ -59,7 +59,8 @@ export class WorksService {
                 levelIndex,
                 lessonIndex,
                 unitTotalLevels,
-                lessonTotalQuestions
+                lessonTotalQuestions,
+                isLastLesson
             } = lessonTree;
 
             const userWorkPromise = this.getUserWork(user._id, bookId);
@@ -179,13 +180,13 @@ export class WorksService {
                 timeEnd: workInfo.timeEnd
             })
             await userWork.save();
-            const bonusStreak = this.pointService.getBonusStreak(user.streak);
+            // const bonusStreak = this.pointService.getBonusStreak(user.streak);
             const accuracy = lessonTotalQuestions / workInfo.doneQuestions;
             questionPoint = Number.isNaN(accuracy) ? questionPoint : questionPoint * accuracy;
-            const bonusLevel = levelIndex;
-            const bonusLesson = lessonIndex / 2;
-            return Number.isNaN(Math.floor(questionPoint + bonusLevel + bonusStreak + bonusLesson)) ? 0 :
-                Math.floor(questionPoint + bonusLevel + bonusStreak + bonusLesson);
+            const bonusLevel = levelIndex + 1;
+            const bonusLesson = isLastLesson ? 1 : 0;
+            return Number.isNaN(Math.floor(questionPoint + bonusLevel + bonusLesson)) ? 0 :
+                Math.floor(questionPoint + bonusLevel + bonusLesson);
 
         } catch (error) {
             throw new InternalServerErrorException(error);

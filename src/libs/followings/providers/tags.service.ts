@@ -25,6 +25,7 @@ export class TagsService {
         }
     }
 
+
     public async viewTags(userId: string): Promise<TagDocument[]> {
         try {
             let listTags = await this.tagModel.find({
@@ -38,6 +39,10 @@ export class TagsService {
 
     public async createTag(userId: string, input: CreateTagDto): Promise<void> {
         try {
+            const createdTags = await this.viewTags(userId);
+            if (createdTags.length >= 15) {
+                throw new BadRequestException(`Maximum tags is 15`);
+            }
             const newTag = await this.tagModel.create({
                 user: Types.ObjectId(userId),
                 name: input.name,
