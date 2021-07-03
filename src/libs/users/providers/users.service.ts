@@ -15,7 +15,7 @@ import { GoogleService } from './google.service';
 import { ProgressesService } from "@libs/progresses/progresses.service";
 import { UsersHelper } from '@helpers/users.helper';
 import { Rank, Role } from '@utils/enums';
-import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto, UpdateUserStatusDto, SaveLessonDto, SearchUser } from "@dto/user";
+import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto, UpdateUserStatusDto, SaveLessonDto} from "@dto/user";
 import { FacebookService } from "./facebook.service";
 import { JwtPayLoad } from "@utils/types";
 import { AnswerResult } from "@dto/lesson";
@@ -24,14 +24,13 @@ import { LeaderBoardsService } from "@libs/leaderBoards/leaderBoards.service";
 import { BooksService } from "@libs/books/providers/books.service";
 import { WorksService } from "@libs/works/works.service";
 import { FollowingsService } from "@libs/followings/providers/followings.service";
-import { ScoreStatistic, ScoreStatisticDocument } from "@entities/scoreStatistic.entity";
 import { UserRank } from "@dto/leaderBoard/userRank.dto";
+import { ScoreStatisticsService } from "@libs/scoreStatistics/scoreStatistics.service";
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-        @InjectModel(ScoreStatistic.name) private scoreStatisticModel: Model<ScoreStatisticDocument>,
         private readonly usersHelper: UsersHelper,
         private authService: AuthenticationService,
         private googleService: GoogleService,
@@ -40,6 +39,7 @@ export class UsersService {
         private booksService: BooksService,
         private worksService: WorksService,
         @Inject(forwardRef(() => LeaderBoardsService)) private leaderBoardsService: LeaderBoardsService,
+        @Inject(forwardRef(()=>ScoreStatisticsService)) private scoreStatisticsService: ScoreStatisticsService,
         private followingsService: FollowingsService,
     ) { }
 
@@ -305,7 +305,7 @@ export class UsersService {
             .catch(error => {
                 throw new InternalServerErrorException(error);
             })
-        await new this.scoreStatisticModel({ xp: point, user: new Types.ObjectId(userCtx.userId) }).save();
+        await this.scoreStatisticsService.addXpAfterSaveLesson(point, userCtx.userId);
         const updateUserStatusPromise = this.updateUserStatus({
             user: userProfile,
             workInfo: userWork,
@@ -365,4 +365,5 @@ export class UsersService {
         }
         return xpArr;
     }
+    
 }
