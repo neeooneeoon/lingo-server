@@ -1,8 +1,10 @@
+import { Statistic } from "@dto/leaderBoard/statistic.dto";
 import { UserRank } from "@dto/leaderBoard/userRank.dto";
+import { UserProfile } from "@dto/user";
 import { ScoreStatistic, ScoreStatisticDocument } from "@entities/scoreStatistic.entity";
 import { UserDocument } from "@entities/user.entity";
 import { UsersService } from "@libs/users/providers/users.service";
-import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import * as dayjs from 'dayjs';
 import { Model, Types } from "mongoose";
@@ -46,7 +48,7 @@ export class ScoreStatisticsService {
                     $lte: endTime
                 }
             }
-            xpArr = await this.getTotalXp(filter);
+            xpArr = await this.getTotalXp(userId, filter);
         }
         const userResult = await this.usersService.queryMe(userId);
         if (xpArr.length == 0) {
@@ -100,19 +102,11 @@ export class ScoreStatisticsService {
         }
         return xpArr.slice(0, 9);
     }
-    public async getUserXpThisWeek(currentUserId: string, followUserId: string): Promise<Partial<UserRank>[]> {
+    public async getUserXpThisWeek(currentUserId: string, followUserId: string): Promise<Statistic> {
         currentUserId = currentUserId.trim();
         followUserId = followUserId.trim()
         if (!currentUserId || !followUserId) {
             throw new BadRequestException('currentUserId or followUserId not entered ');
-        }
-        const currentUser = await this.usersService.queryMe(currentUserId);
-        const followUser = await this.usersService.queryMe(followUserId);
-        if (!currentUserId) {
-            throw new BadRequestException('currentUser not exist')
-        }
-        if (!followUserId) {
-            throw new BadRequestException('followUser not exist')
         }
         const startTime = dayjs().startOf('week').format();
         const endTime = dayjs().format();
@@ -120,72 +114,98 @@ export class ScoreStatisticsService {
             user:
             {
                 $in: [
-                    new Types.ObjectId('60d69b497562563750e9a5a1'),
-                    new Types.ObjectId('60d98e34b4383d196cbca392')
+                    new Types.ObjectId(currentUserId),
+                    new Types.ObjectId(followUserId)
                 ]
             },
             createdAt: {
-                $gte: startTime,
-                $lte: endTime
+                $gte: new Date(startTime),
+                $lte: new Date(endTime)
             }
         };
-        const xpArr = await this.getTotalXp(filter);
-        switch (xpArr.length) {
-            case 0:
-                return [{ xp: 0, isCurrentUser: true }, { xp: 0, isCurrentUser: false }];
-            case 1:
-            case 2:
-                for (const item of xpArr) {
-                    if (item.userId.toHexString() == currentUserId) {
-                        item.isCurrentUser = true
-                    }
+        let followUser: UserProfile;
+        let xpArr: UserRank[];
+        //xpArr = await this.getTotalXp(currentUserId, filter);
+        const promises = await Promise.all([
+            this.usersService.queryMe(followUserId),
+            this.getTotalXp(currentUserId, filter),
+            this.getXpStatistic(followUserId, startTime, endTime)
+        ]);
+        followUser = promises[0];
+        if (!followUser) {
+            throw new BadRequestException('Can not find follow user');
+        }
+        xpArr = promises[1];
+        const weekStatistic = promises[2];
+        //console.log(weekStatistic);
+        
+        let result: Statistic ={currentUserXp: -1, followUserXp: -1, followUserXpStatistic: weekStatistic};
+        for(let i =0; i<2; i++) {
+            if(i>=xpArr.length) {
+                if(result.currentUserXp==-1) result.currentUserXp = 0;
+                if(result.followUserXp==-1) result.followUserXp = 0;
+            }
+            else {
+                if(xpArr[i].isCurrentUser) {
+                    result.currentUserXp = xpArr[i].xp;
                 }
-                break;
-            default:
-                break;
-        }
-
-        return xpArr;
-    }
-
-    private async getTotalXp(filter?: any): Promise<UserRank[]> {
-        let xpArr: UserRank[] = [];
-        let tempArr: ScoreStatisticDocument[] = [];
-        if (filter) {
-            tempArr = await this.scoreStatisticModel.find(filter).populate('user', ['displayName', 'avatar']);
-        }
-        else {
-            tempArr = await this.scoreStatisticModel.find({}).populate('user', ['displayName', 'avatar']);
-        }
-
-        if (!tempArr) {
-            throw new BadRequestException('Can not find');
-        }
-        tempArr.sort(function compareFn(firstEl, secondEl) {
-            if (firstEl.user < secondEl.user) return -1;
-            if (firstEl.user > secondEl.user) return 1;
-            return 0;
-        });
-
-
-        let prevUser: UserDocument;
-        for (const item of tempArr) {
-            const user = item.user as unknown as UserDocument;
-            if (user) {
-                prevUser = user;
-                break;
+                else {
+                    result.followUserXp = xpArr[i].xp
+                }
             }
         }
 
-        let totalXp: number = 0;
-        for (let i: number = 0; i < tempArr.length; i++) {
-            let item = tempArr[i];
-            const currentUser = item.user as unknown as UserDocument;
-            if (currentUser && prevUser) {
+        return result;
+    }
+
+    private async getTotalXp(userId: string, filter?: any): Promise<UserRank[]> {
+        try {
+            let xpArr: UserRank[] = [];
+            let tempArr: ScoreStatisticDocument[];
+            if (filter) {
+                tempArr = await this.scoreStatisticModel.find(filter).populate('user', ['displayName', 'avatar']);
+
+            }
+            else {
+                tempArr = await this.scoreStatisticModel.find({}).populate('user', ['displayName', 'avatar']);
+            }
+
+            if (!tempArr || tempArr.length == 0) {
+                return [];
+            }
+            tempArr.sort(function compareFn(firstEl, secondEl) {
+                if (firstEl.user < secondEl.user) return -1;
+                if (firstEl.user > secondEl.user) return 1;
+                return 0;
+            });
+
+
+            let prevUser: UserDocument = tempArr[0].user as unknown as UserDocument;
+            let totalXp: number = 0;
+            for (let i: number = 0; i < tempArr.length; i++) {
+                let item = tempArr[i];
+                const currentUser = item.user as unknown as UserDocument;
+
                 if (currentUser._id.toHexString() == prevUser._id.toHexString()) {
                     totalXp += item.xp;
                 }
                 else {
+                    const userRank: UserRank = {
+                        orderNumber: 0,
+                        displayName: prevUser.displayName,
+                        avatar: prevUser.avatar,
+                        userId: prevUser._id,
+                        xp: totalXp,
+                        isCurrentUser: false
+                    }
+                    if (userRank.userId.toHexString() == userId) userRank.isCurrentUser = true;
+                    xpArr.push(userRank);
+                    totalXp = 0;
+                    prevUser = currentUser;
+                    i--;
+                }
+
+                if (i == tempArr.length - 1) {
                     xpArr.push(
                         {
                             orderNumber: 0,
@@ -195,53 +215,56 @@ export class ScoreStatisticsService {
                             xp: totalXp,
                             isCurrentUser: false
                         }
-                    );
-                    totalXp = 0;
-                    prevUser = currentUser;
-                    i--;
+                    )
                 }
             }
-            if (i == tempArr.length - 1 && prevUser) {
-                xpArr.push(
-                    {
-                        orderNumber: 0,
-                        displayName: prevUser.displayName,
-                        avatar: prevUser.avatar,
-                        userId: prevUser._id,
-                        xp: totalXp,
-                        isCurrentUser: false
-                    }
-                )
-            }
+            xpArr.sort(function compareFn(firstEl, secondEl) {
+                if (firstEl.xp < secondEl.xp) return 1;
+                if (firstEl.xp > secondEl.xp) return -1;
+                return 0;
+            })
+            return xpArr;
+        } catch (error) {
+            throw new InternalServerErrorException(error);
         }
-        xpArr.sort(function compareFn(firstEl, secondEl) {
-            if (firstEl.xp < secondEl.xp) return 1;
-            if (firstEl.xp > secondEl.xp) return -1;
-            return 0;
-        })
-        return xpArr;
     }
     public async addXpAfterSaveLesson(xp: number, userId: string): Promise<void> {
-        const startTime = dayjs().startOf('day').format();
-        const endTime = dayjs().format();
-        console.log(startTime, endTime);
-        
-        const user = await this.usersService.queryMe(userId);
-        if (!user) {
-            throw new BadRequestException('Can not find user');
+        try {
+            const startTime = dayjs().startOf('day').format();
+            const endTime = dayjs().format();
+            const filter = {
+                user: new Types.ObjectId(userId),
+                createdAt: {
+                    $gte: new Date(startTime),
+                    $lte: new Date(endTime)
+                }
+            };
+            const userXpRecord = await this.scoreStatisticModel.findOne(filter);
+            if (userXpRecord) {
+                await this.scoreStatisticModel.findOneAndUpdate(filter, { xp: userXpRecord.xp + xp });
+                return;
+            }
+            await new this.scoreStatisticModel({ xp: xp, user: new Types.ObjectId(userId) }).save();
+        } catch (error) {
+            throw new InternalServerErrorException(error)
         }
-        const filter = {
+    }
+    private async getXpStatistic(userId: string, startTime: string, endTime: string): Promise<number[]> {
+        const statisticLength = 7;
+        let xpStatistic = await this.scoreStatisticModel.find({
             user: new Types.ObjectId(userId),
             createdAt: {
                 $gte: new Date(startTime),
                 $lte: new Date(endTime)
             }
-        };
-        const userXpRecord = await this.scoreStatisticModel.findOne(filter);
-        if (userXpRecord) {
-            await this.scoreStatisticModel.findOneAndUpdate(filter, {xp: userXpRecord.xp+ xp});
-            return;
+        }); 
+        let xpStatisticResult: number[] = [];
+        if(!(!xpStatistic||xpStatistic.length==0)) xpStatisticResult = xpStatistic.map(i=>i.xp);
+        for(let i = 0; i<statisticLength; i++) {
+            if(i>=xpStatisticResult.length) {
+                xpStatisticResult.push(0);
+            }
         }
-        await new this.scoreStatisticModel({xp: xp, user: new Types.ObjectId(userId)}).save();
+        return xpStatisticResult;
     }
 }
