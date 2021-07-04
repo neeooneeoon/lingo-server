@@ -138,15 +138,15 @@ export class ScoreStatisticsService {
         xpArr = promises[1];
         const weekStatistic = promises[2];
         //console.log(weekStatistic);
-        
-        let result: Statistic ={currentUserXp: -1, followUserXp: -1, followUserXpStatistic: weekStatistic};
-        for(let i =0; i<2; i++) {
-            if(i>=xpArr.length) {
-                if(result.currentUserXp==-1) result.currentUserXp = 0;
-                if(result.followUserXp==-1) result.followUserXp = 0;
+
+        let result: Statistic = { currentUserXp: -1, followUserXp: -1, followUserXpStatistic: weekStatistic };
+        for (let i = 0; i < 2; i++) {
+            if (i >= xpArr.length) {
+                if (result.currentUserXp == -1) result.currentUserXp = 0;
+                if (result.followUserXp == -1) result.followUserXp = 0;
             }
             else {
-                if(xpArr[i].isCurrentUser) {
+                if (xpArr[i].isCurrentUser) {
                     result.currentUserXp = xpArr[i].xp;
                 }
                 else {
@@ -206,16 +206,16 @@ export class ScoreStatisticsService {
                 }
 
                 if (i == tempArr.length - 1) {
-                    xpArr.push(
-                        {
-                            orderNumber: 0,
-                            displayName: prevUser.displayName,
-                            avatar: prevUser.avatar,
-                            userId: prevUser._id,
-                            xp: totalXp,
-                            isCurrentUser: false
-                        }
-                    )
+                    const userRank: UserRank = {
+                        orderNumber: 0,
+                        displayName: prevUser.displayName,
+                        avatar: prevUser.avatar,
+                        userId: prevUser._id,
+                        xp: totalXp,
+                        isCurrentUser: false
+                    }
+                    if (userRank.userId.toHexString() == userId) userRank.isCurrentUser = true;
+                    xpArr.push(userRank);
                 }
             }
             xpArr.sort(function compareFn(firstEl, secondEl) {
@@ -257,11 +257,11 @@ export class ScoreStatisticsService {
                 $gte: new Date(startTime),
                 $lte: new Date(endTime)
             }
-        }); 
+        });
         let xpStatisticResult: number[] = [];
-        if(!(!xpStatistic||xpStatistic.length==0)) xpStatisticResult = xpStatistic.map(i=>i.xp);
-        for(let i = 0; i<statisticLength; i++) {
-            if(i>=xpStatisticResult.length) {
+        if (!(!xpStatistic || xpStatistic.length == 0)) xpStatisticResult = xpStatistic.map(i => i.xp);
+        for (let i = 0; i < statisticLength; i++) {
+            if (i >= xpStatisticResult.length) {
                 xpStatisticResult.push(0);
             }
         }
