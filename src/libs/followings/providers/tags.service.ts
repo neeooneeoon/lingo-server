@@ -37,7 +37,7 @@ export class TagsService {
         }
     }
 
-    public async createTag(userId: string, input: CreateTagDto): Promise<void> {
+    public async createTag(userId: string, input: CreateTagDto): Promise<TagDocument> {
         try {
             const createdTags = await this.viewTags(userId);
             if (createdTags.length >= 15) {
@@ -52,7 +52,7 @@ export class TagsService {
             if (!newTag) {
                 throw new InternalServerErrorException(`Can't creat new tag for ${userId}`);
             }
-            return;
+            return newTag;
 
         } catch (error) {
             throw new InternalServerErrorException(error);
