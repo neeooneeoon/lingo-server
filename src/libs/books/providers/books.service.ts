@@ -6,9 +6,12 @@ import { ProgressesService } from "@libs/progresses/progresses.service";
 import { BookGrade, GetLessonInput, GetLessonOutput, LessonTree } from "@dto/book";
 import { BooksHelper } from "@helpers/books.helper";
 import { WorksService } from "@libs/works/works.service";
-import { ProgressBookMapping } from "@dto/progress";
+import { ActiveBookProgress, ProgressBook, ProgressBookMapping } from "@dto/progress";
 import { QuestionHoldersService } from "@libs/questionHolders/providers/questionHolders.service";
 import { LessonDocument } from "@entities/lesson.entity";
+import { from, Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { UnitLevel } from "@dto/unit";
 
 @Injectable()
 export class BooksService {
@@ -20,6 +23,27 @@ export class BooksService {
         private booksHelper: BooksHelper,
         private questionHoldersService: QuestionHoldersService
     ) { }
+
+    public findBookWithProgressBook(book: Partial<ProgressBook>): Observable<ActiveBookProgress> {
+        const unSelect = ['cover', '-_id']
+        const book$ = from(
+            this.bookModel
+                .findById(book.bookId)
+                .select(unSelect)
+        )
+            .pipe(
+                map((result) => {
+                    return {
+                        cover: result.cover,
+                        bookId: book.bookId,
+                        doneLessons: book.doneLessons,
+                        totalLessons: book.totalLessons,
+                        lastDid: book.lastDid
+                    }
+                })
+            )
+        return book$;
+    }
 
     public async getBook(bookId: string): Promise<BookDocument> {
         try {
@@ -61,7 +85,7 @@ export class BooksService {
             }
             const bookProgress = await this.progressesService.getBookProgress(userId, book);
             return bookProgress;
-            
+
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
@@ -173,9 +197,9 @@ export class BooksService {
             questions: questions,
             listAskingQuestionIds: lesson.questionIds
         });
-        
+
         return {
-            lesson: {...lesson.toJSON(), questions: reducingOutput.listQuestions},
+            lesson: { ...lesson.toJSON(), questions: reducingOutput.listQuestions },
             words: reducingOutput.wordsInLesson,
             sentences: reducingOutput.sentencesInLesson,
         }
@@ -204,6 +228,9 @@ export class BooksService {
             if (!levels || levels.length === 0) {
                 throw new BadRequestException(`No level in unit ${unitId}`);
             }
+            let totalLessonInUnit = 0;
+            levels.map(level => {totalLessonInUnit += level.lessons.length});
+
             const level = levels.find(item => item.levelIndex === levelIndex);
             if (!level) {
                 throw new BadRequestException(`Can't find level ${levelIndex}`);

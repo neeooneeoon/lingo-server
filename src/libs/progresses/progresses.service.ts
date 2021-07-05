@@ -4,12 +4,12 @@ import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErro
 import { InjectModel } from "@nestjs/mongoose";
 import { CreateUserProgressDto } from '@dto/progress/createProgress.dto';
 import { BookDocument } from '@entities/book.entity';
-import { ProgressUnitMapping, ProgressBookMapping, ProgressBook, ProgressUnit, ProgressLevel } from "@dto/progress";
+import { ProgressUnitMapping, ProgressBookMapping, ProgressBook, ProgressUnit, ProgressLevel, ActiveBookProgress } from "@dto/progress";
 import { ProgressesHelper } from '@helpers/progresses.helper';
 import { LessonTree } from '@dto/book';
 import { WorkInfo } from '@dto/works';
-import { forkJoin, from } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { forkJoin, from, Observable, of } from 'rxjs';
+import {map, switchMap } from 'rxjs/operators';
 import { BooksService } from '@libs/books/providers/books.service';
 
 @Injectable()
@@ -84,7 +84,7 @@ export class ProgressesService {
                 levelIndex,
                 levelTotalLessons,
                 lessonIndex,
-                isLastLesson
+                isLastLesson,
             } = lessonTree;
 
             let userProgress = await this.getUserProgress(userId);
@@ -179,11 +179,11 @@ export class ProgressesService {
         }
     }
 
-    public latestActiveBook(userId: string) {
+    public latestActiveBookProgress(userId: string): Observable<ActiveBookProgress[] | ProgressBook> {
         const unSelect = [
-            '-units', '-totalUnits',
-            '-doneQuestions','-correctQuestions',
-            '-score'
+            '-books.units', '-books.totalUnits',
+            '-books.doneQuestions', '-books.correctQuestions',
+            '-books.score', '-__v', '-books._id', '-books.level'
         ]
         const progress$ = from(
             this.progressModel
@@ -201,20 +201,24 @@ export class ProgressesService {
                 })
             )
         const book$ = progress$.pipe(
-            map(progress => {
-                const books = progress.books;
+            switchMap((r: ProgressDocument) => {
+                const books = r.books;
                 if (books.length > 0) {
-                    books.sort(function compareFunc(bookOne, bookTwo) {
+                    const lastActiveBooks = books.sort((bookOne, bookTwo) => {
                         if (bookOne.lastDid < bookTwo.lastDid) return 1;
                         if (bookOne.lastDid > bookTwo.lastDid) return -1;
                         return 0;
                     });
+                    return forkJoin(
+                        lastActiveBooks.slice(0, 5).map((book: ProgressBook) => this.booksService.findBookWithProgressBook(book))
+                    )
                 }
-                const limitBooks = books.slice(0, 4);
-                const limitBookIds = limitBooks.map(item => item.bookId);
-                
-            })
+                else {
+                    return books;
+                }
+            }),
         )
+        return book$
     }
 
 }
