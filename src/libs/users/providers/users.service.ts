@@ -365,4 +365,9 @@ export class UsersService {
         }
         return xpArr;
     }
+
+    public changeUserStreak(userId: string, isBonus: boolean) {
+        if (isBonus) {
+        }
+    }
 }
