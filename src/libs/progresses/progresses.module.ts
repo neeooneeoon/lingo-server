@@ -3,6 +3,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Progress, ProgressSchema } from "@entities/progress.entity";
 import { ProgressesService } from "./progresses.service";
 import { ProgressesHelper } from '@helpers/progresses.helper';
+import { ProgressesController } from "./progresses.controller";
 
 @Module({
     imports: [
@@ -12,6 +13,9 @@ import { ProgressesHelper } from '@helpers/progresses.helper';
                 schema: ProgressSchema
             },
         ]),
+    ],
+    controllers: [
+        ProgressesController,
     ],
     providers: [
         ProgressesService,

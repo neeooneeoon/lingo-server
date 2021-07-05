@@ -24,7 +24,6 @@ import { UserCtx } from "@utils/decorators/custom.decorator";
 import { JwtPayLoad } from "@utils/types";
 
 
-
 @ApiTags('User')
 @Controller('api/user')
 export class UserController {

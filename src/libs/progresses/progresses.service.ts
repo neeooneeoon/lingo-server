@@ -8,6 +8,8 @@ import { ProgressUnitMapping, ProgressBookMapping, ProgressBook, ProgressUnit, P
 import { ProgressesHelper } from '@helpers/progresses.helper';
 import { LessonTree } from '@dto/book';
 import { WorkInfo } from '@dto/works';
+import { from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class ProgressesService {
@@ -67,6 +69,7 @@ export class ProgressesService {
     }
 
     public async saveUserProgress(userId: string, lessonTree: LessonTree, workInfo: WorkInfo): Promise<boolean> {
+        console.log(workInfo)
         try {
             let hasLesson = false;
             let result = false;
@@ -172,6 +175,33 @@ export class ProgressesService {
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
+    }
+
+    public latestActiveBook(userId: string) {
+        const progress$ = from(
+            this.progressModel
+            .findOne({
+                userId: Types.ObjectId(userId)
+            })
+        )
+        .pipe(
+            map(progress => {
+                if (!progress) {
+                    throw new BadRequestException(`Can't find progress with user ${userId}`);
+                }
+                return progress;
+            })
+        )
+        // const book$ = progress$.pipe(
+        //     map(progress => {
+        //         const books = progress.books;
+        //         if (books.length > 0) {
+        //             books.sort(function(bookOne, bookTwo) {
+
+        //             })
+        //         }
+        //     })
+        // )
     }
 
 }

@@ -21,7 +21,7 @@ import { TasksSModule } from '@libs/tasks/tasks.module';
       useFactory: async (configsService: ConfigsService) => configsService.getMongoConfig(),
     }),
     ScheduleModule.forRoot(),
-    // TasksSModule,
+    TasksSModule,
     BooksModule,
     UsersModule,
     LeaderBoardsModule,

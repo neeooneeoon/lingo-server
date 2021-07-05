@@ -2,7 +2,7 @@ import { ProgressBook } from '@dto/progress/progressBook.dto';
 import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-@Schema({timestamps: true})
+@Schema()
 export class Progress {
 
     @Prop({ type: Types.ObjectId, unique: 1 })
@@ -17,7 +17,7 @@ export class Progress {
         correctQuestions: Number,
         totalLessons: Number,
         doneLessons: Number,
-        lasDid: Date,
+        lastDid: Date,
         units: [{
             unitId: String,
             totalLevels: Number,
@@ -25,7 +25,7 @@ export class Progress {
             doneLessons: Number,
             doneQuestions: Number,
             correctQuestions: Number,
-            lasDid: Date,
+            lastDid: Date,
             levels: [{
                 levelIndex: Number,
                 totalLessons: Number,
