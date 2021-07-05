@@ -16,6 +16,7 @@ export class UsersHelper {
             grade: user.grade,
             xp: user.xp,
             rank: user.rank,
+            userId: String(user._id)
         }
     }
     public mapToSearchUserProfile(user: UserDocument): SearchUser{

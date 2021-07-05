@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { BooksController } from "./controllers/books.controller";
 import { BooksService } from "./providers/books.service";
 import { Book, BookSchema } from "@entities/book.entity";
@@ -15,7 +15,7 @@ import { BookPrivateService } from "./private/private.service";
         MongooseModule.forFeature([
             {name: Book.name, schema: BookSchema},
         ]),
-        ProgressesModule,
+        forwardRef(() => ProgressesModule),
         WorksModule,
         QuestionHoldersModule,
     ],

@@ -34,4 +34,7 @@ export class UserProfile {
 
     @ApiProperty({type: Rank})
     rank: Rank;
+
+    @ApiProperty({type: String})
+    userId: string;
 }

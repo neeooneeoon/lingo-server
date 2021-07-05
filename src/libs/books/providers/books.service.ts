@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Book, BookDocument } from "@entities/book.entity";
-import { Model, Types } from "mongoose";
+import { Model } from "mongoose";
 import { ProgressesService } from "@libs/progresses/progresses.service";
 import { BookGrade, GetLessonInput, GetLessonOutput, LessonTree } from "@dto/book";
 import { BooksHelper } from "@helpers/books.helper";
@@ -15,7 +15,7 @@ export class BooksService {
 
     constructor(
         @InjectModel(Book.name) private bookModel: Model<BookDocument>,
-        private progressesService: ProgressesService,
+        @Inject(forwardRef(() => ProgressesService)) private progressesService: ProgressesService,
         private worksService: WorksService,
         private booksHelper: BooksHelper,
         private questionHoldersService: QuestionHoldersService

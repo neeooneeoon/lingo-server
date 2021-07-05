@@ -1,6 +1,6 @@
 import { Model, Types } from 'mongoose';
 import { Progress, ProgressDocument } from "@entities/progress.entity";
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { CreateUserProgressDto } from '@dto/progress/createProgress.dto';
 import { BookDocument } from '@entities/book.entity';
@@ -8,14 +8,16 @@ import { ProgressUnitMapping, ProgressBookMapping, ProgressBook, ProgressUnit, P
 import { ProgressesHelper } from '@helpers/progresses.helper';
 import { LessonTree } from '@dto/book';
 import { WorkInfo } from '@dto/works';
-import { from } from 'rxjs';
+import { forkJoin, from } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { BooksService } from '@libs/books/providers/books.service';
 
 @Injectable()
 export class ProgressesService {
     constructor(
         @InjectModel(Progress.name) private progressModel: Model<ProgressDocument>,
         private progressesHelper: ProgressesHelper,
+        @Inject(forwardRef(() => BooksService)) private booksService: BooksService,
 
     ) { }
 
@@ -178,30 +180,41 @@ export class ProgressesService {
     }
 
     public latestActiveBook(userId: string) {
+        const unSelect = [
+            '-units', '-totalUnits',
+            '-doneQuestions','-correctQuestions',
+            '-score'
+        ]
         const progress$ = from(
             this.progressModel
-            .findOne({
-                userId: Types.ObjectId(userId)
-            })
+                .findOne({
+                    userId: Types.ObjectId(userId)
+                })
+                .select(unSelect)
         )
-        .pipe(
+            .pipe(
+                map(progress => {
+                    if (!progress) {
+                        throw new BadRequestException(`Can't find progress with user ${userId}`);
+                    }
+                    return progress;
+                })
+            )
+        const book$ = progress$.pipe(
             map(progress => {
-                if (!progress) {
-                    throw new BadRequestException(`Can't find progress with user ${userId}`);
+                const books = progress.books;
+                if (books.length > 0) {
+                    books.sort(function compareFunc(bookOne, bookTwo) {
+                        if (bookOne.lastDid < bookTwo.lastDid) return 1;
+                        if (bookOne.lastDid > bookTwo.lastDid) return -1;
+                        return 0;
+                    });
                 }
-                return progress;
+                const limitBooks = books.slice(0, 4);
+                const limitBookIds = limitBooks.map(item => item.bookId);
+                
             })
         )
-        // const book$ = progress$.pipe(
-        //     map(progress => {
-        //         const books = progress.books;
-        //         if (books.length > 0) {
-        //             books.sort(function(bookOne, bookTwo) {
-
-        //             })
-        //         }
-        //     })
-        // )
     }
 
 }
