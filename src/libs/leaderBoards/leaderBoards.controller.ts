@@ -32,6 +32,21 @@ export class LeaderBoardsController {
         return this.scoreStatisticsService.getRankByTime(user.userId, timeSelect)
     }
 
+
+    @UseGuards(JwtAuthGuard)
+    @Get('totalXp/thisWeek/:followUserId')
+    @ApiOperation({summary: "Lấy điểm của user hiện tại và user follow tuần này"})
+    @ApiParam({type: String, name: 'followUserId'})
+    async getUserXpThisWeek(@UserCtx() user: JwtPayLoad, @Param('followUserId') followUserId: string) {
+        return this.scoreStatisticsService.getUserXpThisWeek(user.userId, followUserId);
+    }
+
+    // @UseGuards(JwtAuthGuard)
+    // @Post('test/addXp') 
+    // async addXp() {
+    //     return this.scoreStatisticsService.addXpAfterSaveLesson(15, '60d69b497562563750e9a5a1');
+    //  }
+    
     // @Post('/generate/rank-data')
     // async generateRank(): Promise<any>{
     //     return this.leaderBoardsService.generateRank();
