@@ -8,6 +8,8 @@ import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErro
 import { InjectModel } from "@nestjs/mongoose";
 import * as dayjs from 'dayjs';
 import { Model, Types } from "mongoose";
+import { from, Observable, of } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 
 
 
@@ -267,4 +269,24 @@ export class ScoreStatisticsService {
         }
         return xpStatisticResult;
     }
+
+    public findScoreStatisticRecords(userId: string): Observable<ScoreStatisticDocument[]> {
+        const startDateAsString = dayjs().startOf('day').subtract(1, 'day').format();
+        const endDateAsString = dayjs().endOf('day').subtract(1, 'day').format();
+        const startDate = new Date(startDateAsString);
+        const endDate = new Date(endDateAsString);
+
+        const records$ = from(
+            this.scoreStatisticModel
+            .find({
+                user: Types.ObjectId(userId),
+                createdAt: {
+                    $gte: startDate,
+                    $lte: endDate
+                }
+            })
+        )
+        return records$;
+    }
+  
 }

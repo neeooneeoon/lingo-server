@@ -1,11 +1,12 @@
 import { Model, Types } from 'mongoose';
 import { Following, FollowingDocument } from "@entities/following.entity";
-import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { UsersService } from '@libs/users/providers/users.service';
 import { TagsService } from './tags.service';
 import { TagDocument } from '@entities/tag.entity';
-import { UserProfile } from '@dto/user';
+import { from, Observable } from "rxjs";
+import { switchMap } from "rxjs/operators";
 
 @Injectable()
 export class FollowingsService {
@@ -15,34 +16,45 @@ export class FollowingsService {
         private readonly tagsService: TagsService,
     ) { }
 
-    public async getListFollowings(currentUser: string, tagIds: string[]) {
-        try {
-            const formattedTagIds = tagIds.map(item => item.trim());
-            if (formattedTagIds.includes('all') || formattedTagIds.includes('ALL')) {
-                const listFollowings = await this.followingModel.find({
-                    user: Types.ObjectId(currentUser),
-                })
-                    .select('-__v')
-                    .populate('followUser', ['displayName', 'avatar', 'xp'])
-                    .populate('tags', ['color', 'name']);
+    public getMyFollowings(currentUser: string, tagIds: string[], currentPage: number): Observable<FollowingDocument[]> {
+        const nPerPage = 15;
+        const nSkip = currentPage <= 0 ? 0 : (currentPage - 1) * nPerPage;
+        const followUserRef = ['displayName', 'avatar', 'xp'];
+        const tagRef = ['color', 'name'];
+        const unSelect = ['-__v'];
 
-                return listFollowings;
-            }
-            const listFollowings = await this.followingModel.find({
-                user: Types.ObjectId(currentUser),
-                tags: {
-                    $elemMatch: {
-                        $in: formattedTagIds
-                    }
-                }
-            })
-                .select('-__v')
-                .populate('followUser', ['displayName', 'avatar', 'xp'])
-                .populate('tags', ['color', 'name']);
-
-            return listFollowings;
-        } catch (error) {
-            throw new InternalServerErrorException(error);
+        if (tagIds.includes('all')) {
+            const followings$ = from(
+                this.followingModel
+                    .find({
+                        user: Types.ObjectId(currentUser)
+                    })
+                    .skip(nSkip)
+                    .limit(nPerPage)
+                    .populate('followUser', followUserRef)
+                    .populate('tags', tagRef)
+                    .select(unSelect)
+            );
+            return followings$;
+        }
+        else {
+            const followings$ = from(
+                this.followingModel
+                    .find({
+                        user: Types.ObjectId(currentUser),
+                        tags: {
+                            $elemMatch: {
+                                $in: tagIds
+                            }
+                        }
+                    })
+                    .skip(nSkip)
+                    .limit(nPerPage)
+                    .populate('followUser', followUserRef)
+                    .populate('tags', tagRef)
+                    .select(unSelect)
+            );
+            return followings$;
         }
     }
 

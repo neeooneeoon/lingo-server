@@ -4,7 +4,7 @@ import { Document, Types } from "mongoose";
 @Schema()
 export class Following {
 
-    @Prop({ type: Types.ObjectId, required: true })
+    @Prop({ type: Types.ObjectId, required: true, ref: 'User' })
     user: Types.ObjectId;
 
     @Prop({type: Types.ObjectId, required: true, ref: 'User'})

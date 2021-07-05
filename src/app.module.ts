@@ -10,6 +10,8 @@ import { ReportsModule } from '@libs/reports';
 import { FollowingsModule } from '@libs/followings';
 import { CaslModule } from '@middlewares/casl/casl.module';
 import { AdminModules } from '@admin/admin.module';
+import { ScheduleModule } from  "@nestjs/schedule";
+import { TasksSModule } from '@libs/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { AdminModules } from '@admin/admin.module';
       inject: [ConfigsService],
       useFactory: async (configsService: ConfigsService) => configsService.getMongoConfig(),
     }),
+    ScheduleModule.forRoot(),
+    // TasksSModule,
     BooksModule,
     UsersModule,
     LeaderBoardsModule,
