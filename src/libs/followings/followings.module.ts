@@ -8,6 +8,7 @@ import { Tag, TagSchema } from "@entities/tag.entity";
 import { TagsController } from "./controllers/tags.controller";
 import { TagsService } from "./providers/tags.service";
 import { FollowingsHelper } from "@helpers/followings.helper";
+import { FriendsService } from "./providers/friends.service";
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { FollowingsHelper } from "@helpers/followings.helper";
         FollowingsService,
         TagsService,
         FollowingsHelper,
+        FriendsService,
     ],
     controllers: [
         FollowingsController,
@@ -29,6 +31,7 @@ import { FollowingsHelper } from "@helpers/followings.helper";
     exports: [
         FollowingsService,
         TagsService,
+        FriendsService,
     ]
 })
 
