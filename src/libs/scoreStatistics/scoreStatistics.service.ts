@@ -9,7 +9,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import * as dayjs from 'dayjs';
 import { Model, Types } from "mongoose";
 import { from, Observable, of } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
+
 
 
 
@@ -22,7 +22,7 @@ export class ScoreStatisticsService {
     ) { }
 
     public async getRankByTime(userId: string, timeSelect: string): Promise<UserRank[]> {
-        let topLength = 9;
+        let topLength = 10;
         timeSelect = timeSelect.trim();
         if (!timeSelect) {
             throw new BadRequestException('timeSelect not entered');
@@ -260,12 +260,9 @@ export class ScoreStatisticsService {
                 $lte: new Date(endTime)
             }
         });
-        let xpStatisticResult: number[] = [];
-        if (!(!xpStatistic || xpStatistic.length == 0)) xpStatisticResult = xpStatistic.map(i => i.xp);
-        for (let i = 0; i < statisticLength; i++) {
-            if (i >= xpStatisticResult.length) {
-                xpStatisticResult.push(0);
-            }
+        let xpStatisticResult: number[] = new Array(statisticLength).fill(0);
+        for(let i = 0; i<xpStatistic.length; i++) {
+            xpStatisticResult[dayjs(xpStatistic[i].createdAt).get('day')] = xpStatistic[i].xp;
         }
         return xpStatisticResult;
     }
@@ -278,15 +275,15 @@ export class ScoreStatisticsService {
 
         const records$ = from(
             this.scoreStatisticModel
-            .find({
-                user: Types.ObjectId(userId),
-                createdAt: {
-                    $gte: startDate,
-                    $lte: endDate
-                }
-            })
+                .find({
+                    user: Types.ObjectId(userId),
+                    createdAt: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                })
         )
         return records$;
     }
-  
+
 }
