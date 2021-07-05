@@ -16,7 +16,7 @@ export class FriendsService {
 
     public getFollowers(userId: string, currentPage: number): Observable<FollowingDocument[]> {
         const nPerPage = 15;
-        const nSkip = currentPage === 0 ? 0 : currentPage * nPerPage;
+        const nSkip = currentPage === 0 ? 0 : (currentPage - 1) * nPerPage;
         const userRef = ['displayName', 'avatar', 'xp'];
         const unSelect = ['-__v', '-tags', '-followUser'];
 
