@@ -8,7 +8,7 @@ import {
     NotFoundException,
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
+import { Model, Types, UpdateWriteOpResult } from "mongoose";
 import { User, UserDocument } from "@entities/user.entity";
 import { AuthenticationService } from '@authentication/authentication.service';
 import { GoogleService } from './google.service';
@@ -26,6 +26,8 @@ import { WorksService } from "@libs/works/works.service";
 import { FollowingsService } from "@libs/followings/providers/followings.service";
 import { UserRank } from "@dto/leaderBoard/userRank.dto";
 import { ScoreStatisticsService } from "@libs/scoreStatistics/scoreStatistics.service";
+import { forkJoin, from, Observable } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 
 @Injectable()
 export class UsersService {
@@ -366,8 +368,65 @@ export class UsersService {
         return xpArr;
     }
 
-    public changeUserStreak(userId: string, isBonus: boolean) {
-        if (isBonus) {
-        }
+    public getAllUsers(): Observable<UserDocument[]> {
+        const users$ = from(
+            this.userModel
+            .find()
+        )
+        return users$;
+    }
+
+    public findUser(userId: string): Observable<UserProfile> {
+        const profile$ = from(
+            this.userModel
+            .findById(userId)
+        )
+        .pipe(
+            map(user => {
+                if (!user) {
+                    throw new BadRequestException(`Can't find user ${userId}`);
+                }
+                const userProfile = this.usersHelper.mapToUserProfile(user);
+                return userProfile;
+            })
+        );
+        return profile$;
+    }
+
+    public changeUserStreak(userId: string): Observable<UpdateWriteOpResult> {
+        const user$ = this.findUser(userId);
+        const records$ = this.scoreStatisticsService.findScoreStatisticRecords(userId);
+
+        const update$ = forkJoin([
+            user$,
+            records$
+        ])
+        .pipe(
+            switchMap(([userProfile, records]) => {
+                if (records.length === 0) {
+                    return from(
+                        this.userModel
+                        .updateOne(
+                            {_id: Types.ObjectId(userId)},
+                            {$set: {
+                                streak: 0,
+                            }}
+                        )
+                    )
+                }
+                else {
+                    return from(
+                        this.userModel
+                        .updateOne(
+                            {_id: Types.ObjectId(userId)},
+                            {$set: {
+                                streak: userProfile.streak + 1,
+                            }}
+                        )
+                    )
+                }
+            })
+        );
+        return update$;
     }
 }
