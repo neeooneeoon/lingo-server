@@ -29,7 +29,7 @@ export class BooksController {
     name: 'grade',
     description: 'Chọn khối từ 1 - 12',
   })
-  @ApiResponse({ type: [BookGrade] })
+  @ApiResponse({ type: [BookGrade], status: 200 })
   @ApiOperation({ summary: 'Thông tin sách theo khối học' })
   async booksByGrade(
     @Param('grade') grade: number,
@@ -47,6 +47,7 @@ export class BooksController {
     required: true,
     description: 'Id của sách',
   })
+  @ApiResponse({type: ProgressBookMapping, status: 200})
   async unitsInBook(
     @Param('bookId') bookId: string,
     @UserCtx() user: JwtPayLoad,

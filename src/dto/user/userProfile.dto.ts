@@ -11,7 +11,7 @@ export class UserProfile {
     @ApiProperty({type: String, required: true})
     displayName: string;
 
-    @ApiProperty({type: String, enum: Role})
+    @ApiProperty({type: String, enum: Role, name: 'role'})
     role: Role;
     
     @ApiProperty({type: Number})
@@ -32,7 +32,7 @@ export class UserProfile {
     @ApiProperty({type: Number})
     xp: number;
 
-    @ApiProperty({type: Rank})
+    @ApiProperty({type: Rank, enum: Rank, name: 'rank'})
     rank: Rank;
 
     @ApiProperty({type: String})
