@@ -8,6 +8,7 @@ import { BooksHelper } from "@helpers/books.helper";
 import { WorksModule } from "@libs/works";
 import { QuestionHoldersModule } from "@libs/questionHolders";
 import { BookPrivateService } from "./private/private.service";
+import { WordsModule } from "@libs/words";
 
 
 @Module({
@@ -17,6 +18,7 @@ import { BookPrivateService } from "./private/private.service";
         ]),
         forwardRef(() => ProgressesModule),
         WorksModule,
+        WordsModule,
         QuestionHoldersModule,
     ],
     providers: [
