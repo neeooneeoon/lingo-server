@@ -23,6 +23,7 @@ import { UsersService } from '../providers/users.service';
 import { JwtAuthGuard } from "@authentication/guard/jwtAuth.guard";
 import { UserCtx } from "@utils/decorators/custom.decorator";
 import { JwtPayLoad } from "@utils/types";
+import { ScoreOverviewDto } from "@dto/progress";
 
 
 @ApiTags('User')
@@ -82,6 +83,14 @@ export class UserController {
     @ApiConsumes('application/json')
     @ApiParam({type: String, name: 'userId', required: true, description: 'Id người dùng'})
     viewUserProfile(@Param('userId') userId: string) {
+    }
+
+    @Get('/:userId/scoreOverview')
+    @ApiParam({type: String, name: 'userId', required: true})
+    @ApiOperation({summary: 'Thống kê các đầu điểm của người dùng'})
+    @ApiResponse({type: ScoreOverviewDto, status: 200})
+    public scoresOverview(@Param('userId') userId: string) {
+        return this.usersService.scoresOverview(userId);
     }
     
 }

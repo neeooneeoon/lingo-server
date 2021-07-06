@@ -4,7 +4,7 @@ import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErro
 import { InjectModel } from "@nestjs/mongoose";
 import { CreateUserProgressDto } from '@dto/progress/createProgress.dto';
 import { BookDocument } from '@entities/book.entity';
-import { ProgressUnitMapping, ProgressBookMapping, ProgressBook, ProgressUnit, ProgressLevel, ActiveBookProgress } from "@dto/progress";
+import { ProgressUnitMapping, ProgressBookMapping, ProgressBook, ProgressUnit, ProgressLevel, ActiveBookProgress, ScoreOverviewDto } from "@dto/progress";
 import { ProgressesHelper } from '@helpers/progresses.helper';
 import { LessonTree } from '@dto/book';
 import { WorkInfo } from '@dto/works';
@@ -181,7 +181,7 @@ export class ProgressesService {
         }
     }
 
-    public latestActiveBookProgress(userId: string): Observable<ActiveBookProgress[] | ProgressBook | any[]> {
+    public latestActiveBookProgress(userId: string): Observable<ActiveBookProgress[] | ProgressBook> {
         const unSelect = [
             '-books.totalUnits', '-books.units.levels',
             '-books.doneQuestions', '-books.correctQuestions',
@@ -222,5 +222,34 @@ export class ProgressesService {
         )
         return book$
     }
+
+    public getAllUserScoresInProgress(userId: string): Observable<Pick<ScoreOverviewDto, "correctQuestions" | "doneLessons">> {
+        const score$ = from(
+            this.progressModel
+            .findOne({
+                userId: Types.ObjectId(userId)
+            })
+        )
+        .pipe(
+            map(progress => {
+                let doneLessons = 0;
+                let correctQuestions = 0;
+                if (progress && progress.books && progress.books.length > 0) {
+                    const books = progress.books;
+                    books.map(book => {
+                        doneLessons = doneLessons + book.doneLessons;
+                        correctQuestions = correctQuestions + book.correctQuestions;
+                    });
+                    return {
+                        doneLessons: doneLessons,
+                        correctQuestions: correctQuestions
+                    }
+                }
+            })
+        )
+        ;
+        return score$;
+    }
+
 
 }
