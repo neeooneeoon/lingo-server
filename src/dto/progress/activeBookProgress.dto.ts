@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
+import { ProgressUnit } from "./progressUnit.dto";
 
 export class ActiveBookProgress {
 
@@ -13,4 +14,11 @@ export class ActiveBookProgress {
 
     @ApiProperty({type: Number})
     totalLessons: number;
+
+    @ApiProperty({type: Date})
+    lastDid: Date;
+
+    @ApiProperty({type: [ProgressUnit]})
+    units: Partial<ProgressUnit>[]
+
 }

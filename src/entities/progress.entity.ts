@@ -26,6 +26,8 @@ export class Progress {
             doneQuestions: Number,
             correctQuestions: Number,
             lastDid: Date,
+            normalImage: String,
+            blueImage: String,
             levels: [{
                 levelIndex: Number,
                 totalLessons: Number,

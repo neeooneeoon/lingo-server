@@ -38,7 +38,8 @@ export class BooksService {
                         bookId: book.bookId,
                         doneLessons: book.doneLessons,
                         totalLessons: book.totalLessons,
-                        lastDid: book.lastDid
+                        lastDid: book.lastDid,
+                        units: book.units
                     }
                 })
             )
@@ -148,7 +149,7 @@ export class BooksService {
                 const incorrectPercent = Math.floor(incorrectList.length / questions.length) * 100;
                 const questionsForLatestLesson = this.questionHoldersService.questionsLatestLesson(incorrectPercent, incorrectList, questions);
                 lesson.questionIds = questionsForLatestLesson;
-                if (questionsForLatestLesson.length === 0) {
+                if (questionsForLatestLesson.length < 7) {
                     const setIndexes = new Set<number>();
                     let counter = lesson.questionIds.length;
                     while (lesson.questionIds.length < 7 && counter < questions.length) {

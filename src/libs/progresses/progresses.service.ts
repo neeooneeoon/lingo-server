@@ -71,7 +71,6 @@ export class ProgressesService {
     }
 
     public async saveUserProgress(userId: string, lessonTree: LessonTree, workInfo: WorkInfo): Promise<boolean> {
-        console.log(workInfo)
         try {
             let hasLesson = false;
             let result = false;
@@ -108,6 +107,7 @@ export class ProgressesService {
                 userProgress.books.push(progressBook);
                 progressBook = newProgressBook;
             }
+            const unitInBook = book.units.find(unit => unit._id === unitId)
             let progressUnit = progressBook.units.find(item => item.unitId === lessonTree.unitId);
             if (!progressUnit) {
                 const newProgressUnit: ProgressUnit = {
@@ -118,6 +118,8 @@ export class ProgressesService {
                     doneQuestions: workInfo.doneQuestions,
                     correctQuestions: lessonTotalQuestions,
                     lastDid: workInfo.timeEnd,
+                    normalImage: unitInBook?.normalImage,
+                    blueImage: unitInBook?.blueImage,
                     levels: [{
                         levelIndex: levelIndex,
                         totalLessons: levelTotalLessons,
@@ -179,9 +181,9 @@ export class ProgressesService {
         }
     }
 
-    public latestActiveBookProgress(userId: string): Observable<ActiveBookProgress[] | ProgressBook> {
+    public latestActiveBookProgress(userId: string): Observable<ActiveBookProgress[] | ProgressBook | any[]> {
         const unSelect = [
-            '-books.units', '-books.totalUnits',
+            '-books.totalUnits', '-books.units.levels',
             '-books.doneQuestions', '-books.correctQuestions',
             '-books.score', '-__v', '-books._id', '-books.level'
         ]

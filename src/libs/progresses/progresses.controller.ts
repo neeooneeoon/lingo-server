@@ -21,13 +21,4 @@ export class ProgressesController {
     public latestActiveBook(@Param('userId') userId: string) {
         return this.progressesService.latestActiveBookProgress(userId)
     }
-
-    @Get('/books/:bookId/units')
-    @ApiResponse({type: [ActiveUnitProgress], status: 200})
-    @ApiOperation({summary: 'Thông tin các unit trong cuốn sách học gần đây nhất'})
-    @ApiParam({type: String, name: 'bookId', required: true})
-    public activeUnitsInBook(@Param('bookId') bookId: string) {
-
-    }
-
 }
