@@ -201,4 +201,13 @@ export class FollowingsService {
             throw new InternalServerErrorException(error);
         }
     }
+
+    public async checkIsFollowing(currentUserId: string, userId: string) {
+        const listFollowings = await this.followings(currentUserId);
+        const followUserIds = listFollowings.map(item => String(item.followUser));
+        if (followUserIds.includes(userId)) {
+            return true;
+        }
+        return false;
+    }
 }

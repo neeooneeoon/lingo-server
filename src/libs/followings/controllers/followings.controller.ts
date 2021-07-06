@@ -83,4 +83,11 @@ export class FollowingsController {
         return this.friendService.getFollowingsOtherUser(userId, page);
     }
 
+    @Get('/checkIsFollowing/:userId')
+    @ApiParam({type: String, name: 'userId', required: true})
+    @ApiResponse({type: Boolean, status: 200})
+    checkIsFollowing(@Param('userId') userId: string, @UserCtx()user: JwtPayLoad) {
+        return this.followingsService.checkIsFollowing(user.userId, userId);
+    }
+
 }
