@@ -4,6 +4,9 @@ export class BookGrade {
     @ApiProperty({type: String})
     _id: string;
 
+    @ApiProperty({type: Number})
+    bookNId: number;
+
     @ApiProperty({type: String})
     name: string;
 

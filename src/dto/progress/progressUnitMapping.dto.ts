@@ -5,6 +5,9 @@ export class ProgressUnitMapping {
     @ApiProperty({type: String})
     _id: string;
 
+    @ApiProperty({type: Number})
+    unitNId: number;
+
     @ApiProperty({type: String})
     name: string;
 

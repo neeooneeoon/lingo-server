@@ -7,6 +7,9 @@ export class ProgressBookMapping {
     bookId: string;
 
     @ApiProperty({type: Number})
+    bookNId: number;
+
+    @ApiProperty({type: Number})
     totalUnits: number;
 
     @ApiProperty({type: [ProgressUnitMapping]})

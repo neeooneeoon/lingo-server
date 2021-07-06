@@ -99,4 +99,12 @@ export class BooksController {
     }
     return this.booksService.getDetailLesson(user.userId, input)
   }
+
+  @Get()
+  @ApiParam({type: Number, name: 'bookNId', required: true})
+  @ApiParam({type: Number, name: 'unitNId', required: true})
+  @ApiOperation({summary: ''})
+  getWordsInUnit(@Param('bookNId') bookNId: number, @Param('unitNId') unitId: number) {
+    
+  }
 }
