@@ -14,12 +14,14 @@ import { JwtPayLoad } from '@utils/types';
 import { grades } from '../constants';
 import { BooksService } from '../providers/books.service';
 import { ProgressBookMapping } from '@dto/progress';
+import { WordsService } from '@libs/words/words.service';
 
 @ApiTags('Books')
 @ApiBearerAuth()
 @Controller('api')
 export class BooksController {
-  constructor(private booksService: BooksService) {}
+  constructor(private booksService: BooksService,
+    private wordsService: WordsService) { }
 
   @UseGuards(JwtAuthGuard)
   @Get('books/grade/:grade')
@@ -47,7 +49,7 @@ export class BooksController {
     required: true,
     description: 'Id của sách',
   })
-  @ApiResponse({type: ProgressBookMapping, status: 200})
+  @ApiResponse({ type: ProgressBookMapping, status: 200 })
   async unitsInBook(
     @Param('bookId') bookId: string,
     @UserCtx() user: JwtPayLoad,
@@ -100,11 +102,12 @@ export class BooksController {
     return this.booksService.getDetailLesson(user.userId, input)
   }
 
-  @Get()
-  @ApiParam({type: Number, name: 'bookNId', required: true})
-  @ApiParam({type: Number, name: 'unitNId', required: true})
-  @ApiOperation({summary: ''})
-  getWordsInUnit(@Param('bookNId') bookNId: number, @Param('unitNId') unitId: number) {
-    
+  @UseGuards(JwtAuthGuard)
+  @Get('words/in-unit/:bookNId/:unitNId')
+  @ApiParam({ type: Number, name: 'bookNId', required: true })
+  @ApiParam({ type: Number, name: 'unitNId', required: true })
+  @ApiOperation({ summary: 'Lấy các từ theo book và unit' })
+  async getWordsInUnit(@Param('bookNId') bookNId: number, @Param('unitNId') unitNId: number) {
+    return this.wordsService.getWordsInUnit(bookNId, unitNId);
   }
 }

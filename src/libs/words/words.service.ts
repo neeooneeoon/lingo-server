@@ -40,4 +40,16 @@ export class WordsService {
             throw new InternalServerErrorException(error);
         }
     }
+    public async getWordsInUnit(bookNId: number, unitNId: number): Promise<WordInLesson[]> {
+        try {
+            const words = await this.wordModel.find({
+               bookNId: bookNId,
+               unitNId: unitNId
+            })
+            const result = words.map(word=>this.wordsHelper.mapWordToWordInLesson(word));
+            return result;
+        } catch (error) {
+            throw new InternalServerErrorException(error)
+        }
+    }
 }
