@@ -28,10 +28,9 @@ export class TagsService {
 
     public async viewTags(userId: string): Promise<TagDocument[]> {
         try {
-            let listTags = await this.tagModel.find({
+            return this.tagModel.find({
                 user: Types.ObjectId(userId)
             });
-            return listTags;
         } catch (error) {
             throw new InternalServerErrorException(error);
         }

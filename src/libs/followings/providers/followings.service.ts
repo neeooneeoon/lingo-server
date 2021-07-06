@@ -6,7 +6,6 @@ import { UsersService } from '@libs/users/providers/users.service';
 import { TagsService } from './tags.service';
 import { TagDocument } from '@entities/tag.entity';
 import { from, Observable } from "rxjs";
-import { switchMap } from "rxjs/operators";
 
 @Injectable()
 export class FollowingsService {
@@ -34,7 +33,7 @@ export class FollowingsService {
                     .populate('followUser', followUserRef)
                     .populate('tags', tagRef)
                     .select(unSelect)
-            );
+            )
             return followings$;
         }
         else {
@@ -127,16 +126,42 @@ export class FollowingsService {
         try {
             const formattedTagId = tagId.trim();
             if (formattedTagId) {
-                const following = await this.followingModel.findOne({
+                const allTagPromise = this.tagsService.viewTags(currentUser);
+                const followingPromise = this.followingModel.findOne({
                     user: Types.ObjectId(currentUser),
                     _id: Types.ObjectId(followId)
-                })
+                });
 
-                const assignedTags = following.tags;
+                const [listUserTags, following] = await Promise.all([allTagPromise, followingPromise]);
+                if (!following || !listUserTags || listUserTags.length === 0) {
+                    throw new BadRequestException('No user tag, not found user following');
+                }
+                const userTagIds = listUserTags.map(item => String(item._id));
+                let assignedTags = following.tags;
+                const deleteTags = assignedTags.filter(item => !userTagIds.includes(item));
+
+                if (!userTagIds.includes(tagId)) {
+                    throw new BadRequestException(`Can't find tag`)
+                }
+
                 if (!following) {
                     throw new BadRequestException(`Can't find following`);
                 }
-                if (assignedTags.includes(tagId) === true) {
+                if (deleteTags.length > 0) {
+                    const updated = await this.followingModel.findOneAndUpdate(
+                        {
+                            _id: Types.ObjectId(followId)
+                        },
+                        {
+                            $pullAll: {
+                                tags: deleteTags
+                            },
+                        },
+                        { new: true }
+                    );
+                    assignedTags = updated.tags;
+                }
+                if (assignedTags.includes(tagId)) {
                     const updateResult = await this.followingModel.updateOne(
                         {
                             _id: Types.ObjectId(followId)
@@ -151,39 +176,23 @@ export class FollowingsService {
                         return 'Un-assign tag success';
                     }
                 }
-                else if (assignedTags.length >= 3) {
-                    throw new BadRequestException('Chỉ được gán tối đa 3 thẻ cho một người dùng')
-                }
-                const tag = await this.tagsService.findTag(currentUser, formattedTagId);
-                const result = await this.followingModel.updateOne(
-                    {
-                        user: Types.ObjectId(currentUser),
-                        _id: Types.ObjectId(followId),
-                    },
-                    {
-                        $push: {
-                            tags: tag._id
-                        }
+                else {
+                    if (assignedTags.length >= 3) {
+                        throw new BadRequestException('Chỉ được gán tối đa 3 thẻ cho một người dùng')
                     }
-                )
-                if (result.nModified === 1) {
-                    return 'Assign tag success';
-                }
-            }
-            else {
-                const result = await this.followingModel.updateOne(
-                    {
-                        user: Types.ObjectId(currentUser),
-                        _id: Types.ObjectId(followId),
-                    },
-                    {
-                        $set: {
-                            tag: ''
+                    const updateResult = await this.followingModel.updateOne(
+                        {
+                            _id: Types.ObjectId(followId)
+                        },
+                        {
+                            $push: {
+                                tags: tagId
+                            }
                         }
+                    )
+                    if (updateResult.nModified === 1) {
+                        return 'Assign tag success';
                     }
-                )
-                if (result.nModified === 1) {
-                    return 'Assign tag success';
                 }
             }
             throw new BadRequestException('Assign tag failed');
@@ -192,7 +201,4 @@ export class FollowingsService {
             throw new InternalServerErrorException(error);
         }
     }
-
-    public async 
-
 }
