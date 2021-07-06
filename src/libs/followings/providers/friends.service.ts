@@ -1,4 +1,5 @@
 import { Following, FollowingDocument } from "@entities/following.entity";
+import { UserDocument } from "@entities/user.entity";
 import { UsersService } from "@libs/users/providers/users.service";
 import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
@@ -14,9 +15,9 @@ export class FriendsService {
         @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     ) { }
 
-    public getFollowers(userId: string, currentPage: number): Observable<FollowingDocument[]> {
+    public getFollowers(userId: string, currentPage: number): Observable<FollowingDocument[] | any> {
         const nPerPage = 15;
-        const nSkip = currentPage === 0 ? 0 : currentPage * nPerPage;
+        const nSkip = currentPage === 0 ? 0 : (currentPage - 1) * nPerPage;
         const userRef = ['displayName', 'avatar', 'xp'];
         const unSelect = ['-__v', '-tags', '-followUser'];
 
@@ -40,6 +41,20 @@ export class FriendsService {
                         .populate('user', userRef)
                         .select(unSelect)
                 )),
+                map(followers => {
+                    return followers.map(follower => {
+                        const user = follower.user as unknown as Partial<UserDocument>;
+                        return {
+                            _id: follower._id,
+                            followUser :{
+                                avatar: user.avatar,
+                                _id: user._id,
+                                displayName: user.displayName,
+                                xp: user.xp
+                            }
+                        }
+                    })
+                })
             )
         return followers$;
     }

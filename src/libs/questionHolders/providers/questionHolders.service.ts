@@ -113,7 +113,7 @@ export class QuestionHoldersService {
         rootQuestions: QuestionDocument[]
     ): Array<string> {
         if (incorrectPercent < 20) {
-            return [];
+            return incorrectList;
         }
         else if (incorrectPercent < 40) {
             const mediumQuestions = rootQuestions

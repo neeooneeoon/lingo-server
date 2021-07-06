@@ -15,6 +15,7 @@ export class ProgressesHelper {
                 }
                 return {
                     _id: unit._id,
+                    unitNId: unit.nId,
                     name: unit.name,
                     description: unit.description,
                     totalLevels: unit.levels.length - 1,
@@ -33,6 +34,7 @@ export class ProgressesHelper {
             else {
                 return {
                     _id: unit._id,
+                    unitNId: unit.nId,
                     name: unit.name,
                     description: unit.description,
                     totalLevels: unit.levels.length - 1,
@@ -55,6 +57,7 @@ export class ProgressesHelper {
     ): ProgressBookMapping {
         return {
             units: units,
+            bookNId: book.nId,
             bookId: book._id,
             level: bookProgress.level,
             score: bookProgress.score,

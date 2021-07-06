@@ -28,6 +28,7 @@ import { UserRank } from "@dto/leaderBoard/userRank.dto";
 import { ScoreStatisticsService } from "@libs/scoreStatistics/scoreStatistics.service";
 import { forkJoin, from, Observable } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
+import { ScoreOverviewDto } from "@dto/progress";
 
 @Injectable()
 export class UsersService {
@@ -428,5 +429,22 @@ export class UsersService {
             })
         );
         return update$;
+    }
+
+    public scoresOverview(userId: string): Observable<ScoreOverviewDto> {
+        const overview$: Observable<ScoreOverviewDto> = forkJoin([
+            this.findUser(userId),
+            this.progressesService.getAllUserScoresInProgress(userId)
+        ])
+        .pipe(
+            map(([profile, allScore]) => {
+                return {
+                    ...allScore,
+                    xp: profile.xp,
+                    streak: profile.streak
+                }
+            })
+        );
+        return overview$;
     }
 }

@@ -6,6 +6,7 @@ export class BooksHelper {
     public mapToBookGrade(book: BookDocument, progressBook?: ProgressBook | undefined): BookGrade {
         return {
             _id: book._id,
+            bookNId: book.nId,
             name: book.name,
             grade: book.grade,
             cover: book.cover,
