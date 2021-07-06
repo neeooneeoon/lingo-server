@@ -41,4 +41,32 @@ export class ReportsService {
             throw new InternalServerErrorException(error);
         }
     }
+    public async exportUserReports() {
+        try {
+            const listReports = await this.reportModel.find();
+            if (listReports && listReports.length > 0) {
+                const root: Array<Array<string>> = [];
+                const columnTitles = ["id", "questionId", "userId", "comment", "error", "type", "path", "date"];
+    
+                root.push(columnTitles);
+                const reportData: string[][] = listReports.map((report) => {
+                    const data: Array<string> = [
+                        report._id,
+                        report.questionId,
+                        report.userId,
+                        report.comment,
+                        report._errors.join("\n").toString(),
+                        report.reportType,
+                        report.path,
+                        report.date
+                    ];
+                    return data;
+                });
+                return [...root, ...reportData];
+            }
+        }
+        catch(e) {
+            throw new Error(e);
+        }
+    }
 }

@@ -5,7 +5,8 @@ import { Model, Types } from "mongoose";
 import { UsersService } from "@libs/users/providers/users.service";
 import { Rank } from "@utils/enums";
 import { User, UserDocument } from '@entities/user.entity';
-import { ScoreStatistic, ScoreStatisticDocument } from "@entities/scoreStatistic.entity";
+import { ScoreStatisticsService } from "@libs/scoreStatistics/scoreStatistics.service";
+
 
 
 @Injectable()
@@ -13,7 +14,6 @@ export class LeaderBoardsService {
 
     constructor(
         @InjectModel(LeaderBoard.name) private leaderBoardModel: Model<LeaderBoardDocument>,
-        @InjectModel(ScoreStatistic.name) private scoreStatisticModel: Model<ScoreStatisticDocument>,
         @InjectModel(User.name) private userModel: Model<UserDocument>,
         @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     ) { }

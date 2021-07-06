@@ -5,6 +5,7 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { AdminController } from "./admin.controller";
 import { AdminService } from "./admin.service";
+import { ExportsModule } from "./exports/exports.module";
 import { ManagementsModule } from "./managements/managements.module";
 
 @Module({
@@ -13,7 +14,8 @@ import { ManagementsModule } from "./managements/managements.module";
             {name: User.name, schema: UserSchema}
         ]),
         AuthenticationModule,
-        ManagementsModule
+        ManagementsModule,
+        ExportsModule
     ],
     controllers: [AdminController],
     providers: [
