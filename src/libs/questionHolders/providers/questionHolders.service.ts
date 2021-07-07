@@ -8,7 +8,7 @@ import { WordsService } from "@libs/words/words.service";
 import { SentencesService } from "@libs/sentences/sentences.service";
 import { WordInLesson } from "@dto/word/wordInLesson.dto";
 import { SentenceInLesson } from "@dto/sentence";
-import { ListWorQuestionCodes, ListSentenceQuestionCodes } from "@utils/constants";
+import { ListWorQuestionCodes, ListSentenceQuestionCodes, MultipleChoiceCode } from "@utils/constants";
 import { QuestionsHelper } from "@helpers/questionsHelper";
 import { Unit, UnitDocument } from "@entities/unit.entity";
 
@@ -170,7 +170,7 @@ export class QuestionHoldersService {
     }
 
     public multipleChoiceQuestions(questions: QuestionDocument[]): QuestionDocument[] {
-        const multipleChoiceQuestions = questions.filter(question => question.choices && question.choices.length > 0);
+        const multipleChoiceQuestions = questions.filter(question => MultipleChoiceCode.includes(question.code));
         if (multipleChoiceQuestions.length === 0) {
             throw new BadRequestException('Not multiple choice question in this level');
         }

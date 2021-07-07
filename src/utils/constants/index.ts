@@ -27,6 +27,15 @@ export const ListSentenceQuestionCodes: QuestionTypeCode[] = [
     QuestionTypeCode.S4,
     QuestionTypeCode.S18,
 ]
+export const MultipleChoiceCode: QuestionTypeCode[] = [
+    QuestionTypeCode.W3,
+    QuestionTypeCode.W6,
+    QuestionTypeCode.W2,
+    QuestionTypeCode.W4,
+    QuestionTypeCode.W13,
+    QuestionTypeCode.S10,
+    QuestionTypeCode.S7,
+]
 export const booksName = [
     "Tiếng Anh 1 Macmillan",
     "Tiếng Anh 2 Macmillan",
