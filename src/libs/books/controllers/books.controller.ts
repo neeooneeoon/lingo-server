@@ -15,6 +15,7 @@ import { grades } from '../constants';
 import { BooksService } from '../providers/books.service';
 import { ProgressBookMapping } from '@dto/progress';
 import { WordsService } from '@libs/words/words.service';
+import { WordInLesson } from '@dto/word/wordInLesson.dto';
 
 @ApiTags('Books')
 @ApiBearerAuth()
@@ -107,6 +108,7 @@ export class BooksController {
   @ApiParam({ type: Number, name: 'bookNId', required: true })
   @ApiParam({ type: Number, name: 'unitNId', required: true })
   @ApiOperation({ summary: 'Lấy các từ theo book và unit' })
+  @ApiResponse({type: [WordInLesson], status: 200})
   async getWordsInUnit(@Param('bookNId') bookNId: number, @Param('unitNId') unitNId: number) {
     return this.wordsService.getWordsInUnit(bookNId, unitNId);
   }

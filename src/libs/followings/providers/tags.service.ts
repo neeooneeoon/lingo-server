@@ -3,6 +3,8 @@ import { Tag, TagDocument } from "@entities/tag.entity";
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
+import { from, Observable } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 
 @Injectable()
 export class TagsService {
@@ -10,20 +12,23 @@ export class TagsService {
         @InjectModel(Tag.name) private tagModel: Model<TagDocument>
     ) { }
 
-    public async findTag(currentUser: string, tagId: string): Promise<TagDocument | undefined> {
-        try {
-            const tag = await this.tagModel.findOne({
-                user: Types.ObjectId(currentUser),
-                _id: tagId
-            });
-            if (!tag) {
-                throw new NotFoundException(`Can't find user-tag${tagId}`);
-            }
-            return tag;
-        } catch (error) {
-            throw new BadRequestException()
-        }
+    public findTag(currentUser: string, tagId: string): Observable<TagDocument> {
+        return from(
+            this.tagModel
+                .findOne({
+                    _id: tagId,
+                    user: Types.ObjectId(currentUser),
+                })
+        ).pipe(
+            map(tag => {
+                if (!tag) {
+                    throw new BadRequestException(`Can't find user tag`);
+                }
+                return tag;
+            })
+        )
     }
+
 
 
     public async viewTags(userId: string): Promise<TagDocument[]> {
@@ -36,58 +41,77 @@ export class TagsService {
         }
     }
 
-    public async createTag(userId: string, input: CreateTagDto): Promise<TagDocument> {
-        try {
-            const createdTags = await this.viewTags(userId);
-            if (createdTags.length >= 15) {
-                throw new BadRequestException(`Maximum tags is 15`);
-            }
-            const newTag = await this.tagModel.create({
-                user: Types.ObjectId(userId),
-                name: input.name,
-                color: input.color,
-                _id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-            });
-            if (!newTag) {
-                throw new InternalServerErrorException(`Can't creat new tag for ${userId}`);
-            }
-            return newTag;
-
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
-    }
-    public async removeTag(id: string): Promise<void> {
-        try {
-            id = id.trim();
-            if(!id){
-                throw new BadRequestException("Can not find")
-            }
-            await this.tagModel.deleteOne({ _id: id });  
-            return; 
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
-    }
-    public async editTag(id: string, tagName: string): Promise<TagDocument> {
-        try {
-            id = id.trim();
-            tagName = tagName.trim();
-            if(!id) {
-                throw new BadRequestException("Can not find");
-            }
-            if(!tagName) {
-                throw new BadRequestException("Name field not entered");
-            }
-            const tag = await this.tagModel.findOneAndUpdate({_id:id}, {name:tagName}, {new: true});
-            if(!tag) {
-                throw new BadRequestException("Can not find");
-            }
-            return tag;
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
+    public getUserTags(currentUser: string): Observable<TagDocument[]> {
+        const unSelect = ['-__v', '-createdAt', '-updatedAt']
+        const tags$ = from(
+            this.tagModel
+                .find({
+                    user: Types.ObjectId(currentUser)
+                })
+                .select(unSelect)
+        );
+        return tags$;
     }
 
+    public createTag(currentUser: string, input: CreateTagDto): Observable<TagDocument> {
+        return this.getUserTags(currentUser)
+            .pipe(
+                map(tags => {
+                    if (tags.length >= 15) {
+                        throw new BadRequestException(`Tạo tối đa 15 thẻ`);
+                    }
+                    return tags;
+                }),
+                switchMap(() => {
+                    return this.tagModel
+                        .create({
+                            user: Types.ObjectId(currentUser),
+                            name: input.name,
+                            color: input.color,
+                            _id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+                        })
+                })
+            );
+    }
+    public removeTag(id: string): Observable<string> {
+        return from(
+            this.tagModel
+                .deleteOne({
+                    _id: id
+                })
+        ).pipe(
+            map(deleteResult => {
+                if (deleteResult.deletedCount === 1) {
+                    return 'Remove tag success';
+                }
+                else {
+                    throw new BadRequestException('Remove tag failed')
+                }
+            })
+        );
+    }
+    public editTag(id: string, tagName: string): Observable<TagDocument> {
+        return from(
+            this.tagModel
+                .findOneAndUpdate(
+                    {
+                        _id: id
+                    },
+                    {
+                        name: tagName
+                    },
+                    {
+                        new: true
+                    }
+                )
+        ).pipe(
+            map((updatedTag: TagDocument) => {
+                if (!updatedTag) {
+                    throw new BadRequestException('Update tag failed');
+                }
+                return updatedTag;
+            })
+        )
+    }
 
 }

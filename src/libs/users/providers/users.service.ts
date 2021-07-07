@@ -15,7 +15,7 @@ import { GoogleService } from './google.service';
 import { ProgressesService } from "@libs/progresses/progresses.service";
 import { UsersHelper } from '@helpers/users.helper';
 import { Rank, Role } from '@utils/enums';
-import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto, UpdateUserStatusDto, SaveLessonDto} from "@dto/user";
+import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto, UpdateUserStatusDto, SaveLessonDto, SearchUser } from "@dto/user";
 import { FacebookService } from "./facebook.service";
 import { JwtPayLoad } from "@utils/types";
 import { AnswerResult } from "@dto/lesson";
@@ -29,6 +29,7 @@ import { ScoreStatisticsService } from "@libs/scoreStatistics/scoreStatistics.se
 import { forkJoin, from, Observable } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
 import { ScoreOverviewDto } from "@dto/progress";
+import { FollowingDocument } from "@entities/following.entity";
 
 @Injectable()
 export class UsersService {
@@ -42,7 +43,7 @@ export class UsersService {
         private booksService: BooksService,
         private worksService: WorksService,
         @Inject(forwardRef(() => LeaderBoardsService)) private leaderBoardsService: LeaderBoardsService,
-        @Inject(forwardRef(()=>ScoreStatisticsService)) private scoreStatisticsService: ScoreStatisticsService,
+        @Inject(forwardRef(() => ScoreStatisticsService)) private scoreStatisticsService: ScoreStatisticsService,
         private followingsService: FollowingsService,
     ) { }
 
@@ -322,15 +323,14 @@ export class UsersService {
             });
         return "save user work";
     }
-    public async searchUser(search: string, userId: string) {
-        try {
-            search = search.trim();
-            if (!search) {
-                throw new BadRequestException('Can not find');
-            }
-            const listFollowings = await this.followingsService.followings(userId);
-            const listUserId = listFollowings.map(item => String(item.followUser));
-            const users = await this.userModel.find({
+    public searchUser(search: string, userId: string): Observable<SearchUser[]> {
+        search = search.trim();
+        if (!search) {
+            throw new BadRequestException('Name or email can not be blank');
+        }
+        return forkJoin([
+            this.followingsService.allFollowings(userId),
+            this.userModel.find({
                 $or: [
                     { displayName: { $regex: '.*' + search + '.*' } },
                     { email: { $regex: '.*' + search + '.*' } }
@@ -341,16 +341,17 @@ export class UsersService {
                 role: {
                     $ne: Role.Admin
                 }
-            });
-            const result = this.usersHelper.mapToFollowingResult(listUserId, users);
-            return result;
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
+            })
+        ]).pipe(
+            map(([allFollowings, users]: [FollowingDocument[], UserDocument[]]) => {
+                const followUsers = allFollowings.map(item => String(item.followUser));
+                return this.usersHelper.mapToFollowingResult(followUsers, users);
+            })
+        );
     }
 
     public async getAllTimeUserXpList(): Promise<UserRank[]> {
-        const userRankList = await this.userModel.find({role: {$ne: Role.Admin}}).sort({ xp: -1 }).select({ xp: 1, displayName: 1, avatar: 1 });
+        const userRankList = await this.userModel.find({ role: { $ne: Role.Admin } }).sort({ xp: -1 }).select({ xp: 1, displayName: 1, avatar: 1 });
         let xpArr: UserRank[] = [];
         if (!userRankList) {
             throw new BadRequestException("Can not find users");
@@ -372,7 +373,7 @@ export class UsersService {
     public getAllUsers(): Observable<UserDocument[]> {
         const users$ = from(
             this.userModel
-            .find()
+                .find()
         )
         return users$;
     }
@@ -380,17 +381,17 @@ export class UsersService {
     public findUser(userId: string): Observable<UserProfile> {
         const profile$ = from(
             this.userModel
-            .findById(userId)
+                .findById(userId)
         )
-        .pipe(
-            map(user => {
-                if (!user) {
-                    throw new BadRequestException(`Can't find user ${userId}`);
-                }
-                const userProfile = this.usersHelper.mapToUserProfile(user);
-                return userProfile;
-            })
-        );
+            .pipe(
+                map(user => {
+                    if (!user) {
+                        throw new BadRequestException(`Can't find user ${userId}`);
+                    }
+                    const userProfile = this.usersHelper.mapToUserProfile(user);
+                    return userProfile;
+                })
+            );
         return profile$;
     }
 
@@ -402,32 +403,36 @@ export class UsersService {
             user$,
             records$
         ])
-        .pipe(
-            switchMap(([userProfile, records]) => {
-                if (records.length === 0) {
-                    return from(
-                        this.userModel
-                        .updateOne(
-                            {_id: Types.ObjectId(userId)},
-                            {$set: {
-                                streak: 0,
-                            }}
+            .pipe(
+                switchMap(([userProfile, records]) => {
+                    if (records.length === 0) {
+                        return from(
+                            this.userModel
+                                .updateOne(
+                                    { _id: Types.ObjectId(userId) },
+                                    {
+                                        $set: {
+                                            streak: 0,
+                                        }
+                                    }
+                                )
                         )
-                    )
-                }
-                else {
-                    return from(
-                        this.userModel
-                        .updateOne(
-                            {_id: Types.ObjectId(userId)},
-                            {$set: {
-                                streak: userProfile.streak + 1,
-                            }}
+                    }
+                    else {
+                        return from(
+                            this.userModel
+                                .updateOne(
+                                    { _id: Types.ObjectId(userId) },
+                                    {
+                                        $set: {
+                                            streak: userProfile.streak + 1,
+                                        }
+                                    }
+                                )
                         )
-                    )
-                }
-            })
-        );
+                    }
+                })
+            );
         return update$;
     }
 
@@ -436,15 +441,15 @@ export class UsersService {
             this.findUser(userId),
             this.progressesService.getAllUserScoresInProgress(userId)
         ])
-        .pipe(
-            map(([profile, allScore]) => {
-                return {
-                    ...allScore,
-                    xp: profile.xp,
-                    streak: profile.streak
-                }
-            })
-        );
+            .pipe(
+                map(([profile, allScore]) => {
+                    return {
+                        ...allScore,
+                        xp: profile.xp,
+                        streak: profile.streak
+                    }
+                })
+            );
         return overview$;
     }
 }

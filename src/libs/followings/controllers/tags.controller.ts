@@ -1,8 +1,7 @@
 import { JwtAuthGuard } from "@authentication/guard/jwtAuth.guard";
-import { CreateTagDto } from "@dto/following";
-import { TagDocument } from "@entities/tag.entity";
+import { CreateTagDto, UserTag } from "@dto/following";
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UserCtx } from "@utils/decorators/custom.decorator";
 import { JwtPayLoad } from "@utils/types";
 import { TagsService } from "../providers/tags.service";
@@ -20,20 +19,23 @@ export class TagsController {
     @Post('add')
     @ApiOperation({ summary: 'Tạo thẻ' })
     @ApiBody({ type: CreateTagDto })
+    @ApiResponse({type: UserTag, status: 201})
     createTag(@Body() body: CreateTagDto, @UserCtx() user: JwtPayLoad) {
         return this.tagsService.createTag(user.userId, body);
     }
 
     @Get('/')
-    @ApiOperation({ summary: 'Get tags' })
+    @ApiOperation({ summary: 'Các thẻ của người dùng hiện tại' })
+    @ApiResponse({type: [UserTag], status: 200})
     viewTags(@UserCtx() user: JwtPayLoad) {
-        return this.tagsService.viewTags(user.userId);
+        return this.tagsService.getUserTags(user.userId);
     }
 
     @Delete('/removeTag/:id')
-    @ApiOperation({ summary: 'Remove tag' })
+    @ApiOperation({ summary: 'Xóa thẻ đã tạo' })
     @ApiParam({ type: String, name: 'id', required: true })
-    async removeTag(@Param('id') id: string) {
+    @ApiResponse({type: String, description: 'Message', status: 200})
+    removeTag(@Param('id') id: string) {
         return this.tagsService.removeTag(id);
     }
 
@@ -41,7 +43,7 @@ export class TagsController {
     @ApiOperation({ summary: 'Edit tag' })
     @ApiParam({ type: String, name: 'id', required: true })
     @ApiQuery({type: String, name: 'tagName', required: true})
-    async editTag(@Param('id') id: string, @Query('tagName') tagName: string) {
+    editTag(@Param('id') id: string, @Query('tagName') tagName: string) {
         return this.tagsService.editTag(id, tagName);
     }
 

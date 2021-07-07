@@ -1,5 +1,5 @@
 import { JwtAuthGuard } from "@authentication/guard/jwtAuth.guard";
-import { AddFollowingDto, AssignTagDto, ViewFollowingsDto } from "@dto/following";
+import { AddFollowingDto, AssignTagDto, FollowingUser, ViewFollowingsDto } from "@dto/following";
 import { FriendsDto } from "@dto/following/friends.dto";
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -22,7 +22,8 @@ export class FollowingsController {
     @Post('add')
     @ApiOperation({ summary: 'Theo dõi người dùng' })
     @ApiBody({ type: AddFollowingDto })
-    async addUserToListFollowing(@Body() body: AddFollowingDto, @UserCtx() user: JwtPayLoad) {
+    @ApiResponse({type: FollowingUser, status: 201})
+    addUserToListFollowing(@Body() body: AddFollowingDto, @UserCtx() user: JwtPayLoad) {
         const {
             followId,
             tagId
@@ -33,7 +34,8 @@ export class FollowingsController {
     @Delete('unFollow/:id')
     @ApiParam({ type: 'string', required: true, description: 'Id người đang theo dõi', name: 'id' })
     @ApiOperation({ summary: 'Hủy theo dõi người dùng' })
-    async unFollowUser(@Param('id') id: string, @UserCtx() user: JwtPayLoad) {
+    @ApiResponse({type: String, status: 200})
+    unFollowUser(@Param('id') id: string, @UserCtx() user: JwtPayLoad) {
         return this.followingsService.unFollow(user.userId, id);
     }
 

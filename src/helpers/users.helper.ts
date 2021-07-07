@@ -19,35 +19,16 @@ export class UsersHelper {
             userId: String(user._id)
         }
     }
-    public mapToSearchUserProfile(user: UserDocument): SearchUser{
-        return {
-            userId: String(user._id),
-            email: user.email,
-            avatar: user.avatar,
-            displayName: user.displayName
-        }
-    }
 
-    public mapToFollowingResult(listFollowings: string[], searchUserResult: UserDocument[]) {
-        const result =  searchUserResult.map(user => {
+    public mapToFollowingResult(listFollowings: string[], searchUserResult: UserDocument[]): SearchUser[] {
+        const result =  searchUserResult.map((user): SearchUser => {
             const userId = String(user._id);
-            if (listFollowings.includes(userId)) {
-                return {
-                    userId: userId,
-                    email: user.email,
-                    avatar: user.avatar,
-                    displayName: user.displayName,
-                    followed: true
-                }
-            }
-            else {
-                return {
-                    userId: userId,
-                    email: user.email,
-                    avatar: user.avatar,
-                    displayName: user.displayName,
-                    followed: false
-                }
+            return {
+                userId: userId,
+                email: user.email,
+                avatar: user.avatar,
+                displayName: user.displayName,
+                followed: listFollowings.includes(userId)
             }
         });
         return result;

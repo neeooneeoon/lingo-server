@@ -40,7 +40,7 @@ export class UserController {
     @ApiConsumes('application/json')
     @ApiResponse({type: UserProfile, status: 200})
     async getUserProfile(@UserCtx() user: JwtPayLoad) {
-        return this.usersService.queryMe(user.userId)
+        return this.usersService.findUser(user.userId)
     }
 
     @UseGuards(JwtAuthGuard)
@@ -60,7 +60,7 @@ export class UserController {
     @ApiOperation({ summary: "Lưu kết quả mỗi bài học" })
     @ApiConsumes('application/json')
     @ApiBody({ type: SaveLessonDto, required: true, description: "Kết quả bài học" })
-    @ApiResponse({type: String})
+    @ApiResponse({type: String, status: 200})
     async saveUserLesson(@Body() input: SaveLessonDto, @UserCtx() user: JwtPayLoad): Promise<string> {
         return this.usersService.saveUserLesson(user, input);
     }
@@ -74,15 +74,6 @@ export class UserController {
     @ApiResponse({type: [SearchUser], status: 200})
     async searchUser(@Query('search') search: string, @UserCtx()user: JwtPayLoad) {
         return this.usersService.searchUser(search, user.userId);
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Get('viewProfile/:userId')
-    @ApiBearerAuth()
-    @ApiOperation({summary: 'Xem thông tin người dùng bất kỳ'})
-    @ApiConsumes('application/json')
-    @ApiParam({type: String, name: 'userId', required: true, description: 'Id người dùng'})
-    viewUserProfile(@Param('userId') userId: string) {
     }
 
     @Get('/:userId/scoreOverview')

@@ -5,7 +5,8 @@ import { InjectModel } from "@nestjs/mongoose";
 import { UsersService } from '@libs/users/providers/users.service';
 import { TagsService } from './tags.service';
 import { TagDocument } from '@entities/tag.entity';
-import { from, Observable } from "rxjs";
+import { forkJoin, from, Observable, of } from "rxjs";
+import { map, mergeMap, switchMap } from 'rxjs/operators';
 
 @Injectable()
 export class FollowingsService {
@@ -57,6 +58,15 @@ export class FollowingsService {
         }
     }
 
+    public allFollowings(currentUser: string): Observable<FollowingDocument[]> {
+        return from(
+            this.followingModel
+                .find({
+                    user: Types.ObjectId(currentUser)
+                })
+        )
+    }
+
     public async followings(currentUser: string) {
         try {
             const listFollowings = await this.followingModel.find({
@@ -68,58 +78,81 @@ export class FollowingsService {
         }
     }
 
-    public async startFollow(currentUser: string, followUser: string, tagId?: string): Promise<string> {
-        try {
-            if (currentUser === followUser) {
-                throw new BadRequestException('You can not follow yourself');
-            }
-            const listFollowings = await this.followingModel.find({
-                user: Types.ObjectId(currentUser)
-            });
-            const followingIds = listFollowings.map(item => item.followUser.toHexString());
-            if (!followingIds || !followingIds.includes(followUser)) {
-                const existsUser = await this.usersService.queryMe(followUser);
-                if (!existsUser) {
-                    throw new BadRequestException(`Can't find user ${followUser}`);
-                }
-                let existsTag: TagDocument;
-                if (tagId) {
-                    existsTag = await this.tagsService.findTag(currentUser, tagId);
-                }
-                const addingResult = await this.followingModel.create({
-                    user: Types.ObjectId(currentUser),
-                    followUser: Types.ObjectId(followUser),
-                    tag: existsTag ? existsTag._id : ''
-                });
-                if (!addingResult) {
-                    throw new BadRequestException('Follow failed');
-                }
-                return 'Follow success';
-            }
-            else if (followingIds && followingIds.includes(followUser)) {
-                throw new BadRequestException('Already follow this user');
-            }
-
-        } catch (error) {
-            throw new InternalServerErrorException(error);
+    public startFollow(currentUser: string, followUser: string, tagId?: string): Observable<FollowingDocument> {
+        if (currentUser === followUser) {
+            throw new BadRequestException('You can not follow yourself');
         }
+        return forkJoin([
+            this.allFollowings(currentUser),
+            this.usersService.findUser(followUser)
+        ]).pipe(
+            map(([followings, user]) => {
+                let followingIds: string[] = [];
+                if (followings && followings.length > 0) {
+                    followingIds = followings.map(item => String(item._id));
+                }
+                if (followingIds.includes(followUser)) {
+                    throw new BadRequestException('Already follow this user');
+                }
+                return {
+                    followingIds: followingIds,
+                    followUser: user
+                };
+            }),
+            mergeMap(({ followUser }) => {
+                if (tagId) {
+                    return this.tagsService.findTag(currentUser, tagId)
+                        .pipe(
+                            map(tag => {
+                                return {
+                                    followUserId: followUser.userId,
+                                    tagId: String(tag._id)
+                                }
+                            })
+                        )
+                }
+                else {
+                    return of({
+                        followUserId: followUser.userId,
+                        tagId: undefined
+                    })
+                }
+            }),
+            switchMap(({ followUserId, tagId }) => {
+                return from(
+                    this.followingModel.create({
+                        user: Types.ObjectId(currentUser),
+                        followUser: Types.ObjectId(followUserId),
+                        tags: tagId ? [tagId] : []
+                    })
+                )
+            }),
+            map(newFollowing => {
+                if (!newFollowing) {
+                    throw new BadRequestException(`Can't follow this user`);
+                }
+                return newFollowing;
+            })
+        )
     }
 
-    public async unFollow(currentUser: string, followedUser: string): Promise<void> {
-        try {
-            const result = await this.followingModel.deleteOne({
+    public unFollow(currentUser: string, followedUser: string): Observable<string> {
+        return from(
+            this.followingModel
+            .deleteOne({
                 user: Types.ObjectId(currentUser),
                 followUser: Types.ObjectId(followedUser)
-            });
-            if (result.deletedCount === 1) {
-                return;
-            }
-            else {
-                throw new InternalServerErrorException('Error');
-            }
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
+            })
+        ).pipe(
+            map(deleteResult => {
+                if (deleteResult.deletedCount === 1) {
+                    return 'Un-follow success';
+                }
+                else {
+                    throw new InternalServerErrorException();
+                }
+            })
+        )
     }
 
     public async addTagToFollowingUser(currentUser: string, followId: string, tagId: string): Promise<string> {
