@@ -4,6 +4,7 @@ import { SentencesHelper } from "@helpers/sentences.helper";
 import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { from } from "rxjs";
 
 @Injectable()
 export class SentencesService {
@@ -39,6 +40,25 @@ export class SentencesService {
         } catch (error) {
             throw new InternalServerErrorException(error);    
         }
+    }
+
+    public getSentencesINPreviousBooks(currentBookNId: number) {
+       return from(
+           this.sentenceModel
+           .find(
+            {
+                bookNId: {
+                    $lte: currentBookNId
+                }
+            },
+            {
+                content: 1,
+                translate: 1,
+                audio: 1,
+                _id: 1
+            }
+           )
+       )
     }
 
 }

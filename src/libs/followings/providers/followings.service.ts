@@ -4,9 +4,9 @@ import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErro
 import { InjectModel } from "@nestjs/mongoose";
 import { UsersService } from '@libs/users/providers/users.service';
 import { TagsService } from './tags.service';
-import { TagDocument } from '@entities/tag.entity';
 import { forkJoin, from, Observable, of } from "rxjs";
 import { map, mergeMap, switchMap } from 'rxjs/operators';
+import { CheckFollowing } from '@dto/following';
 
 @Injectable()
 export class FollowingsService {
@@ -235,12 +235,22 @@ export class FollowingsService {
         }
     }
 
-    public async checkIsFollowing(currentUserId: string, userId: string) {
-        const listFollowings = await this.followings(currentUserId);
-        const followUserIds = listFollowings.map(item => String(item.followUser));
-        if (followUserIds.includes(userId)) {
-            return true;
+    public async checkIsFollowing(currentUserId: string, userId: string): Promise<CheckFollowing> {
+        try {
+            const [listFollowings, otherUserProfile] = await Promise.all([
+                this.followings(currentUserId),
+                this.usersService.queryMe(userId)
+            ]);
+            if (!otherUserProfile) {
+                throw new BadRequestException('Can`t find user')
+            }
+            const followUserIds = listFollowings.map(item => String(item.followUser));
+            return {
+                ...otherUserProfile,
+                followed: followUserIds.includes(userId)
+            }
+        } catch (error) {
+            throw new BadRequestException(error)
         }
-        return false;
     }
 }

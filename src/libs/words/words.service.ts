@@ -4,6 +4,7 @@ import { WordsHelper } from "@helpers/words.helper";
 import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { from } from "rxjs";
 
 @Injectable()
 export class WordsService {
@@ -51,5 +52,23 @@ export class WordsService {
         } catch (error) {
             throw new InternalServerErrorException(error)
         }
+    }
+
+    public getWordsInPreviousBooks(currentBookNId: number) {
+        return from(
+            this.wordModel
+            .find(
+                {
+                    bookNId: {
+                        $lte: currentBookNId
+                    }
+                },
+                {
+                    content: 1,
+                    meaning: 1,
+                    _id: 1
+                }
+            )
+        )
     }
 }

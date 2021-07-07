@@ -9,7 +9,7 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger"
 import { Action } from "@utils/enums";
 
 
-@ApiTags('Admin/Question')
+@ApiTags('Admin')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @Controller('api/admin/question')

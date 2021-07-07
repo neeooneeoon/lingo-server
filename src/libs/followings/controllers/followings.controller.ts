@@ -1,5 +1,5 @@
 import { JwtAuthGuard } from "@authentication/guard/jwtAuth.guard";
-import { AddFollowingDto, AssignTagDto, FollowingUser, ViewFollowingsDto } from "@dto/following";
+import { AddFollowingDto, AssignTagDto, FollowingUser, ViewFollowingsDto, CheckFollowing } from "@dto/following";
 import { FriendsDto } from "@dto/following/friends.dto";
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -87,7 +87,7 @@ export class FollowingsController {
 
     @Get('/checkIsFollowing/:userId')
     @ApiParam({type: String, name: 'userId', required: true})
-    @ApiResponse({type: Boolean, status: 200})
+    @ApiResponse({type: CheckFollowing, status: 200})
     checkIsFollowing(@Param('userId') userId: string, @UserCtx()user: JwtPayLoad) {
         return this.followingsService.checkIsFollowing(user.userId, userId);
     }
