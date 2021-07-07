@@ -3,6 +3,11 @@ import { SSL_OP_TLS_ROLLBACK_BUG } from 'constants';
 import { ProgressUnit } from './progressUnit.dto';
 
 export class ProgressBook {
+    @ApiProperty({type: Number})
+    grade: number;
+
+    @ApiProperty({type: String})
+    name: string;
 
     @ApiProperty({ type: String })
     bookId: string;

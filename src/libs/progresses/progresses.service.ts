@@ -46,6 +46,8 @@ export class ProgressesService {
         let bookProgress = userProgress.books.find(item => item.bookId === book._id);
         if (!bookProgress) {
             bookProgress = {
+                name: book.name,
+                grade: book.grade,
                 totalLessons: book.totalLessons,
                 doneLessons: 0,
                 bookId: book._id,
@@ -94,6 +96,8 @@ export class ProgressesService {
             if (!progressBook) {
                 const newProgressBook: ProgressBook = {
                     bookId: bookId,
+                    name: book.name,
+                    grade: book.grade,
                     totalUnits: book.units.length,
                     score: 0,
                     level: 0,
@@ -197,7 +201,8 @@ export class ProgressesService {
             .pipe(
                 map(progress => {
                     if (!progress) {
-                        throw new BadRequestException(`Can't find progress with user ${userId}`);
+                        // throw new BadRequestException(`Can't find progress with user ${userId}`);
+                        return [];
                     }
                     return progress;
                 })

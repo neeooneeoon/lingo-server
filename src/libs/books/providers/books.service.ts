@@ -25,7 +25,7 @@ export class BooksService {
     ) { }
 
     public findBookWithProgressBook(book: Partial<ProgressBook>): Observable<ActiveBookProgress> {
-        const unSelect = ['cover', '-_id']
+        const unSelect = ['name','grade','cover', '-_id']
         const book$ = from(
             this.bookModel
                 .findById(book.bookId)
@@ -33,16 +33,22 @@ export class BooksService {
         )
             .pipe(
                 map((result) => {
+                   
                     return {
+                        name: result.name,
+                        grade: result.grade,
                         cover: result.cover,
                         bookId: book.bookId,
                         doneLessons: book.doneLessons,
                         totalLessons: book.totalLessons,
                         lastDid: book.lastDid,
                         units: book.units
+
                     }
                 })
             )
+
+
         return book$;
     }
 
@@ -230,7 +236,7 @@ export class BooksService {
                 throw new BadRequestException(`No level in unit ${unitId}`);
             }
             let totalLessonInUnit = 0;
-            levels.map(level => {totalLessonInUnit += level.lessons.length});
+            levels.map(level => { totalLessonInUnit += level.lessons.length });
 
             const level = levels.find(item => item.levelIndex === levelIndex);
             if (!level) {
@@ -263,7 +269,7 @@ export class BooksService {
                 lessonTotalQuestions: lesson.totalQuestions,
                 book: book
             }
-            
+
         } catch (error) {
             throw new InternalServerErrorException(error);
         }

@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { BookGrade, GetLessonInput, GetLessonOutput } from '@dto/book';
-import { Controller, Get, Param, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,

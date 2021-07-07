@@ -105,6 +105,7 @@ export class ScoreStatisticsService {
         return xpArr.slice(0, 9);
     }
     public async getUserXpThisWeek(currentUserId: string, followUserId: string): Promise<Statistic> {
+        //  await this.generateXP();
         currentUserId = currentUserId.trim();
         followUserId = followUserId.trim()
         if (!currentUserId || !followUserId) {
@@ -261,8 +262,8 @@ export class ScoreStatisticsService {
             }
         });
         let xpStatisticResult: number[] = new Array(statisticLength).fill(0);
-        for(let i = 0; i<xpStatistic.length; i++) {
-            xpStatisticResult[dayjs(xpStatistic[i].createdAt).get('day')] = xpStatistic[i].xp;
+        for (const item of xpStatistic) {
+            xpStatisticResult[dayjs(item.createdAt).get('day')] = item.xp;
         }
         return xpStatisticResult;
     }
@@ -286,5 +287,9 @@ export class ScoreStatisticsService {
         return records$;
     }
 
+    // public async generateXP() {
+    //     const createdAt = dayjs().subtract(2, 'days').format();
+    //     await new this.scoreStatisticModel({ xp: 35, createdAt: createdAt, user: new Types.ObjectId('60d69b497562563750e9a5a1') }).save();
+    // }
 
 }
