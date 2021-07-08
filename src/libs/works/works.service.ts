@@ -192,4 +192,8 @@ export class WorksService {
             throw new InternalServerErrorException(error);
         }
     }
+    public async isExist(): Promise<Boolean> {
+        const works = this.workModel.findOne({});
+        return works? true: false;
+    }
 }

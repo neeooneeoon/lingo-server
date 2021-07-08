@@ -12,6 +12,7 @@ import { LessonDocument } from "@entities/lesson.entity";
 import { from, Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { UnitLevel } from "@dto/unit";
+import { booksName } from "@utils/constants";
 
 @Injectable()
 export class BooksService {
@@ -25,7 +26,7 @@ export class BooksService {
     ) { }
 
     public findBookWithProgressBook(book: Partial<ProgressBook>): Observable<ActiveBookProgress> {
-        const unSelect = ['name','grade','cover', '-_id']
+        const unSelect = ['name', 'grade', 'cover', '-_id']
         const book$ = from(
             this.bookModel
                 .findById(book.bookId)
@@ -33,7 +34,7 @@ export class BooksService {
         )
             .pipe(
                 map((result) => {
-                   
+
                     return {
                         name: result.name,
                         grade: result.grade,
@@ -273,6 +274,36 @@ export class BooksService {
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
+    }
+    public async importBook(rows: string[][]): Promise<void> {
+        for (let i = 1; i < rows.length; i++) {
+            if (!booksName.includes(rows[i][5])) continue;
+            try {
+                await this.bookModel.create({
+                    _id: this.booksHelper.getID(rows[i][5]),
+                    nId: Number(rows[i][1]),
+                    key: rows[i][0],
+                    cover: rows[i][2],
+                    description: rows[i][3],
+                    grade: Number(rows[i][4]),
+                    name: rows[i][5],
+                    number: Number(rows[i][9]),
+                    imgName: rows[i][6],
+                    totalLessons: 0,
+                    totalQuestions: 0,
+                    totalSentences: 0,
+                    totalWords: 0,
+                    units: [],
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+    
+    public async isExist(): Promise<Boolean> {
+        const books = await this.bookModel.findOne({});
+        return books ? true : false;
     }
 
 }

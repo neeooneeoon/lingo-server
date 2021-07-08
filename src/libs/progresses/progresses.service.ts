@@ -258,6 +258,9 @@ export class ProgressesService {
         ;
         return score$;
     }
-
+    public async isExist(): Promise<Boolean> {
+        const progresses = await this.progressModel.findOne({});
+        return progresses ? true : false;
+    }
 
 }

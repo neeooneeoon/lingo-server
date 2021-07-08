@@ -3,11 +3,11 @@ import { Controller, Get, Res } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { ExportsService } from "./exports.service";
 
-@Controller()
+@Controller('admin/export')
 @ApiTags('export')
 export class ExportsController {
     constructor(private exportsService: ExportsService) { }
-    @Get('export/users/reports')
+    @Get('users/reports')
     async exportUserReports(@Res() res: Response) {
         return this.exportsService.exportReportsToGoogleSheet(res);
     }

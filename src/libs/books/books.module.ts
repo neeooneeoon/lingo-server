@@ -9,6 +9,7 @@ import { WorksModule } from "@libs/works";
 import { QuestionHoldersModule } from "@libs/questionHolders";
 import { BookPrivateService } from "./private/private.service";
 import { WordsModule } from "@libs/words";
+import { UnitsModule } from "@libs/units/units.module";
 
 
 @Module({
@@ -20,6 +21,7 @@ import { WordsModule } from "@libs/words";
         WorksModule,
         WordsModule,
         QuestionHoldersModule,
+        forwardRef(() => UnitsModule)
     ],
     providers: [
         BooksService,
@@ -28,6 +30,7 @@ import { WordsModule } from "@libs/words";
     ],
     controllers: [BooksController],
     exports: [
+        BooksHelper,
         BooksService,
         WorksModule,
         ProgressesModule,
