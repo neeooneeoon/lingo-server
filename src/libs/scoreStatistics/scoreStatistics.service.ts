@@ -132,17 +132,24 @@ export class ScoreStatisticsService {
         const promises = await Promise.all([
             this.usersService.queryMe(followUserId),
             this.getTotalXp(currentUserId, filter),
-            this.getXpStatistic(followUserId, startTime, endTime)
+            this.getXpStatistic(followUserId, startTime, endTime),
+            this.getXpStatistic(currentUserId, startTime, endTime)
         ]);
         followUser = promises[0];
         if (!followUser) {
             throw new BadRequestException('Can not find follow user');
         }
         xpArr = promises[1];
-        const weekStatistic = promises[2];
+        const followUserWeekStatistic = promises[2];
+        const currentUserWeekStatistic = promises[3];
         //console.log(weekStatistic);
 
-        let result: Statistic = { currentUserXp: -1, followUserXp: -1, followUserXpStatistic: weekStatistic };
+        let result: Statistic = { 
+            currentUserXp: -1, 
+            followUserXp: -1, 
+            followUserXpStatistic: followUserWeekStatistic, 
+            currentUserXpStatistic: currentUserWeekStatistic 
+         };
         for (let i = 0; i < 2; i++) {
             if (i >= xpArr.length) {
                 if (result.currentUserXp == -1) result.currentUserXp = 0;
