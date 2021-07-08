@@ -209,8 +209,8 @@ export class ProgressesService {
             )
         const book$ = progress$.pipe(
             switchMap((r: ProgressDocument) => {
-                const books = r.books;
-                if (books.length > 0) {
+                const books = r?.books;
+                if (books && books.length > 0) {
                     const lastActiveBooks = books.sort((bookOne, bookTwo) => {
                         if (bookOne.lastDid < bookTwo.lastDid) return 1;
                         if (bookOne.lastDid > bookTwo.lastDid) return -1;
@@ -221,7 +221,7 @@ export class ProgressesService {
                     )
                 }
                 else {
-                    return books;
+                    return [] as Array<ProgressBook>;
                 }
             }),
         )
