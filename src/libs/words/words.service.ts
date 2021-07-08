@@ -1,10 +1,11 @@
+import { map } from 'rxjs/operators';
 import { WordInLesson } from "@dto/word/wordInLesson.dto";
 import { Word, WordDocument } from "@entities/word.entity";
 import { WordsHelper } from "@helpers/words.helper";
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { from } from "rxjs";
+import { from, Observable } from "rxjs";
 
 @Injectable()
 export class WordsService {
@@ -69,6 +70,23 @@ export class WordsService {
                     _id: 1
                 }
             )
+        )
+    }
+
+    public searchExactWord(search: string): Observable<WordDocument> {
+        return from(
+            this.wordModel
+            .findOne({
+                content: search
+            })
+        )
+        .pipe(
+            map((word: WordDocument) => {
+                if (!word) {
+                    throw new NotFoundException(`Not found ${search}`);
+                }
+                return word;
+            })
         )
     }
 }

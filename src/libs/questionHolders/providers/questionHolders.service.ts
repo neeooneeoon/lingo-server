@@ -11,6 +11,7 @@ import { SentenceInLesson } from "@dto/sentence";
 import { ListWorQuestionCodes, ListSentenceQuestionCodes, MultipleChoiceCode } from "@utils/constants";
 import { QuestionsHelper } from "@helpers/questionsHelper";
 import { Unit, UnitDocument } from "@entities/unit.entity";
+import { from } from "rxjs";
 
 @Injectable()
 export class QuestionHoldersService {
@@ -175,6 +176,89 @@ export class QuestionHoldersService {
             throw new BadRequestException('Not multiple choice question in this level');
         }
         return multipleChoiceQuestions
+    }
+
+    public async removeChoice(
+        input: {
+            bookId: string,
+            unitId: string,
+            levelIndex: number,
+            questionId: string,
+            choiceId: string,
+        }
+    ) {
+        // console.log(input)
+        const questionHolder = await this.questionHolderModel.findOne({
+            bookId: input.bookId,
+            unitId: input.unitId,
+            level: input.levelIndex,
+        });
+        if (!questionHolder) {
+            throw new BadRequestException()
+        }
+        let questions = questionHolder.questions;
+        if (questions.length === 0) {
+            throw new BadRequestException()
+        }
+        const index = questions.findIndex(question => question._id === input.questionId);
+        if (index === -1) {
+            throw new BadRequestException()
+        }
+        // /console.log(questions[index].choices)
+        const choiceIndex = questions[index].choices.findIndex(item => item === input.choiceId);
+        if (choiceIndex !== -1) {
+            questions[index].choices.splice(choiceIndex, 1);
+        }
+        else {
+            throw new BadRequestException()
+        }
+        // console.log(questions[index].choices)
+        const updateResult = await this.questionHolderModel.updateOne({
+            bookId: input.bookId,
+            unitId: input.unitId,
+            level: input.levelIndex,
+        }, 
+        {
+            $set: {
+                questions: questions
+            }
+        });
+        if (updateResult.nModified ===1) {
+            return true;
+        }
+        throw new InternalServerErrorException()
+    }
+
+    public async addChoice(input: {
+        bookId: string,
+        unitId: string,
+        levelIndex: number,
+        questionId: string,
+        choiceId: string,
+    }) {
+        // console.log(input)
+        const questionHolder = await this.questionHolderModel.findOne({
+            bookId: input.bookId,
+            unitId: input.unitId,
+            level: input.levelIndex,
+        });
+        if (!questionHolder) {
+            throw new BadRequestException()
+        }
+        let questions = questionHolder.questions;
+        if (questions.length === 0) {
+            throw new BadRequestException()
+        }
+        const index = questions.findIndex(question => question._id === input.questionId);
+        if (index === -1) {
+            throw new BadRequestException()
+        }
+        if (questions[index].choices.includes(input.questionId)) {
+            throw new BadRequestException()
+        }
+        questions[index].choices.push(input.questionId);
+        await questionHolder.save();
+        return true;
     }
 
 }

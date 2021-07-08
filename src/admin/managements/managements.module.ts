@@ -1,4 +1,5 @@
 import { BooksModule } from "@libs/books";
+import { QuestionHoldersModule } from "@libs/questionHolders";
 import { SentencesModule } from "@libs/sentences";
 import { WordsModule } from "@libs/words";
 import { Module } from "@nestjs/common";
@@ -11,6 +12,7 @@ import { WordsController } from "./controllers/words.controller";
         BooksModule,
         WordsModule,
         SentencesModule,
+        QuestionHoldersModule,
     ],
     controllers: [
         QuestionsController,
