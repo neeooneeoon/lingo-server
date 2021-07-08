@@ -30,4 +30,10 @@ export class ProgressUnit {
 
     @ApiProperty({type: String, })
     blueImage: string;
+
+    @ApiProperty({type: Number})
+    totalLessons: number;
+    
+    @ApiProperty({type: String})
+    unitName: string;
 }

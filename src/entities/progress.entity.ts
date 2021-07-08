@@ -28,6 +28,8 @@ export class Progress {
             lastDid: Date,
             normalImage: String,
             blueImage: String,
+            unitName: String,
+            totalLessons: Number,
             levels: [{
                 levelIndex: Number,
                 totalLessons: Number,

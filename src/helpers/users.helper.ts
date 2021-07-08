@@ -16,7 +16,8 @@ export class UsersHelper {
             grade: user.grade,
             xp: user.xp,
             rank: user.rank,
-            userId: String(user._id)
+            userId: String(user._id),
+            createdAt: user.createdAt
         }
     }
 

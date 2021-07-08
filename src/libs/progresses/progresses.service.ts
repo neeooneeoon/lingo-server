@@ -130,7 +130,9 @@ export class ProgressesService {
                         passed: levelTotalLessons === 1,
                         doneLessons: 1,
                         lessons: [lessonIndex]
-                    }]
+                    }],
+                    unitName: unitInBook.name,
+                    totalLessons: unitInBook.totalLessons
                 };
                 progressBook.units.push(newProgressUnit);
             }
@@ -209,7 +211,7 @@ export class ProgressesService {
             )
         const book$ = progress$.pipe(
             switchMap((r: ProgressDocument) => {
-                const books = r?.books;
+                let books: ProgressBook[] = r?.books;
                 if (books && books.length > 0) {
                     const lastActiveBooks = books.sort((bookOne, bookTwo) => {
                         if (bookOne.lastDid < bookTwo.lastDid) return 1;
@@ -221,7 +223,8 @@ export class ProgressesService {
                     )
                 }
                 else {
-                    return [] as Array<ProgressBook>;
+                    books = []
+                    return of([])
                 }
             }),
         )

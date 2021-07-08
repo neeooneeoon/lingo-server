@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiProperty } from "@nestjs/swagger";
 import { Role, Rank } from '@utils/enums';
 
 export class UserProfile {
@@ -37,4 +37,7 @@ export class UserProfile {
 
     @ApiProperty({type: String})
     userId: string;
+    
+    @ApiProperty({type: Date, required: false})
+    createdAt?: Date
 }

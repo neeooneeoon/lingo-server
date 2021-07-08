@@ -58,6 +58,9 @@ export class User {
 
     @Prop({ type: String, required: false })
     password?: string;
+    
+    @Prop({type: Date, required: false})
+    createdAt?: Date
 
 };
 
