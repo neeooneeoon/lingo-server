@@ -12,6 +12,6 @@ export class ImportsController {
     ) {}
     @Post('import/data')
     async importData() {
-        // return this.importsService.importData()
+        return this.importsService.importBooksData()
     }
 }

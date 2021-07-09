@@ -60,5 +60,32 @@ export class SentencesService {
            )
        )
     }
-
+    public async getSentencesInUnit(bookNId: number, unitNId: number): Promise<SentenceDocument[]> {
+        try {
+            const sentences = await this.sentenceModel.find({
+               bookNId: bookNId,
+               unitNId: unitNId
+            })
+            return sentences;
+        } catch (error) {
+            throw new InternalServerErrorException(error)
+        }
+    }
+    public async updateSentences(ids: number|string[], unitNId: number): Promise<void> {
+        try {
+            let filter = {};
+            let update = {};
+            if (Array.isArray(ids)) {
+                filter = { _id: { $in: ids } };
+                update = { unitNId: unitNId };
+            }
+            else {
+                filter = { bookNId: ids, unitNId: unitNId };
+                update = { unitNId: 100 * unitNId };
+            }
+            await this.sentenceModel.updateMany(filter, update);
+        } catch (error) {
+            throw new InternalServerErrorException(error)
+        }
+    }
 }

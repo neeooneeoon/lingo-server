@@ -10,6 +10,7 @@ import { QuestionHoldersModule } from "@libs/questionHolders";
 import { BookPrivateService } from "./private/private.service";
 import { WordsModule } from "@libs/words";
 import { UnitsModule } from "@libs/units/units.module";
+import { SentencesModule } from "@libs/sentences";
 
 
 @Module({
@@ -20,6 +21,7 @@ import { UnitsModule } from "@libs/units/units.module";
         forwardRef(() => ProgressesModule),
         WorksModule,
         WordsModule,
+        SentencesModule,
         QuestionHoldersModule,
         forwardRef(() => UnitsModule)
     ],

@@ -1,3 +1,4 @@
+import { GoogleModule } from "@admin/google/google.module";
 import { Book, BookSchema } from "@entities/book.entity";
 import { BooksModule } from "@libs/books";
 import { SentencesModule } from "@libs/sentences";
@@ -12,6 +13,7 @@ import { UnitsService } from "./units.service";
             {name: Book.name, schema: BookSchema}
         ]),
         forwardRef(() => BooksModule),
+        GoogleModule,
         WordsModule,
         SentencesModule
     ],

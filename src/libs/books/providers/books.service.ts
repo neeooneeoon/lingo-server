@@ -13,6 +13,12 @@ import { from, Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { UnitLevel } from "@dto/unit";
 import { booksName } from "@utils/constants";
+import { Unit } from "@dto/unit/unit.dto";
+import { WordDocument } from "@entities/word.entity";
+import { SentenceDocument } from "@entities/sentence.entity";
+import { WordsService } from "@libs/words/words.service";
+import { SentencesService } from "@libs/sentences/sentences.service";
+import { WordInLesson } from "@dto/word/wordInLesson.dto";
 
 @Injectable()
 export class BooksService {
@@ -21,6 +27,8 @@ export class BooksService {
         @InjectModel(Book.name) private bookModel: Model<BookDocument>,
         @Inject(forwardRef(() => ProgressesService)) private progressesService: ProgressesService,
         private worksService: WorksService,
+        private wordsService: WordsService,
+        private sentencesService: SentencesService,
         private booksHelper: BooksHelper,
         private questionHoldersService: QuestionHoldersService
     ) { }
@@ -300,10 +308,89 @@ export class BooksService {
             }
         }
     }
-    
+
     public async isExist(): Promise<Boolean> {
-        const books = await this.bookModel.findOne({});
-        return books ? true : false;
+        const book = await this.bookModel.findOne({});
+        return book ? true : false;
+    }
+    public async updateBook(nId: number, unit: Unit | Unit[]): Promise<void> {
+        try {
+            let update = {};
+            const filter = { nId: nId };
+            update = {
+                $inc: { totalUnits: 1 },
+                $push: { units: unit },
+            }
+            if (Array.isArray(unit)) {
+                update = {
+                    $inc: { totalUnits: unit.length },
+                    $push: { units: { $each: unit } },
+                }
+            }
+            await this.bookModel.updateOne(filter, update);
+        } catch (error) {
+            throw new InternalServerErrorException(error)
+        }
+    }
+    public async mapRangeToWords(
+        words: WordInLesson[],
+        sentences: SentenceDocument[],
+        ranges: Array<number>,
+        minSize: number,
+        info: string[],
+        prefix: number,
+        unitImages: any,
+        bookName: string
+    ): Promise<Unit[]> {
+        const prefixNormal = `https://s.saokhuee.com/lingo/anhunit/${bookName}/normal/`;
+        const prefixBlue = `https://s.saokhuee.com/lingo/anhunit/${bookName}/blue/`;
+        const remainder = words.length % minSize;
+        const unitNId = Number(info[1]);
+        const _id = this.booksHelper.getID(info[4]);
+        const unitIndex = Number(info[7]);
+        const listUnits: Array<Unit> = [];
+        const totalUnits = Math.floor(words.length / minSize)
+        for (let index = 0; index < ranges.length; index++) {
+            const range = ranges[index];
+            let start: number;
+            let end: number;
+            if (range !== minSize) {
+                start = index * range;
+                end = (index + 1) * range;
+            } else {
+                start = index * range + remainder;
+                end = (index + 1) * range + remainder;
+            }
+            const wordIds = words.slice(start, end).map((w) => w._id);
+            const sentenceIds = sentences
+                .filter((s) => wordIds.includes(s.baseId))
+                .map((s) => s._id);
+           // const changedUnitNId = unitNId * 100 + index;
+            const unit: Unit = {
+                _id: `${_id}${index + 1}`,
+                nId: unitNId * 100 + index,
+                unitIndex: unitIndex * 100 + index,
+                key: `${info[0]}${index}`,
+                name: `U${prefix}. ${info[4]} (${index + 1}/${totalUnits})`,
+                description: info[3],
+                grammar: info[5],
+                tips: info[6],
+                wordIds: wordIds,
+                sentenceIds: sentenceIds,
+                normalImage: unitImages && unitImages?.normal ? prefixNormal + unitImages.normal : '',
+                blueImage: unitImages && unitImages?.blue ? prefixBlue + unitImages.blue : '',
+                totalLessons: 0,
+                totalLevels: 0,
+                levels: [],
+                totalQuestions: 0,
+            };
+            listUnits.push(unit);
+            await Promise.all([
+                this.wordsService.updateWords(wordIds, unit.nId),
+                this.sentencesService.updateSentences(sentenceIds, unit.nId)
+            ]);
+        }
+        return listUnits;
     }
 
 }

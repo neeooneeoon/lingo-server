@@ -43,4 +43,43 @@ export class BooksHelper {
         str = str.trim();
         return str;
     }
+    public divideRange(rootSize: number, minSize: number) {
+        const totalUnits = Math.floor(rootSize / minSize);
+        const remainder = rootSize % minSize;
+        const ranges = new Array(totalUnits).fill(0);
+        let i = 0, j = 0;
+        while (true) {
+          if (totalUnits <= remainder) {
+            if (i < totalUnits) {
+              if (ranges[i] == 0) {
+                ranges[i] = minSize + 1;
+              } else {
+                ranges[i] = ranges[i] + 1;
+              }
+              i++;
+              j++;
+            }
+            if (i >= totalUnits) {
+              i = 0;
+            }
+            if (j >= remainder) {
+              break;
+            }
+          } else {
+            if (i < totalUnits) {
+              if (i < remainder) {
+                ranges[i] = minSize + 1;
+              } else {
+                ranges[i] = minSize;
+              }
+              i++;
+              j++;
+            }
+            if (i >= totalUnits) {
+              break;
+            }
+          }
+        }
+        return ranges;
+      }
 }

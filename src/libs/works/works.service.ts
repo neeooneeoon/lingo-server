@@ -193,7 +193,8 @@ export class WorksService {
         }
     }
     public async isExist(): Promise<Boolean> {
-        const works = this.workModel.findOne({});
-        return works? true: false;
+        const work = this.workModel.findOne({});
+        return work ? true : false;
     }
+
 }

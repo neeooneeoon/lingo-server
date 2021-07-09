@@ -1,6 +1,8 @@
 import { ConfigsModule } from "@configs/configs.module";
 import { BooksModule } from "@libs/books";
 import { ProgressesModule } from "@libs/progresses";
+import { UnitsModule } from "@libs/units/units.module";
+import { WordsModule } from "@libs/words";
 import { WorksModule } from "@libs/works";
 import { Module } from "@nestjs/common";
 import { GoogleModule } from "../google/google.module";
@@ -12,6 +14,8 @@ import { ImportsService } from "./imports.service";
         ConfigsModule,
         WorksModule,
         BooksModule,
+        UnitsModule,
+        WordsModule,
         ProgressesModule
     ],
     providers: [ImportsService],
