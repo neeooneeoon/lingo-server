@@ -1,6 +1,7 @@
 import { QuestionDocument } from "@entities/question.entity";
 import { QuestionTypeCode } from "@utils/enums";
 import { ListSentenceQuestionCodes, ListWorQuestionCodes } from "@utils/constants";
+import { DistractedChoice } from "@utils/types";
 
 export class QuestionsHelper {
 
@@ -89,7 +90,8 @@ export class QuestionsHelper {
         }
     }
 
-    public getQuestionOutPut(question: QuestionDocument) {
+    public getQuestionOutPut(question: QuestionDocument, activeDistracted: DistractedChoice[]) {
+        const serialization = activeDistracted.map(item => item._id);
         if (ListWorQuestionCodes.includes(question.code)) {
             return {
                 _id: question._id,
@@ -98,7 +100,7 @@ export class QuestionsHelper {
                 interaction: this.getInteraction(question.code),
                 focusWord: question.focus,
                 point: 0,
-                words: question.choices,
+                words: serialization,
                 unitId: "",
                 bookId: "",
                 content: this.getContent(question.code),
@@ -111,8 +113,8 @@ export class QuestionsHelper {
                 interaction: this.getInteraction(question.code),
                 point: 0,
                 focusSentence: question.focus,
-                sentences: question.code == QuestionTypeCode.S10 ? question.choices : [],
-                wrongWords: question.code != QuestionTypeCode.S10 ? question.choices : [],
+                sentences: question.code == QuestionTypeCode.S10 ? serialization : [],
+                wrongWords: question.code != QuestionTypeCode.S10 ? serialization : [],
                 hiddenWord: question.hiddenIndex,
                 checkSentence: question.focus,
                 unitId: "",

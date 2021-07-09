@@ -12,7 +12,7 @@ export class Question {
         _id: String,
         active: Boolean
     }], required: true, default: []})
-    choices: {_id: string, active: Boolean}[];
+    choices: {_id: string, active: boolean}[];
 
     @Prop({type: String, required: true})
     focus: string;

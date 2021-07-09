@@ -65,20 +65,21 @@ export class QuestionHoldersService {
                         choices,
                         focus: baseQuestionId
                     } = inspectedQuestion;
+                    const activeDistracted = choices.filter(choice => choice.active === true);
 
                     if (ListWorQuestionCodes.includes(questionCode)) {
                         baseQuestionId ? setWordIds.add(baseQuestionId) : null;
-                        for (const choice of choices) {
+                        for (const choice of activeDistracted) {
                             setWordIds.add(choice._id);
                         }
                     }
                     else if (ListSentenceQuestionCodes.includes(questionCode)) {
                         baseQuestionId ? setSentenceIds.add(baseQuestionId) : null;
-                        for (const choice of choices) {
+                        for (const choice of activeDistracted) {
                             setSentenceIds.add(choice._id);
                         }
                     }
-                    const questionOutput = this.questionsHelper.getQuestionOutPut(inspectedQuestion);
+                    const questionOutput = this.questionsHelper.getQuestionOutPut(inspectedQuestion, activeDistracted);
                     listQuestions.push(questionOutput);
                 }
             }
@@ -253,10 +254,10 @@ export class QuestionHoldersService {
         if (index === -1) {
             throw new BadRequestException()
         }
-        if (questions[index].choices.includes(input.questionId)) {
-            throw new BadRequestException()
-        }
-        questions[index].choices.push(input.questionId);
+        // if (questions[index].choices.includes(input.questionId)) {
+        //     throw new BadRequestException()
+        // }
+        // questions[index].choices.push(input.questionId);
         await questionHolder.save();
         return true;
     }
