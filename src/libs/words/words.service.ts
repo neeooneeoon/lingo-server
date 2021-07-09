@@ -76,16 +76,23 @@ export class WordsService {
     public searchExactWord(search: string): Observable<WordDocument> {
         return from(
             this.wordModel
-            .findOne({
+            .find({
                 content: search
             })
         )
         .pipe(
-            map((word: WordDocument) => {
-                if (!word) {
+            map((words: WordDocument[]) => {
+                if (!words || words.length === 0) {
                     throw new NotFoundException(`Not found ${search}`);
                 }
-                return word;
+                let result = words[0];
+                for (let i = 0; i < words.length; i++) {
+                    if (words[i].imageRoot !== "" && words[i].imageRoot) {
+                        result = words[i];
+                        break;
+                    }
+                }
+                return result;
             })
         )
     }

@@ -45,6 +45,70 @@ export class QuestionHoldersService {
         }
     }
 
+    public async adminReduceQuestion(input: QuestionReducingInput): Promise<QuestionReducingOutput> {
+        try {
+            const {
+                questions,
+                listAskingQuestionIds,
+                currentUnit
+            } = input;
+
+            const setWordIds: Set<string> = new Set<string>(currentUnit.wordIds);
+            const setSentenceIds: Set<string> = new Set<string>(currentUnit.sentenceIds);
+            const listQuestions: any[] = []
+
+            for (const questionId of listAskingQuestionIds) {
+                const inspectedQuestion = questions.find(question => question._id == questionId);
+                if (inspectedQuestion) {
+                    const {
+                        code: questionCode,
+                        choices,
+                        focus: baseQuestionId
+                    } = inspectedQuestion;
+                    const activeDistracted = choices.filter(choice => choice.active === true);
+
+                    if (ListWorQuestionCodes.includes(questionCode)) {
+                        baseQuestionId ? setWordIds.add(baseQuestionId) : null;
+                        for (const choice of choices) {
+                            setWordIds.add(choice._id);
+                        }
+                    }
+                    else if (ListSentenceQuestionCodes.includes(questionCode)) {
+                        baseQuestionId ? setSentenceIds.add(baseQuestionId) : null;
+                        for (const choice of choices) {
+                            setSentenceIds.add(choice._id);
+                        }
+                    }
+                    const questionOutput = this.questionsHelper.getDetailQuestionOutput(inspectedQuestion);
+                    listQuestions.push(questionOutput);
+                }
+            }
+
+            const wordsInLessonPromise = this.wordsService.findByIds([...setWordIds]);
+            const sentencesInLessonPromise = this.sentencesService.findByIds([...setSentenceIds]);
+            let wordsInLesson: WordInLesson[] = [];
+            let sentencesInLesson: SentenceInLesson[] = [];
+
+            await Promise.all([wordsInLessonPromise, sentencesInLessonPromise])
+                .then(([wordsResult, sentencesResult]) => {
+                    wordsInLesson = wordsResult;
+                    sentencesInLesson = sentencesResult;
+                })
+                .catch(error => {
+                    throw new InternalServerErrorException(error);
+                })
+
+            return {
+                wordsInLesson: wordsInLesson,
+                sentencesInLesson: sentencesInLesson,
+                listQuestions: listQuestions
+            }
+
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
+
     public async reduceByQuestionIds(input: QuestionReducingInput): Promise<QuestionReducingOutput> {
         try {
             const {
@@ -179,7 +243,7 @@ export class QuestionHoldersService {
         return multipleChoiceQuestions
     }
 
-    public async removeChoice(
+    public async toggleChoice(
         input: {
             bookId: string,
             unitId: string,
@@ -205,15 +269,18 @@ export class QuestionHoldersService {
         if (index === -1) {
             throw new BadRequestException()
         }
-        // /console.log(questions[index].choices)
         const choiceIndex = questions[index].choices.findIndex(item => item._id === input.choiceId);
         if (choiceIndex !== -1) {
-            questions[index].choices.splice(choiceIndex, 1);
+            if (questions[index].choices[choiceIndex].active === true) {
+                questions[index].choices[choiceIndex].active = false
+            }
+            else {
+                questions[index].choices[choiceIndex].active = true
+            }
         }
         else {
             throw new BadRequestException()
         }
-        // console.log(questions[index].choices)
         const updateResult = await this.questionHolderModel.updateOne({
             bookId: input.bookId,
             unitId: input.unitId,
@@ -236,7 +303,9 @@ export class QuestionHoldersService {
         levelIndex: number,
         questionId: string,
         choiceId: string,
+        word?: any
     }) {
+        // console.log(input.word)
         // console.log(input)
         const questionHolder = await this.questionHolderModel.findOne({
             bookId: input.bookId,
@@ -254,12 +323,32 @@ export class QuestionHoldersService {
         if (index === -1) {
             throw new BadRequestException()
         }
+        const choiceIds = questions[index].choices.map(item => item._id);
+        if (choiceIds.includes(input.choiceId)) {
+            throw new BadRequestException('already exists');
+        }
+        questions[index].choices.push({
+            _id: input.choiceId,
+            active: true
+        })
         // if (questions[index].choices.includes(input.questionId)) {
         //     throw new BadRequestException()
         // }
         // questions[index].choices.push(input.questionId);
-        await questionHolder.save();
-        return true;
+        const updateResult = await this.questionHolderModel.updateOne({
+            bookId: input.bookId,
+            unitId: input.unitId,
+            level: input.levelIndex,
+        }, 
+        {
+            $set: {
+                questions: questions
+            }
+        });
+        if (updateResult.nModified ===1) {
+            return input.word
+        }
+        throw new InternalServerErrorException()
     }
 
 }

@@ -9,3 +9,10 @@ export class RemoveChoiceDto {
     choiceId: string;
 
 }
+export class AddChoiceDto {
+    @ApiProperty({type: String, required: true})
+    questionId: string;
+
+    @ApiProperty({type: String, required: true})
+    content: string;
+}

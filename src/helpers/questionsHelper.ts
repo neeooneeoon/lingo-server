@@ -1,6 +1,6 @@
 import { QuestionDocument } from "@entities/question.entity";
 import { QuestionTypeCode } from "@utils/enums";
-import { ListSentenceQuestionCodes, ListWorQuestionCodes } from "@utils/constants";
+import { ListWorQuestionCodes } from "@utils/constants";
 import { DistractedChoice } from "@utils/types";
 
 export class QuestionsHelper {
@@ -87,6 +87,40 @@ export class QuestionsHelper {
                 return "Reorder";
             default:
                 return "";
+        }
+    }
+
+    public getDetailQuestionOutput(question: QuestionDocument) {
+        if (ListWorQuestionCodes.includes(question.code)) {
+            return {
+                _id: question._id,
+                code: question.code,
+                skills: [],
+                interaction: this.getInteraction(question.code),
+                focusWord: question.focus,
+                point: 0,
+                words: question.choices,
+                unitId: "",
+                bookId: "",
+                content: this.getContent(question.code),
+            };
+        }
+        else {
+            return {
+                _id: question._id,
+                skills: [],
+                interaction: this.getInteraction(question.code),
+                point: 0,
+                focusSentence: question.focus,
+                sentences: question.code == QuestionTypeCode.S10 ? question.choices : [],
+                wrongWords: question.code != QuestionTypeCode.S10 ? question.choices : [],
+                hiddenWord: question.hiddenIndex,
+                checkSentence: question.focus,
+                unitId: "",
+                bookId: "",
+                content: this.getContent(question.code),
+                code: question.code
+            };
         }
     }
 

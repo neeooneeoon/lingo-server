@@ -43,7 +43,7 @@ export class BookPrivateService {
             if (!currentUnit) {
                 throw new BadRequestException(`Can't find unit ${unitId} in book ${bookId}`);
             }
-            const result = await this.questionHoldersService.reduceByQuestionIds({
+            const result = await this.questionHoldersService.adminReduceQuestion({
                 questions: multipleChoiceQuestions,
                 listAskingQuestionIds: listAskingQuestionIds,
                 currentUnit: currentUnit
