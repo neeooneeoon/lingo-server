@@ -8,8 +8,11 @@ export class Question {
     @Prop({type: String})
     _id: string;
 
-    @Prop({type: [String], required: true, default: []})
-    choices: string[];
+    @Prop({type: [{
+        _id: String,
+        active: Boolean
+    }], required: true, default: []})
+    choices: {_id: string, active: Boolean}[];
 
     @Prop({type: String, required: true})
     focus: string;

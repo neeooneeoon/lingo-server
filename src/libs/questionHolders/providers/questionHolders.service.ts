@@ -69,13 +69,13 @@ export class QuestionHoldersService {
                     if (ListWorQuestionCodes.includes(questionCode)) {
                         baseQuestionId ? setWordIds.add(baseQuestionId) : null;
                         for (const choice of choices) {
-                            setWordIds.add(choice);
+                            setWordIds.add(choice._id);
                         }
                     }
                     else if (ListSentenceQuestionCodes.includes(questionCode)) {
                         baseQuestionId ? setSentenceIds.add(baseQuestionId) : null;
                         for (const choice of choices) {
-                            setSentenceIds.add(choice);
+                            setSentenceIds.add(choice._id);
                         }
                     }
                     const questionOutput = this.questionsHelper.getQuestionOutPut(inspectedQuestion);
@@ -205,7 +205,7 @@ export class QuestionHoldersService {
             throw new BadRequestException()
         }
         // /console.log(questions[index].choices)
-        const choiceIndex = questions[index].choices.findIndex(item => item === input.choiceId);
+        const choiceIndex = questions[index].choices.findIndex(item => item._id === input.choiceId);
         if (choiceIndex !== -1) {
             questions[index].choices.splice(choiceIndex, 1);
         }
