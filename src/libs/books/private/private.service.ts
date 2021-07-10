@@ -70,13 +70,7 @@ export class BookPrivateService {
     levelIndex: number,
   ) {
     try {
-      const listQuestionCode = [
-        QuestionTypeCode.S12,
-        QuestionTypeCode.S10,
-        QuestionTypeCode.S1,
-        QuestionTypeCode.S2,
-        QuestionTypeCode.S7,
-      ];
+      const listQuestionCode = [QuestionTypeCode.S10, QuestionTypeCode.S7];
       const [bookResult, questionsResult] = await Promise.all([
         this.booksService.getBook(bookId),
         this.questionHoldersService.getQuestionHolder({

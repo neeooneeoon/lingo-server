@@ -28,6 +28,7 @@ import { QuestionsHelper } from '@helpers/questionsHelper';
 import { Unit, UnitDocument } from '@entities/unit.entity';
 import { WordDocument } from '@entities/word.entity';
 import { SentenceDocument } from '@entities/sentence.entity';
+import { QuestionTypeCode } from '@utils/enums';
 
 @Injectable()
 export class QuestionHoldersService {
@@ -88,10 +89,22 @@ export class QuestionHoldersService {
             for (const choice of choices) {
               setWordIds.add(choice._id);
             }
-          } else if (ListSentenceQuestionCodes.includes(questionCode)) {
+          } else if (
+            questionCode !== QuestionTypeCode.S12 &&
+            ListSentenceQuestionCodes.includes(questionCode)
+          ) {
             baseQuestionId ? setSentenceIds.add(baseQuestionId) : null;
-            for (const choice of choices) {
-              setSentenceIds.add(choice._id);
+            if (questionCode === QuestionTypeCode.S7) {
+              const lastIndex = baseQuestionId.lastIndexOf('S');
+              const wordBaseId = baseQuestionId.slice(0, lastIndex);
+              setWordIds.add(wordBaseId);
+              for (const choice of choices) {
+                setWordIds.add(choice._id);
+              }
+            } else {
+              for (const choice of choices) {
+                setSentenceIds.add(choice._id);
+              }
             }
           }
           const questionOutput =
