@@ -1,1 +1,1 @@
-export { FollowingsModule } from "./followings.module";
+export { FollowingsModule } from './followings.module';

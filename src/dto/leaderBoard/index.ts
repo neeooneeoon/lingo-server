@@ -1,1 +1,1 @@
-export { Champion } from "./champion.dto";
+export { Champion } from './champion.dto';

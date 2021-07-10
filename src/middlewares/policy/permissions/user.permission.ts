@@ -1,18 +1,16 @@
 import { JwtPayLoad } from '@utils/types/index';
-import { Action } from "@utils/enums";
-import { AppAbility } from "@middlewares/casl/casl-ability.factory";
-import { IPolicyHandler } from "../policy.config";
+import { Action } from '@utils/enums';
+import { AppAbility } from '@middlewares/casl/casl-ability.factory';
+import { IPolicyHandler } from '../policy.config';
 
 export class UserPermission implements IPolicyHandler {
+  private permission: Action;
 
-    private permission: Action;
+  constructor(permission: Action) {
+    this.permission = permission;
+  }
 
-    constructor(permission: Action) {
-        this.permission = permission;
-    }
-
-    handle(ability: AppAbility): boolean {
-        return ability.can(this.permission, JwtPayLoad)
-    }
-    
+  handle(ability: AppAbility): boolean {
+    return ability.can(this.permission, JwtPayLoad);
+  }
 }

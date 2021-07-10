@@ -1,1 +1,1 @@
-export { AdminLoginDto } from "./AdminLogin.dto";
+export { AdminLoginDto } from './AdminLogin.dto';

@@ -1,455 +1,472 @@
 import {
-    BadRequestException,
-    Inject,
-    Injectable,
-    InternalServerErrorException,
-    UnauthorizedException,
-    forwardRef,
-    NotFoundException,
-} from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types, UpdateWriteOpResult } from "mongoose";
-import { User, UserDocument } from "@entities/user.entity";
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+  forwardRef,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types, UpdateWriteOpResult } from 'mongoose';
+import { User, UserDocument } from '@entities/user.entity';
 import { AuthenticationService } from '@authentication/authentication.service';
 import { GoogleService } from './google.service';
-import { ProgressesService } from "@libs/progresses/progresses.service";
+import { ProgressesService } from '@libs/progresses/progresses.service';
 import { UsersHelper } from '@helpers/users.helper';
 import { Rank, Role } from '@utils/enums';
-import { UserProfile, UserLogin, FetchAccountInfo, UpdateUserDto, UpdateUserStatusDto, SaveLessonDto, SearchUser } from "@dto/user";
-import { FacebookService } from "./facebook.service";
-import { JwtPayLoad } from "@utils/types";
-import { AnswerResult } from "@dto/lesson";
-import { WorkInfo } from "@dto/works";
-import { LeaderBoardsService } from "@libs/leaderBoards/leaderBoards.service";
-import { BooksService } from "@libs/books/providers/books.service";
-import { WorksService } from "@libs/works/works.service";
-import { FollowingsService } from "@libs/followings/providers/followings.service";
-import { UserRank } from "@dto/leaderBoard/userRank.dto";
-import { ScoreStatisticsService } from "@libs/scoreStatistics/scoreStatistics.service";
-import { forkJoin, from, Observable } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
-import { ScoreOverviewDto } from "@dto/progress";
-import { FollowingDocument } from "@entities/following.entity";
+import {
+  UserProfile,
+  UserLogin,
+  FetchAccountInfo,
+  UpdateUserDto,
+  UpdateUserStatusDto,
+  SaveLessonDto,
+  SearchUser,
+} from '@dto/user';
+import { FacebookService } from './facebook.service';
+import { JwtPayLoad } from '@utils/types';
+import { AnswerResult } from '@dto/lesson';
+import { WorkInfo } from '@dto/works';
+import { LeaderBoardsService } from '@libs/leaderBoards/leaderBoards.service';
+import { BooksService } from '@libs/books/providers/books.service';
+import { WorksService } from '@libs/works/works.service';
+import { FollowingsService } from '@libs/followings/providers/followings.service';
+import { UserRank } from '@dto/leaderBoard/userRank.dto';
+import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
+import { forkJoin, from, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { ScoreOverviewDto } from '@dto/progress';
+import { FollowingDocument } from '@entities/following.entity';
 
 @Injectable()
 export class UsersService {
-    constructor(
-        @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-        private readonly usersHelper: UsersHelper,
-        private authService: AuthenticationService,
-        private googleService: GoogleService,
-        private facebookService: FacebookService,
-        private progressesService: ProgressesService,
-        private booksService: BooksService,
-        private worksService: WorksService,
-        @Inject(forwardRef(() => LeaderBoardsService)) private leaderBoardsService: LeaderBoardsService,
-        @Inject(forwardRef(() => ScoreStatisticsService)) private scoreStatisticsService: ScoreStatisticsService,
-        private followingsService: FollowingsService,
-    ) { }
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly usersHelper: UsersHelper,
+    private authService: AuthenticationService,
+    private googleService: GoogleService,
+    private facebookService: FacebookService,
+    private progressesService: ProgressesService,
+    private booksService: BooksService,
+    private worksService: WorksService,
+    @Inject(forwardRef(() => LeaderBoardsService))
+    private leaderBoardsService: LeaderBoardsService,
+    @Inject(forwardRef(() => ScoreStatisticsService))
+    private scoreStatisticsService: ScoreStatisticsService,
+    private followingsService: FollowingsService,
+  ) {}
 
-    public async findByIds(ids: Types.ObjectId[] | string[]): Promise<UserDocument[]> {
-        try {
-            const users = await this.userModel.find({
-                _id: {
-                    $in: ids
-                }
-            });
-            return users;
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
+  public async findByIds(
+    ids: Types.ObjectId[] | string[],
+  ): Promise<UserDocument[]> {
+    try {
+      const users = await this.userModel.find({
+        _id: {
+          $in: ids,
+        },
+      });
+      return users;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
+  }
 
+  public async getUserProfile(
+    fetchAccount: FetchAccountInfo,
+  ): Promise<UserLogin> {
+    const { email } = fetchAccount;
 
-    public async getUserProfile(fetchAccount: FetchAccountInfo): Promise<UserLogin> {
-        const {
-            email
-        } = fetchAccount;
+    const existsUser = await this.userModel.findOne({
+      email: email,
+    });
+    if (existsUser) {
+      const useProfile = this.usersHelper.mapToUserProfile(existsUser);
+      const token = this.authService.generateToken({
+        userId: existsUser._id,
+        role: existsUser.role,
+      });
+      const refreshToken = this.authService.generateRefreshToken({
+        userId: existsUser._id,
+        role: existsUser.role,
+      });
+      return {
+        user: useProfile,
+        token: token,
+        refreshToken: refreshToken,
+      };
+    } else {
+      const newUser = await this.userModel.create({
+        ...fetchAccount,
+        grade: 0,
+        xp: 0,
+        level: 0,
+        score: 0,
+        rank: Rank.None,
+        role: Role.Member,
+        loginCount: 0,
+        streak: 0,
+        lastActive: new Date(),
+      });
+      await this.progressesService.createUserProgress({
+        userId: newUser._id,
+        books: [],
+      });
+      const userProfile = this.usersHelper.mapToUserProfile(newUser);
+      const token = this.authService.generateToken({
+        userId: newUser._id,
+        role: newUser.role,
+      });
+      const refreshToken = this.authService.generateRefreshToken({
+        userId: newUser._id,
+        role: newUser.role,
+      });
+      return {
+        user: userProfile,
+        token: token,
+        refreshToken: refreshToken,
+      };
+    }
+  }
 
-        const existsUser = await this.userModel.findOne({
-            email: email
+  public googleRedirect(req: any): any {
+    if (!req.user) {
+      const errorMessage = 'No user from google';
+      return errorMessage;
+    }
+    return {
+      message: 'User information from google',
+      user: req.user,
+    };
+  }
+
+  public async googleLoginHandle(accessToken: string): Promise<UserLogin> {
+    try {
+      const {
+        email,
+        picture: avatar,
+        given_name: givenName,
+        family_name: familyName,
+        name: displayName,
+      } = await this.googleService.getUserData(accessToken);
+
+      if (!email) {
+        throw new BadRequestException('Invalid accessToken');
+      } else {
+        return this.getUserProfile({
+          facebookId: '-1',
+          email: email,
+          givenName: givenName,
+          familyName: familyName,
+          displayName: displayName,
+          avatar: avatar,
         });
-        if (existsUser) {
-            const useProfile = this.usersHelper.mapToUserProfile(existsUser);
-            const token = this.authService.generateToken({
-                userId: existsUser._id,
-                role: existsUser.role
-            });
-            const refreshToken = this.authService.generateRefreshToken({
-                userId: existsUser._id,
-                role: existsUser.role
-            });
-            return {
-                user: useProfile,
-                token: token,
-                refreshToken: refreshToken,
-            }
-        }
-        else {
-            const newUser = await this.userModel.create({
-                ...fetchAccount,
-                grade: 0, xp: 0,
-                level: 0, score: 0,
-                rank: Rank.None, role: Role.Member,
-                loginCount: 0, streak: 0,
-                lastActive: new Date()
-            });
-            await this.progressesService.createUserProgress({
-                userId: newUser._id,
-                books: []
-            });
-            const userProfile = this.usersHelper.mapToUserProfile(newUser);
-            const token = this.authService.generateToken({
-                userId: newUser._id,
-                role: newUser.role
-            });
-            const refreshToken = this.authService.generateRefreshToken({
-                userId: newUser._id,
-                role: newUser.role,
-            });
-            return {
-                user: userProfile,
-                token: token,
-                refreshToken: refreshToken
-            }
-        }
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
+  }
 
+  public async facebookLoginHandle(accessToken: string): Promise<UserLogin> {
+    const facebookProfile = await this.facebookService.getUserData(accessToken);
 
-    public googleRedirect(req: any): any {
-        if (!req.user) {
-            const errorMessage = 'No user from google'
-            return errorMessage
-        }
-        return {
-            message: 'User information from google',
-            user: req.user
-        }
+    if (!facebookProfile) {
+      throw new BadRequestException('This account not exists.');
+    } else {
+      return this.getUserProfile({
+        facebookId: facebookProfile.id,
+        email: facebookProfile.email,
+        givenName: facebookProfile.first_name,
+        familyName: facebookProfile.last_name,
+        displayName: facebookProfile.name,
+        avatar: `http://graph.facebook.com/${facebookProfile.id}/picture?type=square`,
+      });
     }
+  }
 
-
-
-    public async googleLoginHandle(accessToken: string): Promise<UserLogin> {
-        try {
-            const {
-                email,
-                picture: avatar,
-                given_name: givenName,
-                family_name: familyName,
-                name: displayName,
-            } = await this.googleService.getUserData(accessToken);
-
-            if (!email) {
-                throw new BadRequestException('Invalid accessToken');
-            }
-            else {
-                return this.getUserProfile({
-                    facebookId: "-1",
-                    email: email,
-                    givenName: givenName,
-                    familyName: familyName,
-                    displayName: displayName,
-                    avatar: avatar
-                });
-            }
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
+  public async queryMe(userId: Types.ObjectId | string): Promise<UserProfile> {
+    try {
+      const user = await this.userModel.findById(userId);
+      if (user) {
+        return this.usersHelper.mapToUserProfile(user);
+      }
+    } catch (error) {
+      throw new InternalServerErrorException();
     }
+  }
 
-
-    public async facebookLoginHandle(accessToken: string): Promise<UserLogin> {
-        const facebookProfile = await this.facebookService.getUserData(accessToken);
-
-        if (!facebookProfile) {
-            throw new BadRequestException('This account not exists.');
-        }
-        else {
-            return this.getUserProfile({
-                facebookId: facebookProfile.id,
-                email: facebookProfile.email,
-                givenName: facebookProfile.first_name,
-                familyName: facebookProfile.last_name,
-                displayName: facebookProfile.name,
-                avatar: `http://graph.facebook.com/${facebookProfile.id}/picture?type=square`
-            });
-        }
+  public async updateUserProfile(
+    userId: Types.ObjectId | string,
+    data: UpdateUserDto,
+  ): Promise<UserProfile> {
+    try {
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        userId,
+        { ...data },
+        { new: true },
+      );
+      return this.usersHelper.mapToUserProfile(updatedUser);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
+  }
 
+  public async updateUserStatus(input: UpdateUserStatusDto): Promise<void> {
+    try {
+      const { user, workInfo, isFinishLevel, point } = input;
 
-    public async queryMe(userId: Types.ObjectId | string): Promise<UserProfile> {
-        try {
-            const user = await this.userModel.findById(userId);
-            if (user) {
-                return this.usersHelper.mapToUserProfile(user);
-            }
-        } catch (error) {
-            throw new InternalServerErrorException
+      let streak = user.streak;
+      let loginCount = user.loginCount;
+      const xp = user.xp;
+
+      const newActive = workInfo.timeStart;
+      const lastActive = user.lastActive;
+
+      const newActiveDay = Number(newActive.toLocaleDateString().split('/')[1]);
+      const lastActiveDay = Number(
+        lastActive.toLocaleDateString().split('/')[1],
+      );
+      const checker = newActiveDay - lastActiveDay;
+
+      if (checker === 1) {
+        streak++;
+        loginCount++;
+      } else if (checker > 1) {
+        streak = 0;
+        loginCount++;
+      } else if (checker === 0) {
+        if (streak === 0 && loginCount === 0) {
+          streak++;
+          loginCount++;
         }
-    }
+      }
 
-    public async updateUserProfile(userId: Types.ObjectId | string, data: UpdateUserDto): Promise<UserProfile> {
-        try {
-            const updatedUser = await this.userModel.findByIdAndUpdate(
-                userId,
-                { ...data },
-                { new: true }
-            );
-            return this.usersHelper.mapToUserProfile(updatedUser);
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
-    }
-
-    public async updateUserStatus(input: UpdateUserStatusDto): Promise<void> {
-        try {
-            const {
-                user,
-                workInfo,
-                isFinishLevel,
-                point
-            } = input;
-
-            let streak = user.streak;
-            let loginCount = user.loginCount;
-            const xp = user.xp;
-
-            const newActive = workInfo.timeStart;
-            const lastActive = user.lastActive;
-
-            const newActiveDay = Number(newActive.toLocaleDateString().split("/")[1]);
-            const lastActiveDay = Number(lastActive.toLocaleDateString().split("/")[1]);
-            const checker = newActiveDay - lastActiveDay;
-
-            if (checker === 1) {
-                streak++;
-                loginCount++;
-            }
-            else if (checker > 1) {
-                streak = 0;
-                loginCount++;
-            }
-            else if (checker === 0) {
-                if (streak === 0 && loginCount === 0) {
-                    streak++;
-                    loginCount++;
-                }
-            }
-
-            if (isFinishLevel) {
-                await this.userModel.updateOne(
-                    { _id: user._id },
-                    {
-                        streak: streak,
-                        lastActive: workInfo.timeStart,
-                        loginCount: loginCount,
-                        level: user.level + 1,
-                        score: user.score + 1,
-                        xp: xp + point
-                    }
-                )
-            }
-            else {
-                await this.userModel.updateOne(
-                    { _id: user._id },
-                    {
-                        streak: streak,
-                        lastActive: workInfo.timeStart,
-                        loginCount: loginCount,
-                        score: user.score + 1,
-                        xp: xp + point
-                    }
-                )
-            }
-        } catch (error) {
-            throw new InternalServerErrorException(error);
-        }
-    }
-
-    public async saveUserLesson(userCtx: JwtPayLoad, input: SaveLessonDto): Promise<string> {
-        const userProfile = await this.userModel.findById(userCtx.userId);
-        if (!userProfile) {
-            throw new UnauthorizedException('Not authorized');
-        }
-        const lessonResult: AnswerResult[] = input.results.map(result => ({ ...result, status: false }));
-        const {
-            doneQuestions,
-            timeEnd,
-            timeStart,
-            bookId,
-            unitId,
-            levelIndex,
-            lessonIndex
-        } = input;
-        const userWork: WorkInfo = {
-            doneQuestions: doneQuestions,
-            timeStart: new Date(timeStart),
-            timeEnd: new Date(timeEnd)
-        }
-
-        const lessonTree = await this.booksService.getLessonTree({
-            bookId: bookId,
-            unitId: unitId,
-            levelIndex: levelIndex,
-            lessonIndex: lessonIndex
-        });
-        if (!lessonTree) {
-            throw new NotFoundException(`Can't find lessonTree with ${input}`);
-        }
-        const saveUserProgressPromise = this.progressesService.saveUserProgress(userCtx.userId, lessonTree, userWork);
-        const saveUserWorkPromise = this.worksService.saveUserWork(userProfile, lessonTree, userWork, lessonResult);
-
-        let isPassedLevel: boolean = false;
-        let point: number = 0;
-        await Promise.all([saveUserProgressPromise, saveUserWorkPromise])
-            .then(([promiseOneResult, promiseTwoResult]) => {
-                isPassedLevel = promiseOneResult;
-                point = promiseTwoResult;
-            })
-            .catch(error => {
-                throw new InternalServerErrorException(error);
-            })
-        await this.scoreStatisticsService.addXpAfterSaveLesson(point, userCtx.userId);
-        const updateUserStatusPromise = this.updateUserStatus({
-            user: userProfile,
-            workInfo: userWork,
-            isFinishLevel: isPassedLevel,
-            point: point
-        });
-        const updateUserPointPromise = this.leaderBoardsService.updateUserPointDto(userProfile, point);
-        await Promise.all([updateUserStatusPromise, updateUserPointPromise])
-            .catch(error => {
-                throw new InternalServerErrorException(error);
-            });
-        return "save user work";
-    }
-    public searchUser(search: string, userId: string): Observable<SearchUser[]> {
-        search = search.trim();
-        if (!search) {
-            throw new BadRequestException('Name or email can not be blank');
-        }
-        return forkJoin([
-            this.followingsService.allFollowings(userId),
-            this.userModel.find({
-                $or: [
-                    { displayName: { $regex: '.*' + search + '.*' } },
-                    { email: { $regex: '.*' + search + '.*' } }
-                ],
-                _id: {
-                    $ne: userId
-                },
-                role: {
-                    $ne: Role.Admin
-                }
-            })
-        ]).pipe(
-            map(([allFollowings, users]: [FollowingDocument[], UserDocument[]]) => {
-                const followUsers = allFollowings.map(item => String(item.followUser));
-                return this.usersHelper.mapToFollowingResult(followUsers, users);
-            })
+      if (isFinishLevel) {
+        await this.userModel.updateOne(
+          { _id: user._id },
+          {
+            streak: streak,
+            lastActive: workInfo.timeStart,
+            loginCount: loginCount,
+            level: user.level + 1,
+            score: user.score + 1,
+            xp: xp + point,
+          },
         );
+      } else {
+        await this.userModel.updateOne(
+          { _id: user._id },
+          {
+            streak: streak,
+            lastActive: workInfo.timeStart,
+            loginCount: loginCount,
+            score: user.score + 1,
+            xp: xp + point,
+          },
+        );
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
+  }
 
-    public async getAllTimeUserXpList(): Promise<UserRank[]> {
-        const userRankList = await this.userModel.find({ role: { $ne: Role.Admin } }).sort({ xp: -1 }).select({ xp: 1, displayName: 1, avatar: 1 });
-        let xpArr: UserRank[] = [];
-        if (!userRankList) {
-            throw new BadRequestException("Can not find users");
+  public async saveUserLesson(
+    userCtx: JwtPayLoad,
+    input: SaveLessonDto,
+  ): Promise<string> {
+    const userProfile = await this.userModel.findById(userCtx.userId);
+    if (!userProfile) {
+      throw new UnauthorizedException('Not authorized');
+    }
+    const lessonResult: AnswerResult[] = input.results.map((result) => ({
+      ...result,
+      status: false,
+    }));
+    const {
+      doneQuestions,
+      timeEnd,
+      timeStart,
+      bookId,
+      unitId,
+      levelIndex,
+      lessonIndex,
+    } = input;
+    const userWork: WorkInfo = {
+      doneQuestions: doneQuestions,
+      timeStart: new Date(timeStart),
+      timeEnd: new Date(timeEnd),
+    };
+
+    const lessonTree = await this.booksService.getLessonTree({
+      bookId: bookId,
+      unitId: unitId,
+      levelIndex: levelIndex,
+      lessonIndex: lessonIndex,
+    });
+    if (!lessonTree) {
+      throw new NotFoundException(`Can't find lessonTree with ${input}`);
+    }
+    const saveUserProgressPromise = this.progressesService.saveUserProgress(
+      userCtx.userId,
+      lessonTree,
+      userWork,
+    );
+    const saveUserWorkPromise = this.worksService.saveUserWork(
+      userProfile,
+      lessonTree,
+      userWork,
+      lessonResult,
+    );
+
+    let isPassedLevel: boolean = false;
+    let point: number = 0;
+    await Promise.all([saveUserProgressPromise, saveUserWorkPromise])
+      .then(([promiseOneResult, promiseTwoResult]) => {
+        isPassedLevel = promiseOneResult;
+        point = promiseTwoResult;
+      })
+      .catch((error) => {
+        throw new InternalServerErrorException(error);
+      });
+    await this.scoreStatisticsService.addXpAfterSaveLesson(
+      point,
+      userCtx.userId,
+    );
+    const updateUserStatusPromise = this.updateUserStatus({
+      user: userProfile,
+      workInfo: userWork,
+      isFinishLevel: isPassedLevel,
+      point: point,
+    });
+    const updateUserPointPromise = this.leaderBoardsService.updateUserPointDto(
+      userProfile,
+      point,
+    );
+    await Promise.all([updateUserStatusPromise, updateUserPointPromise]).catch(
+      (error) => {
+        throw new InternalServerErrorException(error);
+      },
+    );
+    return 'save user work';
+  }
+  public searchUser(search: string, userId: string): Observable<SearchUser[]> {
+    search = search.trim();
+    if (!search) {
+      throw new BadRequestException('Name or email can not be blank');
+    }
+    return forkJoin([
+      this.followingsService.allFollowings(userId),
+      this.userModel.find({
+        $or: [
+          { displayName: { $regex: '.*' + search + '.*' } },
+          { email: { $regex: '.*' + search + '.*' } },
+        ],
+        _id: {
+          $ne: userId,
+        },
+        role: {
+          $ne: Role.Admin,
+        },
+      }),
+    ]).pipe(
+      map(([allFollowings, users]: [FollowingDocument[], UserDocument[]]) => {
+        const followUsers = allFollowings.map((item) =>
+          String(item.followUser),
+        );
+        return this.usersHelper.mapToFollowingResult(followUsers, users);
+      }),
+    );
+  }
+
+  public async getAllTimeUserXpList(): Promise<UserRank[]> {
+    const userRankList = await this.userModel
+      .find({ role: { $ne: Role.Admin } })
+      .sort({ xp: -1 })
+      .select({ xp: 1, displayName: 1, avatar: 1 });
+    let xpArr: UserRank[] = [];
+    if (!userRankList) {
+      throw new BadRequestException('Can not find users');
+    }
+    for (let i = 0; i < userRankList.length; i++) {
+      const item = userRankList[i];
+      xpArr.push({
+        orderNumber: i + 1,
+        displayName: item.displayName,
+        avatar: item.avatar,
+        userId: item._id,
+        xp: item.xp,
+        isCurrentUser: false,
+      });
+    }
+    return xpArr;
+  }
+
+  public getAllUsers(): Observable<UserDocument[]> {
+    const users$ = from(this.userModel.find());
+    return users$;
+  }
+
+  public findUser(userId: string): Observable<UserProfile> {
+    const profile$ = from(this.userModel.findById(userId)).pipe(
+      map((user) => {
+        if (!user) {
+          throw new BadRequestException(`Can't find user ${userId}`);
         }
-        for (let i = 0; i < userRankList.length; i++) {
-            const item = userRankList[i];
-            xpArr.push({
-                orderNumber: i + 1,
-                displayName: item.displayName,
-                avatar: item.avatar,
-                userId: item._id,
-                xp: item.xp,
-                isCurrentUser: false
-            })
+        const userProfile = this.usersHelper.mapToUserProfile(user);
+        return userProfile;
+      }),
+    );
+    return profile$;
+  }
+
+  public changeUserStreak(userId: string): Observable<UpdateWriteOpResult> {
+    const user$ = this.findUser(userId);
+    const records$ =
+      this.scoreStatisticsService.findScoreStatisticRecords(userId);
+
+    const update$ = forkJoin([user$, records$]).pipe(
+      switchMap(([userProfile, records]) => {
+        if (records.length === 0) {
+          return from(
+            this.userModel.updateOne(
+              { _id: Types.ObjectId(userId) },
+              {
+                $set: {
+                  streak: 0,
+                },
+              },
+            ),
+          );
+        } else {
+          return from(
+            this.userModel.updateOne(
+              { _id: Types.ObjectId(userId) },
+              {
+                $set: {
+                  streak: userProfile.streak + 1,
+                },
+              },
+            ),
+          );
         }
-        return xpArr;
-    }
+      }),
+    );
+    return update$;
+  }
 
-    public getAllUsers(): Observable<UserDocument[]> {
-        const users$ = from(
-            this.userModel
-                .find()
-        )
-        return users$;
-    }
-
-    public findUser(userId: string): Observable<UserProfile> {
-        const profile$ = from(
-            this.userModel
-                .findById(userId)
-        )
-            .pipe(
-                map(user => {
-                    if (!user) {
-                        throw new BadRequestException(`Can't find user ${userId}`);
-                    }
-                    const userProfile = this.usersHelper.mapToUserProfile(user);
-                    return userProfile;
-                })
-            );
-        return profile$;
-    }
-
-    public changeUserStreak(userId: string): Observable<UpdateWriteOpResult> {
-        const user$ = this.findUser(userId);
-        const records$ = this.scoreStatisticsService.findScoreStatisticRecords(userId);
-
-        const update$ = forkJoin([
-            user$,
-            records$
-        ])
-            .pipe(
-                switchMap(([userProfile, records]) => {
-                    if (records.length === 0) {
-                        return from(
-                            this.userModel
-                                .updateOne(
-                                    { _id: Types.ObjectId(userId) },
-                                    {
-                                        $set: {
-                                            streak: 0,
-                                        }
-                                    }
-                                )
-                        )
-                    }
-                    else {
-                        return from(
-                            this.userModel
-                                .updateOne(
-                                    { _id: Types.ObjectId(userId) },
-                                    {
-                                        $set: {
-                                            streak: userProfile.streak + 1,
-                                        }
-                                    }
-                                )
-                        )
-                    }
-                })
-            );
-        return update$;
-    }
-
-    public scoresOverview(userId: string): Observable<ScoreOverviewDto> {
-        const overview$: Observable<ScoreOverviewDto> = forkJoin([
-            this.findUser(userId),
-            this.progressesService.getAllUserScoresInProgress(userId)
-        ])
-            .pipe(
-                map(([profile, allScore]) => {
-                    return {
-                        ...allScore,
-                        xp: profile.xp,
-                        streak: profile.streak
-                    }
-                })
-            );
-        return overview$;
-    }
+  public scoresOverview(userId: string): Observable<ScoreOverviewDto> {
+    const overview$: Observable<ScoreOverviewDto> = forkJoin([
+      this.findUser(userId),
+      this.progressesService.getAllUserScoresInProgress(userId),
+    ]).pipe(
+      map(([profile, allScore]) => {
+        return {
+          ...allScore,
+          xp: profile.xp,
+          streak: profile.streak,
+        };
+      }),
+    );
+    return overview$;
+  }
 }

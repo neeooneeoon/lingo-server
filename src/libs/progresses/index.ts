@@ -1,1 +1,1 @@
-export { ProgressesModule } from "./progresses.module";
+export { ProgressesModule } from './progresses.module';

@@ -1,10 +1,10 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginBodyDto {
-    @ApiProperty({
-        type: String,
-        required: true,
-        description: "Access token"
-    })
-    access_token: string;
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: 'Access token',
+  })
+  access_token: string;
 }

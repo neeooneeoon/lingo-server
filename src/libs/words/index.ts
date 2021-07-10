@@ -1,1 +1,1 @@
-export { WordsModule } from "./words.module";
+export { WordsModule } from './words.module';
