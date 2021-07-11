@@ -29,6 +29,9 @@ import { Unit, UnitDocument } from '@entities/unit.entity';
 import { WordDocument } from '@entities/word.entity';
 import { SentenceDocument } from '@entities/sentence.entity';
 import { QuestionTypeCode } from '@utils/enums';
+import { from, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { BackupsService } from '@libs/backups/providers/backups.service';
 
 @Injectable()
 export class QuestionHoldersService {
@@ -246,60 +249,59 @@ export class QuestionHoldersService {
     return multipleChoiceQuestions;
   }
 
-  public async toggleChoice(input: {
+  public toggleChoice(input: {
     bookId: string;
     unitId: string;
     levelIndex: number;
     questionId: string;
     choiceId: string;
-  }) {
-    // console.log(input)
-    const questionHolder = await this.questionHolderModel.findOne({
-      bookId: input.bookId,
-      unitId: input.unitId,
-      level: input.levelIndex,
-    });
-    if (!questionHolder) {
-      throw new BadRequestException();
-    }
-    const questions = questionHolder.questions;
-    if (questions.length === 0) {
-      throw new BadRequestException();
-    }
-    const index = questions.findIndex(
-      (question) => question._id === input.questionId,
-    );
-    if (index === -1) {
-      throw new BadRequestException();
-    }
-    const choiceIndex = questions[index].choices.findIndex(
-      (item) => item._id === input.choiceId,
-    );
-    if (choiceIndex !== -1) {
-      questions[index].choices[choiceIndex].active =
-        questions[index].choices[choiceIndex].active !== true;
-    } else {
-      throw new BadRequestException();
-    }
-    const updateResult = await this.questionHolderModel.updateOne(
-      {
+  }): Observable<boolean> {
+    return from(
+      this.questionHolderModel.findOne({
         bookId: input.bookId,
         unitId: input.unitId,
         level: input.levelIndex,
-      },
-      {
-        $set: {
-          questions: questions,
-        },
-      },
+      }),
+    ).pipe(
+      map((questionHolder) => {
+        if (!questionHolder)
+          throw new BadRequestException('Not found questionHolder');
+        const questions = questionHolder.questions;
+        if (questions.length === 0)
+          throw new BadRequestException('Set questions is empty.');
+        const questionIndex = questions.findIndex(
+          (question) => question._id === input.questionId,
+        );
+        if (questionIndex === -1)
+          throw new BadRequestException('Not found question');
+        const choiceIndex = questions[questionIndex].choices.findIndex(
+          (choice) => choice._id === input.choiceId,
+        );
+        if (choiceIndex === -1)
+          throw new BadRequestException('Not found choice');
+        const status = questions[questionIndex].choices[choiceIndex].active;
+        questions[questionIndex].choices[choiceIndex].active = status !== true;
+        return questions;
+      }),
+      switchMap((questions) => {
+        return this.questionHolderModel.updateOne(
+          {
+            bookId: input.bookId,
+            unitId: input.unitId,
+            level: input.levelIndex,
+          },
+          {
+            $set: {
+              questions: questions,
+            },
+          },
+        );
+      }),
+      map((updateResult) => updateResult.nModified === 1),
     );
-    if (updateResult.nModified === 1) {
-      return true;
-    }
-    throw new InternalServerErrorException();
   }
 
-  public async addChoice(input: {
+  public addChoice(input: {
     bookId: string;
     unitId: string;
     levelIndex: number;
@@ -307,51 +309,58 @@ export class QuestionHoldersService {
     choiceId: string;
     word?: Partial<WordDocument>;
     sentence?: Partial<SentenceDocument>;
-  }) {
-    const questionHolder = await this.questionHolderModel.findOne({
-      bookId: input.bookId,
-      unitId: input.unitId,
-      level: input.levelIndex,
-    });
-    if (!questionHolder) {
-      throw new BadRequestException();
-    }
-    const questions = questionHolder.questions;
-    if (questions.length === 0) {
-      throw new BadRequestException();
-    }
-    const index = questions.findIndex(
-      (question) => question._id === input.questionId,
-    );
-    if (index === -1) {
-      throw new BadRequestException();
-    }
-    const choiceIds = questions[index].choices.map((item) => item._id);
-    if (choiceIds.includes(input.choiceId)) {
-      throw new BadRequestException('already exists');
-    }
-    questions[index].choices.push({
-      _id: input.choiceId,
-      active: true,
-    });
-    const updateResult = await this.questionHolderModel.updateOne(
-      {
+  }): Observable<{
+    word: Partial<WordDocument>;
+    sentence: Partial<SentenceDocument>;
+  }> {
+    return from(
+      this.questionHolderModel.findOne({
         bookId: input.bookId,
         unitId: input.unitId,
         level: input.levelIndex,
-      },
-      {
-        $set: {
-          questions: questions,
-        },
-      },
+      }),
+    ).pipe(
+      map((questionHolder) => {
+        if (!questionHolder)
+          throw new BadRequestException('Not found questionHolder.');
+        const questions = questionHolder.questions;
+        if (questions.length === 0)
+          throw new BadRequestException('Set questions is empty.');
+        const questionIndex = questions.findIndex(
+          (question) => question._id === input.questionId,
+        );
+        if (questionIndex === -1)
+          throw new BadRequestException('Not found question.');
+        const choiceIds = questions[questionIndex].choices.map(
+          (choice) => choice._id,
+        );
+        if (choiceIds.includes(input.choiceId))
+          throw new BadRequestException('Already in choices.');
+        questions[questionIndex].choices.push({
+          _id: input.choiceId,
+          active: true,
+        });
+        return questions;
+      }),
+      switchMap((questions) => {
+        return this.questionHolderModel.updateOne(
+          {
+            bookId: input.bookId,
+            unitId: input.unitId,
+            level: input.levelIndex,
+          },
+          {
+            $set: {
+              questions: questions,
+            },
+          },
+        );
+      }),
+      map((updateResult) => {
+        if (updateResult.nModified === 1)
+          return { word: input.word, sentence: input.sentence };
+        throw new BadRequestException('Update failed.');
+      }),
     );
-    if (updateResult.nModified === 1) {
-      return {
-        word: input.word,
-        sentence: input.sentence,
-      };
-    }
-    throw new InternalServerErrorException();
   }
 }

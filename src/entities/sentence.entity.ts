@@ -71,10 +71,10 @@ export class Sentence {
     },
   ];
 
-  @Prop({ type: String, required: true, default: '' })
+  @Prop({ type: String, required: false, default: '' })
   questionSection: string;
 
-  @Prop({ type: String, required: true, default: '' })
+  @Prop({ type: String, required: false, default: '' })
   contextSection: string;
 
   @Prop({ type: Number, required: true, default: 0 })

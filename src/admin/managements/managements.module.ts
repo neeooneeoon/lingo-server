@@ -6,9 +6,16 @@ import { Module } from '@nestjs/common';
 import { QuestionsController } from './controllers/questions.controller';
 import { SentencesController } from './controllers/sentences.controller';
 import { WordsController } from './controllers/words.controller';
+import { BackupsModule } from '@libs/backups';
 
 @Module({
-  imports: [BooksModule, WordsModule, SentencesModule, QuestionHoldersModule],
+  imports: [
+    BooksModule,
+    WordsModule,
+    SentencesModule,
+    QuestionHoldersModule,
+    BackupsModule,
+  ],
   controllers: [QuestionsController, WordsController, SentencesController],
   exports: [],
 })

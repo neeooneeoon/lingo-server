@@ -86,29 +86,33 @@ export class SentencesService {
         .select(unSelect),
     );
   }
-  public async addNewSentence(
+  public addNewSentence(
     input: CreateSentenceDto,
-  ): Promise<SentenceDocument> {
+  ): Observable<SentenceDocument> {
     const { content, meaning, audio } = input;
     const trimMeaning = meaning.trim().normalize('NFKD');
     const trimContent = content.trim().normalize('NFKD');
     const uuid = randomUUID();
-    return this.sentenceModel.create({
-      isConversation: false,
-      _id: uuid,
-      bookNId: -1,
-      unitNId: -1,
-      position: 0,
-      baseId: uuid,
-      content: trimContent,
-      tempTranslates: [],
-      wordBaseIndex: -1,
-      translate: [],
-      audio: audio ? audio : '',
-      contentSplit: [],
-      translateSplit: [],
-      translates: trimMeaning,
-      replaceWords: [],
-    });
+    return from(
+      this.sentenceModel.create({
+        isConversation: false,
+        _id: uuid,
+        bookNId: -1,
+        unitNId: -1,
+        position: 0,
+        baseId: uuid,
+        content: trimContent,
+        tempTranslates: [],
+        wordBaseIndex: -1,
+        translate: trimMeaning,
+        audio: audio ? audio : '',
+        contentSplit: [],
+        translateSplit: [],
+        translates: [trimMeaning],
+        replaceWords: [],
+        lowerBound: 0,
+        upperBound: 0,
+      }),
+    );
   }
 }
