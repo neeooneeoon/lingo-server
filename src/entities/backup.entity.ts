@@ -22,8 +22,8 @@ export class Backup {
   @Prop({ type: String, required: true })
   content: string;
 
-  @Prop({ type: String, required: true })
-  meaning: string;
+  @Prop({ type: String, required: false, default: '' })
+  meaning?: string;
 
   @Prop({ type: String, required: false, default: '' })
   imageRoot?: string;

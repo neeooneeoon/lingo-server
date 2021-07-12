@@ -318,8 +318,8 @@ export class UsersService {
       lessonResult,
     );
 
-    let isPassedLevel: boolean = false;
-    let point: number = 0;
+    let isPassedLevel = false;
+    let point = 0;
     await Promise.all([saveUserProgressPromise, saveUserWorkPromise])
       .then(([promiseOneResult, promiseTwoResult]) => {
         isPassedLevel = promiseOneResult;
@@ -383,7 +383,7 @@ export class UsersService {
       .find({ role: { $ne: Role.Admin } })
       .sort({ xp: -1 })
       .select({ xp: 1, displayName: 1, avatar: 1 });
-    let xpArr: UserRank[] = [];
+    const xpArr: UserRank[] = [];
     if (!userRankList) {
       throw new BadRequestException('Can not find users');
     }

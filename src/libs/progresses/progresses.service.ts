@@ -121,7 +121,7 @@ export class ProgressesService {
         isLastLesson,
       } = lessonTree;
 
-      let userProgress = await this.getUserProgress(userId);
+      const userProgress = await this.getUserProgress(userId);
       if (!userProgress) {
         throw new BadRequestException(`Can't find progress user ${userId}`);
       }
@@ -147,7 +147,7 @@ export class ProgressesService {
         progressBook = newProgressBook;
       }
       const unitInBook = book.units.find((unit) => unit._id === unitId);
-      let progressUnit = progressBook.units.find(
+      const progressUnit = progressBook.units.find(
         (item) => item.unitId === lessonTree.unitId,
       );
       if (!progressUnit) {
@@ -175,7 +175,7 @@ export class ProgressesService {
         };
         progressBook.units.push(newProgressUnit);
       } else {
-        let progressLevel = progressUnit.levels.find(
+        const progressLevel = progressUnit.levels.find(
           (item) => item.levelIndex === levelIndex,
         );
         if (!progressLevel) {
@@ -308,7 +308,7 @@ export class ProgressesService {
     );
     return score$;
   }
-  public async isExist(): Promise<Boolean> {
+  public async isExist(): Promise<boolean> {
     const progresses = await this.progressModel.findOne({});
     return progresses ? true : false;
   }

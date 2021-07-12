@@ -1,7 +1,6 @@
 import { Model, Types } from 'mongoose';
 import { Work, WorkDocument } from '@entities/work.entity';
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -94,8 +93,8 @@ export class WorksService {
       let unitIndex = userWork.units.findIndex(
         (item) => item.unitId === unitId,
       );
-      let levelWorkIndex: number = 0;
-      let lessonWorkIndex: number = 0;
+      let levelWorkIndex = 0;
+      let lessonWorkIndex = 0;
 
       if (unitIndex === -1) {
         const newUnit: UnitWork = {
@@ -222,7 +221,7 @@ export class WorksService {
       throw new InternalServerErrorException(error);
     }
   }
-  public async isExist(): Promise<Boolean> {
+  public async isExist(): Promise<boolean> {
     const works = this.workModel.findOne({});
     return works ? true : false;
   }

@@ -155,7 +155,7 @@ export class ScoreStatisticsService {
     const currentUserWeekStatistic = promises[3];
     //console.log(weekStatistic);
 
-    let result: Statistic = {
+    const result: Statistic = {
       currentUserXp: -1,
       followUserXp: -1,
       followUserXpStatistic: followUserWeekStatistic,
@@ -179,7 +179,7 @@ export class ScoreStatisticsService {
 
   private async getTotalXp(userId: string, filter?: any): Promise<UserRank[]> {
     try {
-      let xpArr: UserRank[] = [];
+      const xpArr: UserRank[] = [];
       let tempArr: ScoreStatisticDocument[];
       if (filter) {
         tempArr = await this.scoreStatisticModel
@@ -201,9 +201,9 @@ export class ScoreStatisticsService {
       });
 
       let prevUser: UserDocument = tempArr[0].user as unknown as UserDocument;
-      let totalXp: number = 0;
-      for (let i: number = 0; i < tempArr.length; i++) {
-        let item = tempArr[i];
+      let totalXp = 0;
+      for (let i = 0; i < tempArr.length; i++) {
+        const item = tempArr[i];
         const currentUser = item.user as unknown as UserDocument;
 
         if (currentUser._id.toHexString() == prevUser._id.toHexString()) {
@@ -281,14 +281,14 @@ export class ScoreStatisticsService {
     endTime: string,
   ): Promise<number[]> {
     const statisticLength = 7;
-    let xpStatistic = await this.scoreStatisticModel.find({
+    const xpStatistic = await this.scoreStatisticModel.find({
       user: new Types.ObjectId(userId),
       createdAt: {
         $gte: new Date(startTime),
         $lte: new Date(endTime),
       },
     });
-    let xpStatisticResult: number[] = new Array(statisticLength).fill(0);
+    const xpStatisticResult: number[] = new Array(statisticLength).fill(0);
     for (const item of xpStatistic) {
       xpStatisticResult[dayjs(item.createdAt).get('day')] = item.xp;
     }

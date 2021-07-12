@@ -35,7 +35,7 @@ export class AnswerService {
     question: QuestionDocument,
   ): Promise<boolean> {
     try {
-      let isCorrect: boolean = false;
+      let isCorrect = false;
       const { code, focus: wordId } = question;
       const { answer } = result;
       switch (code) {
@@ -84,7 +84,7 @@ export class AnswerService {
     question: QuestionDocument,
   ): Promise<boolean> {
     try {
-      let isCorrect: boolean = false;
+      let isCorrect = false;
       const { code, focus: sentenceId, hiddenIndex } = question;
       const { answer } = result;
       const deepRegex = new RegExp(/[\!\.\:\;\~\`\_\?\,\”\’\‘\“\"\’\'\ \-]/g);
@@ -174,7 +174,7 @@ export class AnswerService {
     question: QuestionDocument,
   ): Promise<boolean> {
     try {
-      let isCorrect: boolean = false;
+      let isCorrect = false;
       if (ListWorQuestionCodes.includes(question.code)) {
         isCorrect = await this.checkAnswerWordQuestion(result, question);
       } else {

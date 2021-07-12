@@ -90,7 +90,7 @@ export class SentencesService {
     input: CreateSentenceDto,
   ): Observable<SentenceDocument> {
     const { content, meaning, audio } = input;
-    const trimMeaning = meaning.trim().normalize('NFKD');
+    const trimMeaning = meaning?.trim()?.normalize('NFKD');
     const trimContent = content.trim().normalize('NFKD');
     const uuid = randomUUID();
     return from(
@@ -104,7 +104,7 @@ export class SentencesService {
         content: trimContent,
         tempTranslates: [],
         wordBaseIndex: -1,
-        translate: trimMeaning,
+        translate: trimMeaning ? trimMeaning : 'null',
         audio: audio ? audio : '',
         contentSplit: [],
         translateSplit: [],

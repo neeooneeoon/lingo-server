@@ -7,7 +7,6 @@ import * as googleKey from '@utils/keys/googleOauth.key.json';
 import { JWT } from 'googleapis-common';
 @Injectable()
 export class GoogleService {
-  constructor() {}
   public async createSheets(
     sheets: sheets_v4.Sheets,
     spreadsheetId: string,

@@ -1,6 +1,6 @@
 import { AdminLoginDto } from '@dto/admin';
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 
 @ApiTags('Admin')

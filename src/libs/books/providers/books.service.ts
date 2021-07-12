@@ -332,7 +332,7 @@ export class BooksService {
     }
   }
 
-  public async isExist(): Promise<Boolean> {
+  public async isExist(): Promise<boolean> {
     const books = await this.bookModel.findOne({});
     return books ? true : false;
   }

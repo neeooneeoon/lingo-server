@@ -31,7 +31,6 @@ import { SentenceDocument } from '@entities/sentence.entity';
 import { QuestionTypeCode } from '@utils/enums';
 import { from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { BackupsService } from '@libs/backups/providers/backups.service';
 
 @Injectable()
 export class QuestionHoldersService {
@@ -93,21 +92,12 @@ export class QuestionHoldersService {
               setWordIds.add(choice._id);
             }
           } else if (
+            questionCode !== QuestionTypeCode.S7 &&
             questionCode !== QuestionTypeCode.S12 &&
             ListSentenceQuestionCodes.includes(questionCode)
           ) {
-            baseQuestionId ? setSentenceIds.add(baseQuestionId) : null;
-            if (questionCode === QuestionTypeCode.S7) {
-              const lastIndex = baseQuestionId.lastIndexOf('S');
-              const wordBaseId = baseQuestionId.slice(0, lastIndex);
-              setWordIds.add(wordBaseId);
-              for (const choice of choices) {
-                setWordIds.add(choice._id);
-              }
-            } else {
-              for (const choice of choices) {
-                setSentenceIds.add(choice._id);
-              }
+            for (const choice of choices) {
+              setSentenceIds.add(choice._id);
             }
           }
           const questionOutput =
@@ -173,9 +163,12 @@ export class QuestionHoldersService {
             for (const choice of activeDistracted) {
               setWordIds.add(choice._id);
             }
-          } else if (ListSentenceQuestionCodes.includes(questionCode)) {
-            baseQuestionId ? setSentenceIds.add(baseQuestionId) : null;
-            for (const choice of activeDistracted) {
+          } else if (
+            questionCode !== QuestionTypeCode.S7 &&
+            questionCode !== QuestionTypeCode.S12 &&
+            ListSentenceQuestionCodes.includes(questionCode)
+          ) {
+            for (const choice of choices) {
               setSentenceIds.add(choice._id);
             }
           }
