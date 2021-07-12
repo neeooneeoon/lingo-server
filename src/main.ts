@@ -5,7 +5,6 @@ import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
 import * as admin from 'firebase-admin';
 import { ServiceAccount } from 'firebase-admin';
-import * as firebaseKey from '@utils/keys/sm-lingo-firebase.json';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
