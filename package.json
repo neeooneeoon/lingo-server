@@ -40,6 +40,7 @@
     "dayjs": "^1.10.5",
     "dotenv": "^10.0.0",
     "express-session": "^1.17.2",
+    "firebase-admin": "^9.10.0",
     "googleapis": "^76.0.0",
     "mongoose": "^5.13.2",
     "node-fetch": "^2.6.1",

@@ -3,7 +3,7 @@ import { google } from 'googleapis';
 import { Credentials } from 'google-auth-library/build/src/auth/credentials';
 import { sheets_v4 } from 'googleapis/build/src/apis/sheets/v4';
 import { booksName } from '@utils/constants';
-import * as googleKey from './keys/googleOauth.key.json';
+import * as googleKey from '@utils/keys/googleOauth.key.json';
 import { JWT } from 'googleapis-common';
 @Injectable()
 export class GoogleService {
