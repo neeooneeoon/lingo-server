@@ -12,6 +12,7 @@ import { CaslModule } from '@middlewares/casl/casl.module';
 import { AdminModules } from '@admin/admin.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksSModule } from '@libs/tasks/tasks.module';
+import { NotificationsModule } from '@libs/notifications';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { TasksSModule } from '@libs/tasks/tasks.module';
     FollowingsModule,
     CaslModule,
     AdminModules,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
