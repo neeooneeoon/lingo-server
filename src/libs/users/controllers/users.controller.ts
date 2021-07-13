@@ -78,17 +78,19 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('search')
+  @Get('search/currentPage')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'TÌm kiếm người dùng theo email hoặc tên hiển thị' })
   @ApiConsumes('application/json')
   @ApiQuery({ type: String, name: 'search', required: true })
+  @ApiQuery({ type: Number, name: 'page', required: true })
   @ApiResponse({ type: [SearchUser], status: 200 })
   async searchUser(
     @Query('search') search: string,
     @UserCtx() user: JwtPayLoad,
+    @Query('page') pageNumber: number,
   ) {
-    return this.usersService.searchUser(search, user.userId);
+    return this.usersService.searchUser(search, user.userId, pageNumber);
   }
 
   @Get('/:userId/scoreOverview')
