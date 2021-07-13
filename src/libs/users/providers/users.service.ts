@@ -349,25 +349,39 @@ export class UsersService {
     );
     return 'save user work';
   }
-  public searchUser(search: string, userId: string): Observable<SearchUser[]> {
+  public searchUser(
+    search: string,
+    userId: string,
+    skip: number,
+    limit: number,
+  ): Observable<SearchUser[]> {
     search = search.trim();
+    if (!skip) {
+      skip = 0;
+    }
+    if (!limit) {
+      limit = 0;
+    }
     if (!search) {
       throw new BadRequestException('Name or email can not be blank');
     }
     return forkJoin([
       this.followingsService.allFollowings(userId),
-      this.userModel.find({
-        $or: [
-          { displayName: { $regex: '.*' + search + '.*' } },
-          { email: { $regex: '.*' + search + '.*' } },
-        ],
-        _id: {
-          $ne: userId,
-        },
-        role: {
-          $ne: Role.Admin,
-        },
-      }),
+      this.userModel
+        .find({
+          $or: [
+            { displayName: { $regex: '.*' + search + '.*' } },
+            { email: { $regex: '.*' + search + '.*' } },
+          ],
+          _id: {
+            $ne: userId,
+          },
+          role: {
+            $ne: Role.Admin,
+          },
+        })
+        .skip(skip)
+        .limit(limit),
     ]).pipe(
       map(([allFollowings, users]: [FollowingDocument[], UserDocument[]]) => {
         const followUsers = allFollowings.map((item) =>
