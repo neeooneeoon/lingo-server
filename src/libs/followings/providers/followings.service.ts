@@ -27,12 +27,15 @@ export class FollowingsService {
     currentUser: string,
     tagIds: string[],
     currentPage: number,
-  ): Observable<FollowingDocument[]> {
+  ) {
     const nPerPage = 15;
     const nSkip = currentPage <= 0 ? 0 : (currentPage - 1) * nPerPage;
     const followUserRef = ['displayName', 'avatar', 'xp'];
     const tagRef = ['color', 'name'];
     const unSelect = ['-__v'];
+    const total$ = from(
+      this.followingModel.count({ user: Types.ObjectId(currentUser) }),
+    );
 
     if (tagIds.includes('all')) {
       const followings$ = from(
@@ -46,7 +49,14 @@ export class FollowingsService {
           .populate('tags', tagRef)
           .select(unSelect),
       );
-      return followings$;
+      return forkJoin([total$, followings$]).pipe(
+        map(([total, followings]) => {
+          return {
+            total: total,
+            items: followings,
+          };
+        }),
+      );
     } else {
       const followings$ = from(
         this.followingModel
@@ -64,7 +74,14 @@ export class FollowingsService {
           .populate('tags', tagRef)
           .select(unSelect),
       );
-      return followings$;
+      return forkJoin([total$, followings$]).pipe(
+        map(([total, followings]) => {
+          return {
+            total: total,
+            items: followings,
+          };
+        }),
+      );
     }
   }
 
