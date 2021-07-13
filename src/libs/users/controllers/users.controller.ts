@@ -33,7 +33,7 @@ import { ScoreOverviewDto } from '@dto/progress';
 @ApiTags('User')
 @Controller('api/user')
 export class UserController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -78,19 +78,19 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('search/skip/:skip/limit/:limit')
+  @Get('search/currentPage')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'TÌm kiếm người dùng theo email hoặc tên hiển thị' })
   @ApiConsumes('application/json')
   @ApiQuery({ type: String, name: 'search', required: true })
-  @ApiParam({ type: Number, name: 'skip', required: true })
-  @ApiParam({ type: Number, name: 'limit', required: true })
+  @ApiQuery({ type: Number, name: 'skip', required: true })
+  @ApiQuery({ type: Number, name: 'limit', required: true })
   @ApiResponse({ type: [SearchUser], status: 200 })
   async searchUser(
     @Query('search') search: string,
     @UserCtx() user: JwtPayLoad,
-    @Param('skip') skip: number,
-    @Param('limit') limit: number,
+    @Query('skip') skip: number,
+    @Query('limit') limit: number,
   ) {
     return this.usersService.searchUser(search, user.userId, skip, limit);
   }
