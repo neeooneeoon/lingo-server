@@ -78,7 +78,7 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('search/currentPage')
+  @Get('search')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'TÌm kiếm người dùng theo email hoặc tên hiển thị' })
   @ApiConsumes('application/json')
