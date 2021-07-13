@@ -70,11 +70,7 @@ export class GoogleService {
     return (
       await sheets.spreadsheets.get({ spreadsheetId: spreadsheetId })
     ).data.sheets.map(
-      (
-        value: sheets_v4.Schema$Sheet,
-        index: number,
-        array: sheets_v4.Schema$Sheet[],
-      ) => value.properties.sheetId,
+      (value: sheets_v4.Schema$Sheet) => value.properties.sheetId,
     );
   }
   public async deleteDimension(

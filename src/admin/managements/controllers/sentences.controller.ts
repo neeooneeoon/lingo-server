@@ -3,24 +3,9 @@ import { SentencesService } from '@libs/sentences/sentences.service';
 import { UserPermission } from '@middlewares/policy/permissions/user.permission';
 import { CheckPolicies } from '@middlewares/policy/policy.decorator';
 import { PoliciesGuard } from '@middlewares/policy/policy.guard';
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiParam,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Action } from '@utils/enums';
-import { CreateSentenceDto } from '@dto/sentence';
 
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 @ApiTags('Admin')
@@ -42,9 +27,4 @@ export class SentencesController {
   searchSentence(@Query('content') content: string) {
     return this.sentencesService.searchSentences(content);
   }
-
-  @CheckPolicies(new UserPermission(Action.Manage))
-  @Post('create')
-  @ApiBody({ type: CreateSentenceDto, required: true })
-  addNewSentence(@Body() body: CreateSentenceDto) {}
 }

@@ -10,7 +10,6 @@ import { Model, Types } from 'mongoose';
 import { UsersService } from '@libs/users/providers/users.service';
 import { Rank } from '@utils/enums';
 import { User, UserDocument } from '@entities/user.entity';
-import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
 
 @Injectable()
 export class LeaderBoardsService {

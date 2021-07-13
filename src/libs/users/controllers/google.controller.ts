@@ -6,11 +6,15 @@ import { AuthGuard } from '@nestjs/passport';
 @ApiTags('Login')
 @Controller('google')
 export class GoogleController {
-  constructor(private googleService: GoogleService) {}
+  constructor(private googleService: GoogleService) {
+    return;
+  }
 
   @Get()
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req: any): Promise<void> {}
+  async googleAuth(): Promise<void> {
+    return;
+  }
 
   @Get('redirect')
   @UseGuards(AuthGuard('google'))

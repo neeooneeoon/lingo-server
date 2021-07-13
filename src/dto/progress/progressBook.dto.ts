@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SSL_OP_TLS_ROLLBACK_BUG } from 'constants';
 import { ProgressUnit } from './progressUnit.dto';
 
 export class ProgressBook {

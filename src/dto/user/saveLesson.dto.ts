@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt } from 'class-validator';
 
 class ItemResult {
   @ApiProperty({ type: String })

@@ -1,47 +1,3 @@
-<<<<<<< HEAD
-import { forwardRef, Module } from "@nestjs/common";
-import { BooksController } from "./controllers/books.controller";
-import { BooksService } from "./providers/books.service";
-import { Book, BookSchema } from "@entities/book.entity";
-import { MongooseModule } from "@nestjs/mongoose";
-import { ProgressesModule } from "@libs/progresses";
-import { BooksHelper } from "@helpers/books.helper";
-import { WorksModule } from "@libs/works";
-import { QuestionHoldersModule } from "@libs/questionHolders";
-import { BookPrivateService } from "./private/private.service";
-import { WordsModule } from "@libs/words";
-import { UnitsModule } from "@libs/units/units.module";
-import { SentencesModule } from "@libs/sentences";
-
-
-@Module({
-    imports: [
-        MongooseModule.forFeature([
-            {name: Book.name, schema: BookSchema},
-        ]),
-        forwardRef(() => ProgressesModule),
-        WorksModule,
-        WordsModule,
-        SentencesModule,
-        QuestionHoldersModule,
-        forwardRef(() => UnitsModule)
-    ],
-    providers: [
-        BooksService,
-        BooksHelper,
-        BookPrivateService,
-    ],
-    controllers: [BooksController],
-    exports: [
-        BooksHelper,
-        BooksService,
-        WorksModule,
-        ProgressesModule,
-        BookPrivateService,
-    ]
-})
-export class BooksModule {}
-=======
 import { forwardRef, Module } from '@nestjs/common';
 import { BooksController } from './controllers/books.controller';
 import { BooksService } from './providers/books.service';
@@ -54,6 +10,7 @@ import { QuestionHoldersModule } from '@libs/questionHolders';
 import { BookPrivateService } from './private/private.service';
 import { WordsModule } from '@libs/words';
 import { UnitsModule } from '@libs/units/units.module';
+import { SentencesModule } from '@libs/sentences';
 
 @Module({
   imports: [
@@ -61,6 +18,7 @@ import { UnitsModule } from '@libs/units/units.module';
     forwardRef(() => ProgressesModule),
     WorksModule,
     WordsModule,
+    SentencesModule,
     QuestionHoldersModule,
     forwardRef(() => UnitsModule),
   ],
@@ -75,4 +33,3 @@ import { UnitsModule } from '@libs/units/units.module';
   ],
 })
 export class BooksModule {}
->>>>>>> 7b264252a805eba2eebd43458261bc2be6f12fdb

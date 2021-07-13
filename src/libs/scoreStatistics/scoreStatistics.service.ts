@@ -1,6 +1,5 @@
 import { Statistic } from '@dto/leaderBoard/statistic.dto';
 import { UserRank } from '@dto/leaderBoard/userRank.dto';
-import { UserProfile } from '@dto/user';
 import {
   ScoreStatistic,
   ScoreStatisticDocument,
@@ -17,7 +16,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import * as dayjs from 'dayjs';
 import { Model, Types } from 'mongoose';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable } from 'rxjs';
 
 @Injectable()
 export class ScoreStatisticsService {
@@ -137,8 +136,6 @@ export class ScoreStatisticsService {
         $lte: new Date(endTime),
       },
     };
-    let followUser: UserProfile;
-    let xpArr: UserRank[];
     //xpArr = await this.getTotalXp(currentUserId, filter);
     const promises = await Promise.all([
       this.usersService.queryMe(followUserId),
@@ -146,11 +143,11 @@ export class ScoreStatisticsService {
       this.getXpStatistic(followUserId, startTime, endTime),
       this.getXpStatistic(currentUserId, startTime, endTime),
     ]);
-    followUser = promises[0];
+    const followUser = promises[0];
     if (!followUser) {
       throw new BadRequestException('Can not find follow user');
     }
-    xpArr = promises[1];
+    const xpArr = promises[1];
     const followUserWeekStatistic = promises[2];
     const currentUserWeekStatistic = promises[3];
     //console.log(weekStatistic);

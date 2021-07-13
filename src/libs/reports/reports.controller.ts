@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { CreateReportDto } from '@dto/report';
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
