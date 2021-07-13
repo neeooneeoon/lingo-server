@@ -352,16 +352,11 @@ export class UsersService {
   public searchUser(
     search: string,
     userId: string,
-    skip: number,
-    limit: number,
+    pageNumber: number,
   ): Observable<SearchUser[]> {
     search = search.trim();
-    if (!skip) {
-      skip = 0;
-    }
-    if (!limit) {
-      limit = 0;
-    }
+    const limit = 15;
+    const skip = pageNumber < 0 ? 0 : limit * pageNumber;
     if (!search) {
       throw new BadRequestException('Name or email can not be blank');
     }

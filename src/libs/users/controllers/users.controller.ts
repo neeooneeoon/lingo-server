@@ -33,7 +33,7 @@ import { ScoreOverviewDto } from '@dto/progress';
 @ApiTags('User')
 @Controller('api/user')
 export class UserController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -83,16 +83,14 @@ export class UserController {
   @ApiOperation({ summary: 'TÌm kiếm người dùng theo email hoặc tên hiển thị' })
   @ApiConsumes('application/json')
   @ApiQuery({ type: String, name: 'search', required: true })
-  @ApiQuery({ type: Number, name: 'skip', required: true })
-  @ApiQuery({ type: Number, name: 'limit', required: true })
+  @ApiQuery({ type: Number, name: 'page', required: true })
   @ApiResponse({ type: [SearchUser], status: 200 })
   async searchUser(
     @Query('search') search: string,
     @UserCtx() user: JwtPayLoad,
-    @Query('skip') skip: number,
-    @Query('limit') limit: number,
+    @Query('page') pageNumber: number,
   ) {
-    return this.usersService.searchUser(search, user.userId, skip, limit);
+    return this.usersService.searchUser(search, user.userId, pageNumber);
   }
 
   @Get('/:userId/scoreOverview')
