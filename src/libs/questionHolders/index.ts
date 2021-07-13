@@ -1,1 +1,1 @@
-export { QuestionHoldersModule } from "./questionHolders.module";
+export { QuestionHoldersModule } from './questionHolders.module';

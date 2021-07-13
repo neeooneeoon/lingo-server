@@ -9,14 +9,26 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-  }));
-  app.enableCors();
+  const configsService: ConfigsService = app.get(ConfigsService);
 
-  const configsService = app.get(ConfigsService);
   const port = configsService.get('PORT');
   const sessionSecret = configsService.get('SESSION_SECRET');
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
+  app.use(
+    session({
+      secret: sessionSecret,
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.enableCors();
 
   const openApiConfig = new DocumentBuilder()
     .addBearerAuth({
@@ -30,16 +42,6 @@ async function bootstrap() {
     .build();
   const apiDocument = SwaggerModule.createDocument(app, openApiConfig);
   SwaggerModule.setup('api-docs', app, apiDocument);
-
-  app.use(
-    session({
-      secret: sessionSecret,
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
 
   await app.listen(port);
   console.log('\nCompile successfully!\n');

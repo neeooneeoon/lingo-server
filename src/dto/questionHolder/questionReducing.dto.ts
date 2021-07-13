@@ -1,16 +1,16 @@
-import { SentenceInLesson } from "@dto/sentence";
-import { WordInLesson } from "@dto/word/wordInLesson.dto";
-import { QuestionDocument } from "@entities/question.entity";
-import { UnitDocument } from "@entities/unit.entity";
+import { SentenceInLesson } from '@dto/sentence';
+import { WordInLesson } from '@dto/word/wordInLesson.dto';
+import { QuestionDocument } from '@entities/question.entity';
+import { UnitDocument } from '@entities/unit.entity';
 
 export class QuestionReducingInput {
-    questions: QuestionDocument[];
-    listAskingQuestionIds: string[];
-    currentUnit: UnitDocument;
+  questions: QuestionDocument[];
+  listAskingQuestionIds: string[];
+  currentUnit: UnitDocument;
 }
 
 export class QuestionReducingOutput {
-    wordsInLesson: WordInLesson[];
-    sentencesInLesson: SentenceInLesson[];
-    listQuestions: any [];
+  wordsInLesson: WordInLesson[];
+  sentencesInLesson: SentenceInLesson[];
+  listQuestions: any[];
 }

@@ -1,1 +1,1 @@
-export { AnswerResult } from "./answerResult.dto";
+export { AnswerResult } from './answerResult.dto';

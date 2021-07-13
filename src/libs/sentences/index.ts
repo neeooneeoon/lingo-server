@@ -1,1 +1,1 @@
-export { SentencesModule } from "./sentences.module";
+export { SentencesModule } from './sentences.module';

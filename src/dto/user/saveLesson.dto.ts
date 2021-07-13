@@ -35,7 +35,10 @@ export class SaveLessonDto {
     type: 'array',
     items: {
       type: 'object',
-      properties: { _id: { type: 'string' }, answer: { type: 'string', default: 'string/array/boolean/object' } },
+      properties: {
+        _id: { type: 'string' },
+        answer: { type: 'string', default: 'string/array/boolean/object' },
+      },
     },
   })
   results: Array<ItemResult>;

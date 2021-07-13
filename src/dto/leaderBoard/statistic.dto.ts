@@ -1,8 +1,8 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 export class Statistic {
-    currentUserXp: number;
-    followUserXp: number;
-    followUserXpStatistic: number[];
-    currentUserXpStatistic: number[];
+  currentUserXp: number;
+  followUserXp: number;
+  followUserXpStatistic: number[];
+  currentUserXpStatistic: number[];
 }

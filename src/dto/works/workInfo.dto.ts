@@ -1,5 +1,5 @@
 export class WorkInfo {
-    doneQuestions: number;
-    timeStart: Date;
-    timeEnd: Date;
+  doneQuestions: number;
+  timeStart: Date;
+  timeEnd: Date;
 }

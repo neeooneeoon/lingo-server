@@ -1,10 +1,10 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 export class UserRank {
-    isCurrentUser: boolean;
-    orderNumber: number;
-    displayName: string;
-    avatar: string;
-    userId: Types.ObjectId;
-    xp: number;
+  isCurrentUser: boolean;
+  orderNumber: number;
+  displayName: string;
+  avatar: string;
+  userId: Types.ObjectId;
+  xp: number;
 }

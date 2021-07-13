@@ -1,6 +1,6 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 export class CreateUserProgressDto {
-    userId: Types.ObjectId | string;
-    books: Array<any>;
+  userId: Types.ObjectId | string;
+  books: Array<any>;
 }

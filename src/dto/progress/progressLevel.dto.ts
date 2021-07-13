@@ -1,18 +1,18 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ProgressLevel {
-    @ApiProperty({type: Number, })
-    levelIndex: number;
+  @ApiProperty({ type: Number })
+  levelIndex: number;
 
-    @ApiProperty({type: Number, })
-    totalLessons: number;
+  @ApiProperty({ type: Number })
+  totalLessons: number;
 
-    @ApiProperty({type: Number, })
-    doneLessons: number;
+  @ApiProperty({ type: Number })
+  doneLessons: number;
 
-    @ApiProperty({type: Boolean, })
-    passed: boolean;
+  @ApiProperty({ type: Boolean })
+  passed: boolean;
 
-    @ApiProperty({type: [Number], })
-    lessons: Array<number>;
+  @ApiProperty({ type: [Number] })
+  lessons: Array<number>;
 }

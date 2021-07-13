@@ -1,9 +1,7 @@
 import { FollowingDocument } from '@entities/following.entity';
 
 export class FriendsDto {
+  followers: FollowingDocument[];
 
-    followers: FollowingDocument[];
-
-    followings: FollowingDocument[];
-
+  followings: FollowingDocument[];
 }

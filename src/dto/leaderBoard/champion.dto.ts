@@ -1,8 +1,8 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 export class Champion {
-    image: string;
-    userId: Types.ObjectId;
-    point: number;
-    displayName: string;
+  image: string;
+  userId: Types.ObjectId;
+  point: number;
+  displayName: string;
 }

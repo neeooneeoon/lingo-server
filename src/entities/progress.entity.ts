@@ -4,11 +4,12 @@ import { Document, Types } from 'mongoose';
 
 @Schema()
 export class Progress {
+  @Prop({ type: Types.ObjectId, unique: 1 })
+  userId: Types.ObjectId;
 
-    @Prop({ type: Types.ObjectId, unique: 1 })
-    userId: Types.ObjectId;
-
-    @Prop({ type: [{
+  @Prop({
+    type: [
+      {
         bookId: String,
         totalUnits: Number,
         score: Number,
@@ -18,7 +19,8 @@ export class Progress {
         totalLessons: Number,
         doneLessons: Number,
         lastDid: Date,
-        units: [{
+        units: [
+          {
             unitId: String,
             totalLevels: Number,
             passedLevels: Number,
@@ -30,20 +32,24 @@ export class Progress {
             blueImage: String,
             unitName: String,
             totalLessons: Number,
-            levels: [{
+            levels: [
+              {
                 levelIndex: Number,
                 totalLessons: Number,
                 doneLessons: Number,
                 passed: Boolean,
-                lessons: [Number]
-            }]
-        }]
-    }]})
-    books: ProgressBook[]
-
+                lessons: [Number],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  })
+  books: ProgressBook[];
 }
 
 export type ProgressDocument = Document & Progress;
 export const ProgressSchema = SchemaFactory.createForClass(Progress);
 
-ProgressSchema.index({userId: 1}, {unique: true});
+ProgressSchema.index({ userId: 1 }, { unique: true });

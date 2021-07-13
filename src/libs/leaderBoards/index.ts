@@ -1,1 +1,1 @@
-export { LeaderBoardsModule } from "./leaderBoards.module";
+export { LeaderBoardsModule } from './leaderBoards.module';

@@ -21,8 +21,10 @@ import { WordInLesson } from '@dto/word/wordInLesson.dto';
 @ApiBearerAuth()
 @Controller('api')
 export class BooksController {
-  constructor(private booksService: BooksService,
-    private wordsService: WordsService) { }
+  constructor(
+    private booksService: BooksService,
+    private wordsService: WordsService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('books/grade/:grade')
@@ -98,9 +100,9 @@ export class BooksController {
       bookId: bookId,
       unitId: unitId,
       levelIndex: levelIndex,
-      lessonIndex: lessonIndex
-    }
-    return this.booksService.getDetailLesson(user.userId, input)
+      lessonIndex: lessonIndex,
+    };
+    return this.booksService.getDetailLesson(user.userId, input);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -108,8 +110,11 @@ export class BooksController {
   @ApiParam({ type: Number, name: 'bookNId', required: true })
   @ApiParam({ type: Number, name: 'unitNId', required: true })
   @ApiOperation({ summary: 'Lấy các từ theo book và unit' })
-  @ApiResponse({type: [WordInLesson], status: 200})
-  async getWordsInUnit(@Param('bookNId') bookNId: number, @Param('unitNId') unitNId: number) {
+  @ApiResponse({ type: [WordInLesson], status: 200 })
+  async getWordsInUnit(
+    @Param('bookNId') bookNId: number,
+    @Param('unitNId') unitNId: number,
+  ) {
     return this.wordsService.getWordsInUnit(bookNId, unitNId);
   }
 }
