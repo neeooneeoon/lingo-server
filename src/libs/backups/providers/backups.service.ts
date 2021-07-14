@@ -7,7 +7,7 @@ import {
   BackupQuestionInputDto,
   RestoreSentenceDto,
 } from '@dto/backup';
-import { forkJoin, from, Observable, of } from 'rxjs';
+import { forkJoin, from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { SentencesService } from '@libs/sentences/sentences.service';
 import { QuestionHoldersService } from '@libs/questionHolders/providers/questionHolders.service';
@@ -63,7 +63,7 @@ export class BackupsService {
       switchMap(({ sentenceRawDocs, backupQuestionInput }) => {
         return forkJoin([
           this.sentencesService.restoreSentences(sentenceRawDocs),
-          // this.questionsService.restoreChoice(backupQuestionInput),
+          this.questionsService.restoreChoice(backupQuestionInput),
         ]);
       }),
     );

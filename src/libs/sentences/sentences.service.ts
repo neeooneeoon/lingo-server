@@ -11,7 +11,7 @@ import { Model } from 'mongoose';
 import { from, Observable } from 'rxjs';
 import { randomUUID } from 'crypto';
 import { RestoreSentenceDto } from '@dto/backup';
-import { catchError, map, switchMap } from "rxjs/operators";
+import { map, switchMap } from 'rxjs/operators';
 
 @Injectable()
 export class SentencesService {
@@ -146,7 +146,7 @@ export class SentencesService {
     );
   }
   public restoreSentences(baseDocs: RestoreSentenceDto[]) {
-    from(
+    return from(
       this.sentenceModel.find({
         bookNId: -1,
         unitNId: -1,
@@ -179,35 +179,11 @@ export class SentencesService {
           };
         });
       }),
-      switchMap
-    );
-    const rawDocuments = baseDocs.map((doc) => {
-      return {
-        isConversation: false,
-        _id: doc._id,
-        bookNId: -1,
-        unitNId: -1,
-        position: 0,
-        baseId: doc._id,
-        content: doc.content,
-        tempTranslates: [],
-        wordBaseIndex: -1,
-        translate: doc.meaning,
-        audio: doc.audio,
-        contentSplit: [],
-        translateSplit: [],
-        translates: [doc.meaning],
-        replaceWords: [],
-        lowerBound: 0,
-        upperBound: 0,
-      };
-    });
-    return from(this.sentenceModel.insertMany(rawDocuments)).pipe(
-      map((sentences) => {
-        if (sentences) {
-          return true;
+      switchMap((docs) => {
+        if (docs.length > 0) {
+          return from(this.sentenceModel.insertMany(docs));
         }
-        return false;
+        return from([]);
       }),
     );
   }
