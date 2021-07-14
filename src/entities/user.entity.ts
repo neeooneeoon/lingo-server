@@ -51,6 +51,19 @@ export class User {
   @Prop({ type: Number, required: true, default: 1 })
   loginCount: number;
 
+  @Prop({
+    type: {
+      province: { type: Number, ref: 'Province', required: false },
+      district: { type: Number, ref: 'District', required: false },
+    },
+    required: true,
+    default: {},
+  })
+  address: {
+    province?: number;
+    district?: number;
+  };
+
   @Prop({ type: Number, required: false, default: 0 })
   streak?: number;
 

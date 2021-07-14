@@ -23,17 +23,22 @@ import {
   UpdateUserDto,
   SaveLessonDto,
   SearchUser,
+  ChangeAddressDto,
 } from '@dto/user';
 import { UsersService } from '../providers/users.service';
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
 import { ScoreOverviewDto } from '@dto/progress';
+import { UserAddressService } from '@libs/users/providers/userAddress.service';
 
 @ApiTags('User')
 @Controller('api/user')
 export class UserController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly userAddressService: UserAddressService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -99,5 +104,19 @@ export class UserController {
   @ApiResponse({ type: ScoreOverviewDto, status: 200 })
   public scoresOverview(@Param('userId') userId: string) {
     return this.usersService.scoresOverview(userId);
+  }
+
+  @Put('changeAddress')
+  @ApiBody({ type: ChangeAddressDto, required: true })
+  @ApiResponse({ type: UserProfile, status: 200 })
+  changeUserAddress(
+    @Body() body: ChangeAddressDto,
+    @UserCtx() user: JwtPayLoad,
+  ) {
+    return this.userAddressService.changeUserAddress({
+      currentUser: user.userId,
+      provinceId: body.provinceId,
+      districtId: body.districtId,
+    });
   }
 }

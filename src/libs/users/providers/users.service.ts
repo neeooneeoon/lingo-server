@@ -107,6 +107,7 @@ export class UsersService {
         loginCount: 0,
         streak: 0,
         lastActive: new Date(),
+        address: { province: -1, district: -1 },
       });
       await this.progressesService.createUserProgress({
         userId: newUser._id,

@@ -9,3 +9,4 @@ export { SaveLessonDto } from './saveLesson.dto';
 export { UpdateUserStatusDto } from './updateUserStatus.dto';
 export {} from './updateUserPoint.dto';
 export { SearchUser } from './searchUser.dto';
+export { ChangeAddressDto } from './changeAddress.dto';

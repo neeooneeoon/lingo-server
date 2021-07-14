@@ -17,6 +17,8 @@ export class AddressService {
   }
 
   public getDistricts(provinceId: number): Observable<DistrictDocument[]> {
-    return from(this.districtModel.find({ province: provinceId }));
+    return from(
+      this.districtModel.find({ province: provinceId }).select('-province'),
+    );
   }
 }

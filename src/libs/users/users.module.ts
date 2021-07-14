@@ -19,6 +19,7 @@ import {
 } from '@entities/scoreStatistic.entity';
 import { ScoreStatisticsModule } from '@libs/scoreStatistics/scoreStatistics.module';
 import { AddressModule } from '@libs/address';
+import { UserAddressService } from '@libs/users/providers/userAddress.service';
 
 @Module({
   imports: [
@@ -45,7 +46,13 @@ import { AddressModule } from '@libs/address';
     FacebookController,
     LoginController,
   ],
-  providers: [UsersService, UsersHelper, GoogleService, FacebookService],
+  providers: [
+    UsersService,
+    UsersHelper,
+    GoogleService,
+    FacebookService,
+    UserAddressService,
+  ],
   exports: [UsersService],
 })
 export class UsersModule {}
