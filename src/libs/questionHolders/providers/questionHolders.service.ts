@@ -29,8 +29,9 @@ import { Unit, UnitDocument } from '@entities/unit.entity';
 import { WordDocument } from '@entities/word.entity';
 import { SentenceDocument } from '@entities/sentence.entity';
 import { QuestionTypeCode } from '@utils/enums';
-import { from, Observable } from 'rxjs';
+import { forkJoin, from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { BackupQuestionInputDto } from '@dto/backup';
 
 @Injectable()
 export class QuestionHoldersService {
@@ -353,6 +354,65 @@ export class QuestionHoldersService {
         if (updateResult.nModified === 1)
           return { word: input.word, sentence: input.sentence };
         throw new BadRequestException('Update failed.');
+      }),
+    );
+  }
+  public restoreChoice(backupInput: BackupQuestionInputDto) {
+    const keys = Object.keys(backupInput);
+    return forkJoin(
+      keys.map((key) => {
+        const pathEls = key.split('/');
+        const bookId = pathEls[0];
+        const unitId = pathEls[1];
+        const levelIndex = Number(pathEls[2]);
+        return from(
+          this.questionHolderModel.findOne({
+            bookId: bookId,
+            unitId: unitId,
+            level: levelIndex,
+          }),
+        ).pipe(
+          switchMap((questionHolder) => {
+            if (questionHolder) {
+              const questions = questionHolder.questions;
+              if (questions && questions.length > 0) {
+                backupInput[key].map((backupItem) => {
+                  const { focusId, choiceId, code } = backupItem;
+                  const index = questions.findIndex(
+                    (question) =>
+                      question.code === code && question.focus === focusId,
+                  );
+                  if (index !== -1) {
+                    const setChoices: Set<string> = new Set<string>(
+                      questions[index].choices.map((choice) => choice._id),
+                    );
+                    if (!setChoices.has(choiceId)) {
+                      setChoices.add(choiceId);
+                      questions[index].choices.push({
+                        _id: choiceId,
+                        active: true,
+                      });
+                    }
+                  }
+                });
+                return from(
+                  this.questionHolderModel.updateOne(
+                    {
+                      bookId: bookId,
+                      unitId: unitId,
+                      level: levelIndex,
+                    },
+                    {
+                      $set: {
+                        questions: questions,
+                      },
+                    },
+                  ),
+                );
+              }
+            }
+          }),
+        );
       }),
     );
   }

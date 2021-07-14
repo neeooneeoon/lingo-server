@@ -1,4 +1,4 @@
-import { CreateSentenceDto, SentenceInLesson } from '@dto/sentence';
+import { SentenceInLesson } from '@dto/sentence';
 import { Sentence, SentenceDocument } from '@entities/sentence.entity';
 import { SentencesHelper } from '@helpers/sentences.helper';
 import {
@@ -10,6 +10,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { from, Observable } from 'rxjs';
 import { randomUUID } from 'crypto';
+import { RestoreSentenceDto } from '@dto/backup';
+import { catchError, map, switchMap } from "rxjs/operators";
 
 @Injectable()
 export class SentencesService {
@@ -115,7 +117,7 @@ export class SentencesService {
     );
   }
   public addNewSentence(
-    input: CreateSentenceDto,
+    input: Omit<RestoreSentenceDto, '_id'>,
   ): Observable<SentenceDocument> {
     const { content, meaning, audio } = input;
     const trimMeaning = meaning?.trim()?.normalize('NFKD');
@@ -140,6 +142,72 @@ export class SentencesService {
         replaceWords: [],
         lowerBound: 0,
         upperBound: 0,
+      }),
+    );
+  }
+  public restoreSentences(baseDocs: RestoreSentenceDto[]) {
+    from(
+      this.sentenceModel.find({
+        bookNId: -1,
+        unitNId: -1,
+      }),
+    ).pipe(
+      map((sentences) => {
+        const backedUpIds = sentences.map((sentence) => sentence._id);
+        const notBackup = baseDocs.filter(
+          (item) => !backedUpIds.includes(item._id),
+        );
+        return notBackup.map((doc) => {
+          return {
+            isConversation: false,
+            _id: doc._id,
+            bookNId: -1,
+            unitNId: -1,
+            position: 0,
+            baseId: doc._id,
+            content: doc.content,
+            tempTranslates: [],
+            wordBaseIndex: -1,
+            translate: doc.meaning,
+            audio: doc.audio,
+            contentSplit: [],
+            translateSplit: [],
+            translates: [doc.meaning],
+            replaceWords: [],
+            lowerBound: 0,
+            upperBound: 0,
+          };
+        });
+      }),
+      switchMap
+    );
+    const rawDocuments = baseDocs.map((doc) => {
+      return {
+        isConversation: false,
+        _id: doc._id,
+        bookNId: -1,
+        unitNId: -1,
+        position: 0,
+        baseId: doc._id,
+        content: doc.content,
+        tempTranslates: [],
+        wordBaseIndex: -1,
+        translate: doc.meaning,
+        audio: doc.audio,
+        contentSplit: [],
+        translateSplit: [],
+        translates: [doc.meaning],
+        replaceWords: [],
+        lowerBound: 0,
+        upperBound: 0,
+      };
+    });
+    return from(this.sentenceModel.insertMany(rawDocuments)).pipe(
+      map((sentences) => {
+        if (sentences) {
+          return true;
+        }
+        return false;
       }),
     );
   }

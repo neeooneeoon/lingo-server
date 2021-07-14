@@ -28,7 +28,7 @@ export class Question {
   @Prop({ type: Number, required: true })
   rank: number;
 
-  @Prop({ type: String, enum: QuestionTypeCode, required: true })
+  @Prop({ type: String, enum: Object.values(QuestionTypeCode), required: true })
   code: QuestionTypeCode;
 
   @Prop({ type: String, required: false })

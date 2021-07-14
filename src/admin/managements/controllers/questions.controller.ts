@@ -140,7 +140,13 @@ export class QuestionsController {
     @Param('levelIndex') levelIndex: number,
     @Body() body: CreateSentenceDto,
   ) {
-    return from(this.sentencesService.addNewSentence(body)).pipe(
+    return from(
+      this.sentencesService.addNewSentence({
+        content: body.content,
+        meaning: body?.meaning,
+        audio: body?.audio,
+      }),
+    ).pipe(
       switchMap((sentence) => {
         if (!sentence) {
           throw new BadRequestException();
