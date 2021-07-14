@@ -18,6 +18,7 @@ import {
   ScoreStatisticSchema,
 } from '@entities/scoreStatistic.entity';
 import { ScoreStatisticsModule } from '@libs/scoreStatistics/scoreStatistics.module';
+import { AddressModule } from '@libs/address';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ScoreStatisticsModule } from '@libs/scoreStatistics/scoreStatistics.mod
     ]),
     AuthenticationModule,
     BooksModule,
+    AddressModule,
     forwardRef(() => LeaderBoardsModule),
     forwardRef(() => FollowingsModule),
     forwardRef(() => ScoreStatisticsModule),
