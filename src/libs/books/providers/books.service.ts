@@ -1,22 +1,37 @@
-import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Book, BookDocument } from "@entities/book.entity";
-import { Model } from "mongoose";
-import { ProgressesService } from "@libs/progresses/progresses.service";
-import { BookGrade, GetLessonInput, GetLessonOutput, LessonTree } from "@dto/book";
-import { BooksHelper } from "@helpers/books.helper";
-import { WorksService } from "@libs/works/works.service";
-import { ActiveBookProgress, ProgressBook, ProgressBookMapping } from "@dto/progress";
-import { QuestionHoldersService } from "@libs/questionHolders/providers/questionHolders.service";
-import { LessonDocument } from "@entities/lesson.entity";
-import { from, Observable } from "rxjs";
-import { map } from "rxjs/operators";
-import { booksName } from "@utils/constants";
-import { Unit } from "@dto/unit/unit.dto";
-import { SentenceDocument } from "@entities/sentence.entity";
-import { WordsService } from "@libs/words/words.service";
-import { SentencesService } from "@libs/sentences/sentences.service";
-import { WordInLesson } from "@dto/word/wordInLesson.dto";
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Book, BookDocument } from '@entities/book.entity';
+import { Model } from 'mongoose';
+import { ProgressesService } from '@libs/progresses/progresses.service';
+import {
+  BookGrade,
+  GetLessonInput,
+  GetLessonOutput,
+  LessonTree,
+} from '@dto/book';
+import { BooksHelper } from '@helpers/books.helper';
+import { WorksService } from '@libs/works/works.service';
+import {
+  ActiveBookProgress,
+  ProgressBook,
+  ProgressBookMapping,
+} from '@dto/progress';
+import { QuestionHoldersService } from '@libs/questionHolders/providers/questionHolders.service';
+import { LessonDocument } from '@entities/lesson.entity';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { booksName } from '@utils/constants';
+import { Unit } from '@dto/unit/unit.dto';
+import { SentenceDocument } from '@entities/sentence.entity';
+import { WordsService } from '@libs/words/words.service';
+import { SentencesService } from '@libs/sentences/sentences.service';
+import { WordInLesson } from '@dto/word/wordInLesson.dto';
 
 @Injectable()
 export class BooksService {
