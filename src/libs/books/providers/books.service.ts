@@ -1,37 +1,22 @@
-import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Book, BookDocument } from '@entities/book.entity';
-import { Model } from 'mongoose';
-import { ProgressesService } from '@libs/progresses/progresses.service';
-import {
-  BookGrade,
-  GetLessonInput,
-  GetLessonOutput,
-  LessonTree,
-} from '@dto/book';
-import { BooksHelper } from '@helpers/books.helper';
-import { WorksService } from '@libs/works/works.service';
-import {
-  ActiveBookProgress,
-  ProgressBook,
-  ProgressBookMapping,
-} from '@dto/progress';
-import { QuestionHoldersService } from '@libs/questionHolders/providers/questionHolders.service';
-import { LessonDocument } from '@entities/lesson.entity';
-import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { booksName } from '@utils/constants';
-import { Unit } from '@dto/unit/unit.dto';
-import { SentenceDocument } from '@entities/sentence.entity';
-import { WordsService } from '@libs/words/words.service';
-import { SentencesService } from '@libs/sentences/sentences.service';
-import { WordInLesson } from '@dto/word/wordInLesson.dto';
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Book, BookDocument } from "@entities/book.entity";
+import { Model } from "mongoose";
+import { ProgressesService } from "@libs/progresses/progresses.service";
+import { BookGrade, GetLessonInput, GetLessonOutput, LessonTree } from "@dto/book";
+import { BooksHelper } from "@helpers/books.helper";
+import { WorksService } from "@libs/works/works.service";
+import { ActiveBookProgress, ProgressBook, ProgressBookMapping } from "@dto/progress";
+import { QuestionHoldersService } from "@libs/questionHolders/providers/questionHolders.service";
+import { LessonDocument } from "@entities/lesson.entity";
+import { from, Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { booksName } from "@utils/constants";
+import { Unit } from "@dto/unit/unit.dto";
+import { SentenceDocument } from "@entities/sentence.entity";
+import { WordsService } from "@libs/words/words.service";
+import { SentencesService } from "@libs/sentences/sentences.service";
+import { WordInLesson } from "@dto/word/wordInLesson.dto";
 
 @Injectable()
 export class BooksService {
@@ -87,23 +72,24 @@ export class BooksService {
     userId: string,
   ): Promise<BookGrade[]> {
     try {
-      const books = (await this.bookModel.find({ grade: grade })).sort(
-        (bookOne, bookTwo) => bookOne.nId - bookTwo.nId,
-      );
-      let userProgress = await this.progressesService.getUserProgress(userId);
+      // eslint-disable-next-line prefer-const
+      let [books, userProgress] = await Promise.all([
+        this.bookModel.find({ grade: grade }),
+        this.progressesService.getUserProgress(userId),
+      ]);
+      books.sort((bookOne, bookTwo) => bookOne.nId - bookTwo.nId);
       if (!userProgress) {
         userProgress = await this.progressesService.createUserProgress({
           userId: userId,
           books: [],
         });
       }
-      const booksGrade: BookGrade[] = books.map((book) => {
+      return books.map((book) => {
         const progressBook = userProgress.books.find(
           (item) => item.bookId === book._id,
         );
         return this.booksHelper.mapToBookGrade(book, progressBook);
       });
-      return booksGrade;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -114,19 +100,14 @@ export class BooksService {
     userId: string,
   ): Promise<ProgressBookMapping> {
     try {
-      const book = await this.getBook(bookId);
-      const instanceUserWork = await this.worksService.getUserWork(
-        userId,
-        bookId,
-      );
+      const [book, instanceUserWork] = await Promise.all([
+        this.getBook(bookId),
+        this.worksService.getUserWork(userId, bookId),
+      ]);
       if (!instanceUserWork) {
         await this.worksService.createUserWork(userId, bookId);
       }
-      const bookProgress = await this.progressesService.getBookProgress(
-        userId,
-        book,
-      );
-      return bookProgress;
+      return this.progressesService.getBookProgress(userId, book);
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
