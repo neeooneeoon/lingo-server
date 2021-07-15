@@ -14,10 +14,10 @@ export class User {
   avatar: string;
 
   @Prop({ type: String, required: false, default: '' })
-  familyName: string;
+  familyName?: string;
 
-  @Prop({ type: String, required: true })
-  givenName: string;
+  @Prop({ type: String, required: false, default: '' })
+  givenName?: string;
 
   @Prop({ type: String, required: true })
   displayName: string;

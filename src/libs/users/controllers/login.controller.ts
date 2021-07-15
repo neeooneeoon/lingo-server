@@ -18,8 +18,7 @@ export class LoginController {
   @ApiOperation({ summary: 'Login thông qua accessToken của Google' })
   @ApiResponse({ type: LoginResultDto, status: 201 })
   loginWithGoogleAccount(@Body() body: LoginBodyDto): Promise<UserLogin> {
-    const { access_token: accessToken } = body;
-    return this.usersService.googleLoginHandle(accessToken);
+    return this.usersService.googleLoginHandle(body);
   }
 
   @Post('facebook')

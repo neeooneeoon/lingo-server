@@ -23,6 +23,7 @@ import {
   UpdateUserStatusDto,
   SaveLessonDto,
   SearchUser,
+  LoginBodyDto,
 } from '@dto/user';
 import { FacebookService } from './facebook.service';
 import { JwtPayLoad } from '@utils/types';
@@ -141,26 +142,37 @@ export class UsersService {
     };
   }
 
-  public async googleLoginHandle(accessToken: string): Promise<UserLogin> {
+  public async googleLoginHandle(body: LoginBodyDto): Promise<UserLogin> {
     try {
-      const {
-        email,
-        picture: avatar,
-        given_name: givenName,
-        family_name: familyName,
-        name: displayName,
-      } = await this.googleService.getUserData(accessToken);
+      if (body.access_token) {
+        const {
+          email,
+          picture: avatar,
+          given_name: givenName,
+          family_name: familyName,
+          name: displayName,
+        } = await this.googleService.getUserData(body.access_token);
 
-      if (!email) {
-        throw new BadRequestException('Invalid accessToken');
+        if (!email) {
+          throw new BadRequestException('Invalid accessToken');
+        } else {
+          return this.getUserProfile({
+            facebookId: '-1',
+            email: email,
+            givenName: givenName,
+            familyName: familyName,
+            displayName: displayName,
+            avatar: avatar,
+          });
+        }
       } else {
         return this.getUserProfile({
+          displayName: body.displayName,
           facebookId: '-1',
-          email: email,
-          givenName: givenName,
-          familyName: familyName,
-          displayName: displayName,
-          avatar: avatar,
+          familyName: '',
+          givenName: '',
+          avatar: body.avatar,
+          email: body.email,
         });
       }
     } catch (error) {
