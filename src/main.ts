@@ -8,6 +8,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { AppClusterService } from './app-cluster.service';
+import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -32,6 +33,7 @@ async function bootstrap() {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.enableCors();
   app.use(helmet());
+  app.useGlobalInterceptors(new TimeoutInterceptor());
   const openApiConfig = new DocumentBuilder()
     .addBearerAuth({
       type: 'http',
@@ -49,5 +51,4 @@ async function bootstrap() {
   console.log('\nCompile successfully!\n');
   console.log(`🚀 Lingo Server is listening at http://localhost:${port}`);
 }
-// AppClusterService.clusterize(bootstrap);
-bootstrap();
+AppClusterService.clusterize(bootstrap);
