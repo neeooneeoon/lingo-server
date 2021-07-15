@@ -3,9 +3,11 @@ import { AppModule } from './app.module';
 import { ConfigsService } from '@configs';
 import * as session from 'express-session';
 import * as bodyParser from 'body-parser';
+import * as helmet from 'helmet';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { AppClusterService } from './app-cluster.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -29,7 +31,7 @@ async function bootstrap() {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.enableCors();
-
+  app.use(helmet());
   const openApiConfig = new DocumentBuilder()
     .addBearerAuth({
       type: 'http',
@@ -47,4 +49,4 @@ async function bootstrap() {
   console.log('\nCompile successfully!\n');
   console.log(`🚀 Lingo Server is listening at http://localhost:${port}`);
 }
-bootstrap();
+AppClusterService.clusterize(bootstrap);
