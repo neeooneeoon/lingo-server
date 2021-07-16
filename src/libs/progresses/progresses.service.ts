@@ -148,7 +148,7 @@ export class ProgressesService {
       }
       const unitInBook = book.units.find((unit) => unit._id === unitId);
       const progressUnit = progressBook.units.find(
-        (item) => item.unitId === lessonTree.unitId,
+        (item) => item.unitId === unitId,
       );
       if (!progressUnit) {
         const newProgressUnit: ProgressUnit = {
