@@ -39,4 +39,3 @@ yarn.lock
 package-json.lock
 *.log
 *.zip
-/migrations
