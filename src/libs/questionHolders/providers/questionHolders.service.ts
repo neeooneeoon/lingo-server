@@ -158,7 +158,6 @@ export class QuestionHoldersService {
           const activeDistracted = choices.filter(
             (choice) => choice.active === true,
           );
-
           if (ListWorQuestionCodes.includes(questionCode)) {
             baseQuestionId ? setWordIds.add(baseQuestionId) : null;
             for (const choice of activeDistracted) {
@@ -180,23 +179,10 @@ export class QuestionHoldersService {
           listQuestions.push(questionOutput);
         }
       }
-
-      const wordsInLessonPromise = this.wordsService.findByIds([...setWordIds]);
-      const sentencesInLessonPromise = this.sentencesService.findByIds([
-        ...setSentenceIds,
+      const [wordsInLesson, sentencesInLesson] = await Promise.all([
+        this.wordsService.findByIds([...setWordIds]),
+        this.sentencesService.findByIds([...setSentenceIds]),
       ]);
-      let wordsInLesson: WordInLesson[] = [];
-      let sentencesInLesson: SentenceInLesson[] = [];
-
-      await Promise.all([wordsInLessonPromise, sentencesInLessonPromise])
-        .then(([wordsResult, sentencesResult]) => {
-          wordsInLesson = wordsResult;
-          sentencesInLesson = sentencesResult;
-        })
-        .catch((error) => {
-          throw new InternalServerErrorException(error);
-        });
-
       return {
         wordsInLesson: wordsInLesson,
         sentencesInLesson: sentencesInLesson,

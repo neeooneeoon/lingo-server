@@ -50,9 +50,7 @@ export class BooksService {
     book: Partial<ProgressBook>,
   ): Observable<ActiveBookProgress> {
     const unSelect = ['name', 'grade', 'cover', '-_id'];
-    const book$ = from(
-      this.bookModel.findById(book.bookId).select(unSelect),
-    ).pipe(
+    return from(this.bookModel.findById(book.bookId).select(unSelect)).pipe(
       map((result) => {
         return {
           name: result.name,
@@ -66,8 +64,6 @@ export class BooksService {
         };
       }),
     );
-
-    return book$;
   }
 
   public async getBook(bookId: string): Promise<BookDocument> {
@@ -266,11 +262,6 @@ export class BooksService {
       if (!levels || levels.length === 0) {
         throw new BadRequestException(`No level in unit ${unitId}`);
       }
-      let totalLessonInUnit = 0;
-      levels.map((level) => {
-        totalLessonInUnit += level.lessons.length;
-      });
-
       const level = levels.find((item) => item.levelIndex === levelIndex);
       if (!level) {
         throw new BadRequestException(`Can't find level ${levelIndex}`);
@@ -336,7 +327,7 @@ export class BooksService {
 
   public async isExist(): Promise<boolean> {
     const book = await this.bookModel.findOne({});
-    return book ? true : false;
+    return !!book;
   }
   public async updateBook(nId: number, unit: Unit | Unit[]): Promise<void> {
     try {
