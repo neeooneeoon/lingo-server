@@ -24,6 +24,8 @@ import {
   SaveLessonDto,
   SearchUser,
   ChangeAddressDto,
+  ToggleNotificationDto,
+  ToggleNotificationRes,
 } from '@dto/user';
 import { UsersService } from '../providers/users.service';
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
@@ -118,5 +120,20 @@ export class UserController {
       provinceId: body.provinceId,
       districtId: body.districtId,
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('toggleNotification')
+  @ApiBody({ type: ToggleNotificationDto })
+  @ApiResponse({ type: ToggleNotificationRes })
+  @ApiOperation({ summary: 'Bật / tắt nhận thông báo ứng dụng' })
+  toggleNotification(
+    @Body() body: ToggleNotificationDto,
+    @UserCtx() user: JwtPayLoad,
+  ) {
+    return this.usersService.toggleReceiveNotification(
+      user.userId,
+      body.enable,
+    );
   }
 }

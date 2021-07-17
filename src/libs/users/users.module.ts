@@ -20,6 +20,7 @@ import {
 import { ScoreStatisticsModule } from '@libs/scoreStatistics/scoreStatistics.module';
 import { AddressModule } from '@libs/address';
 import { UserAddressService } from '@libs/users/providers/userAddress.service';
+import { NotificationsModule } from '@libs/notifications';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { UserAddressService } from '@libs/users/providers/userAddress.service';
     AuthenticationModule,
     BooksModule,
     AddressModule,
+    NotificationsModule,
     forwardRef(() => LeaderBoardsModule),
     forwardRef(() => FollowingsModule),
     forwardRef(() => ScoreStatisticsModule),

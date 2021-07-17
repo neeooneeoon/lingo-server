@@ -11,6 +11,7 @@ import { forkJoin, from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { SentencesService } from '@libs/sentences/sentences.service';
 import { QuestionHoldersService } from '@libs/questionHolders/providers/questionHolders.service';
+import { QuestionTypeCode } from '@utils/enums';
 
 @Injectable()
 export class BackupsService {
@@ -44,9 +45,13 @@ export class BackupsService {
               _id: sentence.choiceId,
             });
           const path = `${sentence.bookId}/${sentence.unitId}/${sentence.levelIndex}`;
+          const choice =
+            sentence.code === QuestionTypeCode.S7
+              ? sentence.content
+              : sentence.choiceId;
           backupQuestionInput[path]
             ? backupQuestionInput[path].push({
-                choiceId: sentence.choiceId,
+                choiceId: choice,
                 code: sentence.code,
                 focusId: sentence.focusId,
               })

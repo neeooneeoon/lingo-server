@@ -25,7 +25,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { Action } from '@utils/enums';
+import { Action, QuestionTypeCode } from '@utils/enums';
 import { SentencesService } from '@libs/sentences/sentences.service';
 import { CreateSentenceDto } from '@dto/sentence';
 import { BackupsService } from '@libs/backups/providers/backups.service';
@@ -115,7 +115,8 @@ export class QuestionsController {
               unitId: unitId,
               levelIndex: levelIndex,
               questionId: body.questionId,
-              choiceId: word._id,
+              choiceId:
+                body.code !== QuestionTypeCode.S7 ? word._id : word.content,
               word: word,
             }),
           ]);

@@ -5,4 +5,5 @@ export class FetchAccountInfo {
   familyName?: string;
   displayName: string;
   avatar: string;
+  deviceToken: string;
 }

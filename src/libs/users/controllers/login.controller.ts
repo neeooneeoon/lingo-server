@@ -29,7 +29,6 @@ export class LoginController {
   @ApiOperation({ summary: 'Login thông qua accessToken của Facebook' })
   @ApiResponse({ type: LoginResultDto, status: 201 })
   loginWithFacebookAccount(@Body() body: LoginBodyDto) {
-    const { access_token: accessToken } = body;
-    return this.usersService.facebookLoginHandle(accessToken);
+    return this.usersService.facebookLoginHandle(body);
   }
 }

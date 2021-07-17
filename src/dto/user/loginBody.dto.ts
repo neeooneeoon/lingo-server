@@ -16,4 +16,7 @@ export class LoginBodyDto {
 
   @ApiProperty({ type: String, required: false })
   avatar?: string;
+
+  @ApiProperty({ type: String, required: true })
+  deviceToken: string;
 }

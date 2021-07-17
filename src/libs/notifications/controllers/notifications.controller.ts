@@ -10,9 +10,9 @@ import { PushNotificationDto } from '@dto/notification';
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
-  @Post('push')
+  @Post('enable')
   @ApiBody({ type: PushNotificationDto, required: true })
   pushNotification(@Body() body: PushNotificationDto) {
-    return this.notificationsService.sendNotification(body);
+    // return this.notificationsService.sendNotification(body);
   }
 }

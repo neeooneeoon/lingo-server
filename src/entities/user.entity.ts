@@ -78,6 +78,9 @@ export class User {
 
   @Prop({ type: Date, required: false })
   createdAt?: Date;
+
+  @Prop({ type: Boolean, required: true, default: false })
+  enableNotification: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

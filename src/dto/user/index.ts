@@ -10,3 +10,7 @@ export { UpdateUserStatusDto } from './updateUserStatus.dto';
 export {} from './updateUserPoint.dto';
 export { SearchUser } from './searchUser.dto';
 export { ChangeAddressDto } from './changeAddress.dto';
+export {
+  ToggleNotificationDto,
+  ToggleNotificationRes,
+} from './toggleNotification.dto';

@@ -1,11 +1,11 @@
 import {
   BadRequestException,
+  forwardRef,
   Inject,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
-  forwardRef,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, UpdateWriteOpResult } from 'mongoose';
@@ -16,14 +16,14 @@ import { ProgressesService } from '@libs/progresses/progresses.service';
 import { UsersHelper } from '@helpers/users.helper';
 import { Rank, Role } from '@utils/enums';
 import {
-  UserProfile,
-  UserLogin,
   FetchAccountInfo,
-  UpdateUserDto,
-  UpdateUserStatusDto,
+  LoginBodyDto,
   SaveLessonDto,
   SearchUser,
-  LoginBodyDto,
+  UpdateUserDto,
+  UpdateUserStatusDto,
+  UserLogin,
+  UserProfile,
 } from '@dto/user';
 import { FacebookService } from './facebook.service';
 import { JwtPayLoad } from '@utils/types';
@@ -39,6 +39,7 @@ import { forkJoin, from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { ScoreOverviewDto } from '@dto/progress';
 import { FollowingDocument } from '@entities/following.entity';
+import { NotificationsService } from '@libs/notifications/providers/notifications.service';
 
 @Injectable()
 export class UsersService {
@@ -56,18 +57,18 @@ export class UsersService {
     @Inject(forwardRef(() => ScoreStatisticsService))
     private scoreStatisticsService: ScoreStatisticsService,
     private followingsService: FollowingsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   public async findByIds(
     ids: Types.ObjectId[] | string[],
   ): Promise<UserDocument[]> {
     try {
-      const users = await this.userModel.find({
+      return this.userModel.find({
         _id: {
           $in: ids,
         },
       });
-      return users;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -82,19 +83,19 @@ export class UsersService {
       email: email,
     });
     if (existsUser) {
+      await this.notificationsService.saveDeviceToken(
+        String(existsUser._id),
+        fetchAccount.deviceToken,
+      );
       const useProfile = this.usersHelper.mapToUserProfile(existsUser);
       const token = this.authService.generateToken({
-        userId: existsUser._id,
-        role: existsUser.role,
-      });
-      const refreshToken = this.authService.generateRefreshToken({
         userId: existsUser._id,
         role: existsUser.role,
       });
       return {
         user: useProfile,
         token: token,
-        refreshToken: refreshToken,
+        refreshToken: token,
       };
     } else {
       const newUser = await this.userModel.create({
@@ -109,37 +110,29 @@ export class UsersService {
         streak: 0,
         lastActive: new Date(),
         address: { province: -1, district: -1 },
+        enableNotification: false,
       });
-      await this.progressesService.createUserProgress({
-        userId: newUser._id,
-        books: [],
-      });
+      await Promise.all([
+        this.progressesService.createUserProgress({
+          userId: newUser._id,
+          books: [],
+        }),
+        this.notificationsService.saveDeviceToken(
+          String(newUser._id),
+          fetchAccount.deviceToken,
+        ),
+      ]);
       const userProfile = this.usersHelper.mapToUserProfile(newUser);
       const token = this.authService.generateToken({
-        userId: newUser._id,
-        role: newUser.role,
-      });
-      const refreshToken = this.authService.generateRefreshToken({
         userId: newUser._id,
         role: newUser.role,
       });
       return {
         user: userProfile,
         token: token,
-        refreshToken: refreshToken,
+        refreshToken: token,
       };
     }
-  }
-
-  public googleRedirect(req: any): any {
-    if (!req.user) {
-      const errorMessage = 'No user from google';
-      return errorMessage;
-    }
-    return {
-      message: 'User information from google',
-      user: req.user,
-    };
   }
 
   public async googleLoginHandle(body: LoginBodyDto): Promise<UserLogin> {
@@ -163,6 +156,7 @@ export class UsersService {
             familyName: familyName,
             displayName: displayName,
             avatar: avatar,
+            deviceToken: body.deviceToken,
           });
         }
       } else {
@@ -173,6 +167,7 @@ export class UsersService {
           givenName: '',
           avatar: body.avatar,
           email: body.email,
+          deviceToken: body.deviceToken,
         });
       }
     } catch (error) {
@@ -180,8 +175,10 @@ export class UsersService {
     }
   }
 
-  public async facebookLoginHandle(accessToken: string): Promise<UserLogin> {
-    const facebookProfile = await this.facebookService.getUserData(accessToken);
+  public async facebookLoginHandle(body: LoginBodyDto): Promise<UserLogin> {
+    const facebookProfile = await this.facebookService.getUserData(
+      body.access_token,
+    );
 
     if (!facebookProfile) {
       throw new BadRequestException('This account not exists.');
@@ -193,6 +190,7 @@ export class UsersService {
         familyName: facebookProfile.last_name,
         displayName: facebookProfile.name,
         avatar: `http://graph.facebook.com/${facebookProfile.id}/picture?type=square`,
+        deviceToken: body.deviceToken,
       });
     }
   }
@@ -362,6 +360,7 @@ export class UsersService {
     );
     return 'save user work';
   }
+
   public searchUser(
     search: string,
     userId: string,
@@ -490,5 +489,28 @@ export class UsersService {
       }),
     );
     return overview$;
+  }
+
+  public toggleReceiveNotification(
+    currentUser: string,
+    enable: boolean,
+  ): Observable<boolean> {
+    return from(
+      this.userModel.updateOne(
+        {
+          _id: Types.ObjectId(currentUser),
+        },
+        {
+          $set: {
+            enableNotification: enable,
+          },
+        },
+      ),
+    ).pipe(
+      map((updateResult) => {
+        if (updateResult.nModified === 1) return true;
+        throw new BadRequestException('Failed.');
+      }),
+    );
   }
 }
