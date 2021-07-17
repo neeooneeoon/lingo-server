@@ -24,7 +24,8 @@ export class ProgressesHelper {
           totalLevels: unit.levels.length - 1,
           totalLessons: unit.totalLessons,
           doneLessons: unitProgress ? unitProgress.doneLessons : 0,
-          totalLessonsOfLevel: currentLevel === 0 ? 0 : unit.levels[currentLevel - 1].totalLessons,
+          totalLessonsOfLevel:
+            currentLevel === 0 ? 0 : unit.levels[currentLevel - 1].totalLessons,
           userLevel: currentLevel,
           userLesson: currentLesson,
           grammar: unit.grammar,

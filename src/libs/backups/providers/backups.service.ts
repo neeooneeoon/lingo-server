@@ -57,7 +57,7 @@ export class BackupsService {
               })
             : (backupQuestionInput[path] = [
                 {
-                  choiceId: sentence.choiceId,
+                  choiceId: choice,
                   code: sentence.code,
                   focusId: sentence.focusId,
                 },
