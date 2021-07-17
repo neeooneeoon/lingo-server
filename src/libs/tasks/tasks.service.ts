@@ -2,10 +2,14 @@ import { UsersService } from '@libs/users/providers/users.service';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { map } from 'rxjs/operators';
+import { NotificationsService } from '@libs/notifications/providers/notifications.service';
 
 @Injectable()
 export class TasksService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private notificationsService: NotificationsService,
+  ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   changeStreakScore() {
@@ -17,5 +21,9 @@ export class TasksService {
         });
       }),
     );
+  }
+  @Cron(CronExpression.EVERY_DAY_AT_7PM)
+  sendNotification() {
+    return this.notificationsService.scheduleNotifications();
   }
 }
