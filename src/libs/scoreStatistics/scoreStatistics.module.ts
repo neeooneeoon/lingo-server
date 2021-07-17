@@ -6,6 +6,7 @@ import {
   ScoreStatisticSchema,
 } from '@entities/scoreStatistic.entity';
 import { ScoreStatisticsService } from './scoreStatistics.service';
+import { ScoreStatisticsHelper } from '@helpers/scoreStatistics.helper';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { ScoreStatisticsService } from './scoreStatistics.service';
     ]),
     forwardRef(() => UsersModule),
   ],
-  providers: [ScoreStatisticsService],
+  providers: [ScoreStatisticsService, ScoreStatisticsHelper],
   exports: [ScoreStatisticsService],
 })
 export class ScoreStatisticsModule {}
