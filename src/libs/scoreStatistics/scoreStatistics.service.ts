@@ -5,6 +5,7 @@ import {
   ScoreStatisticDocument,
 } from '@entities/scoreStatistic.entity';
 import { UserDocument } from '@entities/user.entity';
+import { ScoreStatisticsHelper } from '@helpers/scoreStatistics.helper';
 import { UsersService } from '@libs/users/providers/users.service';
 import {
   BadRequestException,
@@ -24,6 +25,7 @@ export class ScoreStatisticsService {
     @InjectModel(ScoreStatistic.name)
     private scoreStatisticModel: Model<ScoreStatisticDocument>,
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
+    private scoreStatisticsHelper: ScoreStatisticsHelper,
   ) {}
 
   public async getRankByTime(
@@ -60,6 +62,7 @@ export class ScoreStatisticsService {
       };
       xpArr = await this.getTotalXp(userId, filter);
     }
+
     const userResult = await this.usersService.queryMe(userId);
     if (xpArr.length == 0) {
       xpArr.push({
@@ -105,10 +108,10 @@ export class ScoreStatisticsService {
         };
       }
 
-      xpArr = xpArr.slice(0, 8);
+      xpArr = xpArr.slice(0, topLength - 1);
       xpArr.push(lastUser);
     }
-    return xpArr.slice(0, 9);
+    return xpArr.slice(0, topLength);
   }
   public async getUserXpThisWeek(
     currentUserId: string,
@@ -197,12 +200,13 @@ export class ScoreStatisticsService {
         return 0;
       });
 
-      let prevUser: UserDocument = tempArr[0].user as unknown as UserDocument;
+      let prevUser = this.scoreStatisticsHelper.getFirstUserNotNull(tempArr);
       let totalXp = 0;
       for (let i = 0; i < tempArr.length; i++) {
+        if (!prevUser) break;
         const item = tempArr[i];
         const currentUser = item.user as unknown as UserDocument;
-
+        if (!currentUser) continue;
         if (currentUser._id.toHexString() == prevUser._id.toHexString()) {
           totalXp += item.xp;
         } else {
@@ -216,6 +220,7 @@ export class ScoreStatisticsService {
           };
           if (userRank.userId.toHexString() == userId)
             userRank.isCurrentUser = true;
+
           xpArr.push(userRank);
           totalXp = 0;
           prevUser = currentUser;
@@ -241,6 +246,7 @@ export class ScoreStatisticsService {
         if (firstEl.xp > secondEl.xp) return -1;
         return 0;
       });
+
       return xpArr;
     } catch (error) {
       throw new InternalServerErrorException(error);
