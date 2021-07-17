@@ -7,7 +7,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { DeviceToken, DeviceTokenDocument } from '@entities/deviceToken.entity';
 import { Model, Types } from 'mongoose';
 import { forkJoin, from, Observable, of } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { UserDocument } from '@entities/user.entity';
 
 @Injectable()
 export class NotificationsService {
@@ -25,7 +26,6 @@ export class NotificationsService {
     };
     admin.initializeApp({
       credential: admin.credential.cert(adminConfig),
-      databaseURL: this.configsService.get('DATABASE_URL'),
     });
   }
 
@@ -60,7 +60,7 @@ export class NotificationsService {
           return of(deviceToken);
         } else {
           return this.deviceTokenModel.create({
-            user: Types.ObjectId('userId'),
+            user: Types.ObjectId(userId),
             token: token,
           });
         }
@@ -68,20 +68,37 @@ export class NotificationsService {
     );
   }
   public scheduleNotifications(): Observable<void[]> {
-    // from(
-    //   this.deviceTokenModel.find({}).populate('User').select('enableNotification')
-    // ).pipe)
-    return from(this.deviceTokenModel.find()).pipe(
-      switchMap((deviceTokens) => {
-        return forkJoin(
-          deviceTokens.map((deviceToken) => {
+    return from(this.deviceTokenModel.find({}).populate('user')).pipe(
+      map((deviceTokens) => {
+        const enableDevices: string[] = [];
+        deviceTokens.map((deviceToken) => {
+          const user = deviceToken.user as unknown as UserDocument;
+          user.enableNotification && enableDevices.push(deviceToken.token);
+        });
+        return enableDevices;
+      }),
+      switchMap((enableDevices) => {
+        return forkJoin([
+          ...enableDevices.map((device) => {
             return this.sendNotification({
-              token: deviceToken.token,
+              token: device,
               title: 'Nhắc nhở mỗi ngày',
               body: 'Lingo xin chào!',
             });
           }),
-        );
+        ]);
+      }),
+    );
+  }
+  public removeDeviceToken(currentUser: string): Observable<boolean> {
+    return from(
+      this.deviceTokenModel.deleteOne({
+        user: Types.ObjectId(currentUser),
+      }),
+    ).pipe(
+      map((deleteResult) => {
+        if (deleteResult.deletedCount === 1) return true;
+        throw new InternalServerErrorException();
       }),
     );
   }

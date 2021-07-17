@@ -7,6 +7,7 @@ import {
   Put,
   UseGuards,
   Param,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -111,6 +112,7 @@ export class UserController {
   @Put('changeAddress')
   @ApiBody({ type: ChangeAddressDto, required: true })
   @ApiResponse({ type: UserProfile, status: 200 })
+  @ApiBearerAuth()
   changeUserAddress(
     @Body() body: ChangeAddressDto,
     @UserCtx() user: JwtPayLoad,
@@ -124,6 +126,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Put('toggleNotification')
+  @ApiBearerAuth()
   @ApiBody({ type: ToggleNotificationDto })
   @ApiResponse({ type: ToggleNotificationRes })
   @ApiOperation({ summary: 'Bật / tắt nhận thông báo ứng dụng' })
@@ -135,5 +138,12 @@ export class UserController {
       user.userId,
       body.enable,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('logout')
+  @ApiBearerAuth()
+  logout(@UserCtx() user: JwtPayLoad) {
+    return this.usersService.logout(user.userId);
   }
 }

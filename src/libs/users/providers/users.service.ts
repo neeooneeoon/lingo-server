@@ -83,10 +83,10 @@ export class UsersService {
       email: email,
     });
     if (existsUser) {
-      await this.notificationsService.saveDeviceToken(
-        String(existsUser._id),
-        fetchAccount.deviceToken,
-      );
+      this.notificationsService
+        .saveDeviceToken(String(existsUser._id), fetchAccount.deviceToken)
+        .pipe()
+        .subscribe();
       const useProfile = this.usersHelper.mapToUserProfile(existsUser);
       const token = this.authService.generateToken({
         userId: existsUser._id,
@@ -512,5 +512,8 @@ export class UsersService {
         throw new BadRequestException('Failed.');
       }),
     );
+  }
+  public logout(currentUser: string) {
+    return this.notificationsService.removeDeviceToken(currentUser);
   }
 }
