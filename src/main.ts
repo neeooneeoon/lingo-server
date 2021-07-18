@@ -8,7 +8,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { AppClusterService } from './app-cluster.service';
-import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -51,5 +50,4 @@ async function bootstrap() {
   console.log('\nCompile successfully!\n');
   console.log(`🚀 Lingo Server is listening at http://localhost:${port}`);
 }
-bootstrap();
-// AppClusterService.clusterize(bootstrap);
+AppClusterService.clusterize(bootstrap);
