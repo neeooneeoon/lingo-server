@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { switchMap } from 'rxjs/operators';
 import { NotificationsService } from '@libs/notifications/providers/notifications.service';
+import { forkJoin } from 'rxjs';
 
 @Injectable()
 export class TasksService {
@@ -18,9 +19,11 @@ export class TasksService {
     const users$ = this.usersService.getAllUsers();
     users$.pipe(
       switchMap((users) => {
-        return users.map((user) => {
-          return this.usersService.changeUserStreak(String(user._id));
-        });
+        return forkJoin([
+          ...users.map((user) => {
+            return this.usersService.changeUserStreak(String(user._id));
+          }),
+        ]);
       }),
     );
   }
