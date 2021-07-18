@@ -13,7 +13,7 @@ export class TasksService {
     private notificationsService: NotificationsService,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
   changeStreakScore() {
     this.logger.log('Starting check streak');
     const users$ = this.usersService.getAllUsers();
