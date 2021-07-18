@@ -33,7 +33,7 @@ async function bootstrap() {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.enableCors();
   app.use(helmet());
-  app.useGlobalInterceptors(new TimeoutInterceptor());
+  // app.useGlobalInterceptors(new TimeoutInterceptor());
   const openApiConfig = new DocumentBuilder()
     .addBearerAuth({
       type: 'http',
@@ -51,4 +51,5 @@ async function bootstrap() {
   console.log('\nCompile successfully!\n');
   console.log(`🚀 Lingo Server is listening at http://localhost:${port}`);
 }
-AppClusterService.clusterize(bootstrap);
+bootstrap();
+// AppClusterService.clusterize(bootstrap);
