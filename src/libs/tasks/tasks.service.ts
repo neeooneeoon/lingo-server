@@ -1,11 +1,12 @@
 import { UsersService } from '@libs/users/providers/users.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { map } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { NotificationsService } from '@libs/notifications/providers/notifications.service';
 
 @Injectable()
 export class TasksService {
+  private readonly logger = new Logger(TasksService.name);
   constructor(
     private usersService: UsersService,
     private notificationsService: NotificationsService,
@@ -13,9 +14,10 @@ export class TasksService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   changeStreakScore() {
+    this.logger.log('Starting check streak');
     const users$ = this.usersService.getAllUsers();
     users$.pipe(
-      map((users) => {
+      switchMap((users) => {
         return users.map((user) => {
           return this.usersService.changeUserStreak(String(user._id));
         });
@@ -24,6 +26,7 @@ export class TasksService {
   }
   @Cron(CronExpression.EVERY_DAY_AT_7PM)
   sendNotification() {
+    this.logger.log('Starting send notification');
     return this.notificationsService.scheduleNotifications();
   }
 }
