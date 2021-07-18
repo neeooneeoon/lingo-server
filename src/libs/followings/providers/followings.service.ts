@@ -37,7 +37,7 @@ export class FollowingsService {
       this.followingModel.count({ user: Types.ObjectId(currentUser) }),
     );
 
-    if (tagIds.includes('all')) {
+    if (!tagIds || tagIds?.includes('all')) {
       const followings$ = from(
         this.followingModel
           .find({

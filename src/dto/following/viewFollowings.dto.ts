@@ -4,7 +4,7 @@ export class ViewFollowingsDto {
   @ApiProperty({
     type: [String],
     required: true,
-    default: 'all',
+    default: ['all'],
     description: 'Lọc người theo dõi bằng tagId, mặc định bằng "all"',
   })
   tagIds: string[];
