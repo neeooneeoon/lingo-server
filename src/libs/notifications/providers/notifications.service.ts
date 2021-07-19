@@ -24,6 +24,9 @@ export class NotificationsService {
         .replace(/\\n/g, '\n'),
       clientEmail: this.configsService.get('FIREBASE_CLIENT_EMAIL'),
     };
+
+    console.log(adminConfig);
+
     admin.initializeApp({
       credential: admin.credential.cert(adminConfig),
     });
@@ -40,9 +43,11 @@ export class NotificationsService {
           body,
         },
       };
-      await Promise.all([admin.messaging().sendToDevice(token, payload)]);
+      await admin.messaging().sendToDevice(token, payload);
+      // await Promise.all([admin.messaging().sendToDevice(token, payload)]);
       return;
     } catch (e) {
+      console.log(e);
       throw new InternalServerErrorException(e);
     }
   }
@@ -67,7 +72,28 @@ export class NotificationsService {
       }),
     );
   }
-  public scheduleNotifications(): Observable<void[]> {
+  public async scheduleNotifications() {
+    const devices = await this.deviceTokenModel.find({}).populate('user');
+    const enableDevices: Array<string> = [];
+    devices.map((device) => {
+      const user = device.user as unknown as UserDocument;
+      enableDevices.push(device.token);
+      // user && user.enableNotification === true
+      //   ? enableDevices.push(device.token)
+      //   : null;
+    });
+    enableDevices.push(
+      'cJ_pdwdoSim4vxe-T7Stkc:APA91bH2wniG9p-z6oexL03OgaQKOAwqJcoz-PTqC3Ow74iVcZh8hAXjTchIQgzHL6iTvuvdJ0__TOiQeCoE2qVhSNJvcnxriNNTvdx_N304SxEj6trEqYX-WhQL86zVzeeLSPsU3vX2',
+    );
+    await Promise.all(
+      enableDevices.map((token) =>
+        this.sendNotification({
+          token: token,
+          title: '⏰ Nhắc nhở hằng ngày. ',
+          body: 'Bạn chỉ cần dành ra 10 phút để nâng cao kỹ năng Tiếng Anh. Bắt đầu thôi!',
+        }),
+      ),
+    );
     return from(this.deviceTokenModel.find({}).populate('user')).pipe(
       map((deviceTokens) => {
         const enableDevices: string[] = [];

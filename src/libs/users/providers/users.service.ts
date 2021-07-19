@@ -422,9 +422,8 @@ export class UsersService {
     return xpArr;
   }
 
-  public getAllUsers(): Observable<UserDocument[]> {
-    const users$ = from(this.userModel.find());
-    return users$;
+  public async getAllUsers(): Promise<UserDocument[]> {
+    return this.userModel.find({});
   }
 
   public findUser(userId: string): Observable<UserProfile> {
@@ -440,39 +439,21 @@ export class UsersService {
     return profile$;
   }
 
-  public changeUserStreak(userId: string): Observable<UpdateWriteOpResult> {
-    const user$ = this.findUser(userId);
-    const records$ =
-      this.scoreStatisticsService.findScoreStatisticRecords(userId);
-
-    const update$ = forkJoin([user$, records$]).pipe(
-      switchMap(([userProfile, records]) => {
-        if (records.length === 0) {
-          return from(
-            this.userModel.updateOne(
-              { _id: Types.ObjectId(userId) },
-              {
-                $set: {
-                  streak: 0,
-                },
-              },
-            ),
-          );
-        } else {
-          return from(
-            this.userModel.updateOne(
-              { _id: Types.ObjectId(userId) },
-              {
-                $set: {
-                  streak: userProfile.streak + 1,
-                },
-              },
-            ),
-          );
-        }
-      }),
+  public async changeUserStreak(userId: string): Promise<UpdateWriteOpResult> {
+    const [user, scoreRecords] = await Promise.all([
+      this.userModel.findById(Types.ObjectId(userId)),
+      this.scoreStatisticsService.findScoreStatisticRecords(userId),
+    ]);
+    return this.userModel.updateOne(
+      {
+        _id: Types.ObjectId(userId),
+      },
+      {
+        $set: {
+          streak: scoreRecords.length === 0 ? 0 : user.streak + 1,
+        },
+      },
     );
-    return update$;
   }
 
   public scoresOverview(userId: string): Observable<ScoreOverviewDto> {
