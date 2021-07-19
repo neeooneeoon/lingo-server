@@ -6,9 +6,6 @@ export class Province {
   @Prop({ type: Number, required: true })
   _id: number;
 
-  @Prop({ type: Number, required: true, ref: 'Province' })
-  province: number;
-
   @Prop({ type: String, required: true })
   name: string;
 }

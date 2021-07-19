@@ -40,4 +40,15 @@ export class UserProfile {
 
   @ApiProperty({ type: Date, required: false })
   createdAt?: Date;
+
+  @ApiProperty({
+    type: 'object',
+  })
+  address: {
+    province: string;
+    district: string;
+  };
+
+  @ApiProperty({ type: Boolean })
+  enableNotification: boolean;
 }

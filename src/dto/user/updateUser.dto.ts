@@ -15,4 +15,10 @@ export class UpdateUserDto {
 
   @ApiProperty({ type: Number, required: true, default: 1 })
   grade: number;
+
+  @ApiProperty({ type: Number, required: true })
+  provinceId: number;
+
+  @ApiProperty({type: Number, required: true})
+  districtId: number;
 }

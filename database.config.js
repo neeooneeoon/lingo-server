@@ -1,7 +1,7 @@
 const env = {
   mongo: {
     url: 'mongodb://localhost:27017',
-    dbname: 'tuvungtest',
+    dbname: 'tuvung',
   },
 };
 module.exports = env;
