@@ -316,9 +316,9 @@ export class ScoreStatisticsService {
     return xpStatisticResult;
   }
 
-  public findScoreStatisticRecords(
+  public async findScoreStatisticRecords(
     userId: string,
-  ): Observable<ScoreStatisticDocument[]> {
+  ): Promise<ScoreStatisticDocument[]> {
     const startDateAsString = dayjs()
       .startOf('day')
       .subtract(1, 'day')
@@ -326,17 +326,13 @@ export class ScoreStatisticsService {
     const endDateAsString = dayjs().endOf('day').subtract(1, 'day').format();
     const startDate = new Date(startDateAsString);
     const endDate = new Date(endDateAsString);
-
-    const records$ = from(
-      this.scoreStatisticModel.find({
-        user: Types.ObjectId(userId),
-        createdAt: {
-          $gte: startDate,
-          $lte: endDate,
-        },
-      }),
-    );
-    return records$;
+    return this.scoreStatisticModel.find({
+      user: Types.ObjectId(userId),
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    });
   }
 
   // public async generateXP() {

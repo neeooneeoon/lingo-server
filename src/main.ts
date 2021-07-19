@@ -50,4 +50,5 @@ async function bootstrap() {
   console.log('\nCompile successfully!\n');
   console.log(`🚀 Lingo Server is listening at http://localhost:${port}`);
 }
-AppClusterService.clusterize(bootstrap);
+bootstrap();
+// AppClusterService.clusterize(bootstrap);
