@@ -40,6 +40,8 @@ import { map, switchMap } from 'rxjs/operators';
 import { ScoreOverviewDto } from '@dto/progress';
 import { FollowingDocument } from '@entities/following.entity';
 import { NotificationsService } from '@libs/notifications/providers/notifications.service';
+import { Province } from '@entities/province.entity';
+import { District } from '@entities/district.entity';
 
 @Injectable()
 export class UsersService {
@@ -211,11 +213,20 @@ export class UsersService {
     data: UpdateUserDto,
   ): Promise<UserProfile> {
     try {
-      const updatedUser = await this.userModel.findByIdAndUpdate(
-        userId,
-        { ...data },
-        { new: true },
-      );
+      const address = {
+        address: {
+          province: data.provinceId,
+          district: data.districtId,
+        },
+      };
+      delete data.provinceId;
+      delete data.districtId;
+      const userData = { ...data, ...address };
+      const updatedUser = await this.userModel
+        .findByIdAndUpdate(userId, { ...userData }, { new: true })
+        .populate('address.province', ['name'], Province.name)
+        .populate('address.district', ['name'], District.name);
+      // .populate('address.district', ['name']);
       return this.usersHelper.mapToUserProfile(updatedUser);
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -428,7 +439,12 @@ export class UsersService {
   }
 
   public findUser(userId: string): Observable<UserProfile> {
-    const profile$ = from(this.userModel.findById(userId)).pipe(
+    const profile$ = from(
+      this.userModel
+        .findById(userId)
+        .populate('address.province', ['name'], Province.name)
+        .populate('address.district', ['name'], District.name),
+    ).pipe(
       map((user) => {
         if (!user) {
           throw new BadRequestException(`Can't find user ${userId}`);
@@ -513,6 +529,7 @@ export class UsersService {
       }),
     );
   }
+
   public logout(currentUser: string) {
     return this.notificationsService.removeDeviceToken(currentUser);
   }

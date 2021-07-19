@@ -31,6 +31,8 @@ export class ScoreStatisticsService {
   public async getRankByTime(
     userId: string,
     timeSelect: string,
+    provinceId?: string,
+    districtId?: string,
   ): Promise<UserRank[]> {
     let topLength = 10;
     timeSelect = timeSelect.trim();
@@ -153,7 +155,6 @@ export class ScoreStatisticsService {
     const xpArr = promises[1];
     const followUserWeekStatistic = promises[2];
     const currentUserWeekStatistic = promises[3];
-    //console.log(weekStatistic);
 
     const result: Statistic = {
       currentUserXp: -1,
@@ -177,6 +178,23 @@ export class ScoreStatisticsService {
     return result;
   }
 
+  // private async getXpStatisticByAddress(
+  //   filter?: any,
+  //   address?: any,
+  // ): Promise<ScoreStatisticDocument[]> {
+  //   let tempArr: ScoreStatisticDocument[];
+  //   if (filter) {
+  //     tempArr = await this.scoreStatisticModel
+  //       .find(filter)
+  //       .populate('user', ['displayName', 'avatar', 'address']);
+  //   } else {
+  //     tempArr = await this.scoreStatisticModel
+  //       .find({})
+  //       .populate('user', ['displayName', 'avatar', 'address']);
+  //   }
+  //
+  // }
+
   private async getTotalXp(userId: string, filter?: any): Promise<UserRank[]> {
     try {
       const xpArr: UserRank[] = [];
@@ -184,11 +202,11 @@ export class ScoreStatisticsService {
       if (filter) {
         tempArr = await this.scoreStatisticModel
           .find(filter)
-          .populate('user', ['displayName', 'avatar']);
+          .populate('user', ['displayName', 'avatar', 'address']);
       } else {
         tempArr = await this.scoreStatisticModel
           .find({})
-          .populate('user', ['displayName', 'avatar']);
+          .populate('user', ['displayName', 'avatar'], 'address');
       }
 
       if (!tempArr || tempArr.length == 0) {
