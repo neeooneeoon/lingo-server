@@ -17,7 +17,6 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import * as dayjs from 'dayjs';
 import { Model, Types } from 'mongoose';
-import { from, Observable } from 'rxjs';
 
 @Injectable()
 export class ScoreStatisticsService {

@@ -36,7 +36,7 @@ import { FollowingsService } from '@libs/followings/providers/followings.service
 import { UserRank } from '@dto/leaderBoard/userRank.dto';
 import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
 import { forkJoin, from, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ScoreOverviewDto } from '@dto/progress';
 import { FollowingDocument } from '@entities/following.entity';
 import { NotificationsService } from '@libs/notifications/providers/notifications.service';
