@@ -11,7 +11,7 @@ export class TasksService {
     private notificationsService: NotificationsService,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron('0 0 * * *')
   async changeStreakScore() {
     this.logger.log('Starting check streak');
     const users = await this.usersService.getAllUsers();
@@ -19,7 +19,8 @@ export class TasksService {
       users.map((user) => this.usersService.changeUserStreak(String(user._id))),
     );
   }
-  @Cron(CronExpression.EVERY_DAY_AT_7PM)
+  s;
+  @Cron('0 19 * * *')
   sendNotification() {
     this.logger.log('Starting send notification');
     return this.notificationsService.scheduleNotifications();
