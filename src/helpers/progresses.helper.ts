@@ -21,7 +21,7 @@ export class ProgressesHelper {
           unitNId: unit.nId,
           name: unit.name,
           description: unit.description,
-          totalLevels: unit.levels.length - 1,
+          totalLevels: unit.levels.length,
           totalLessons: unit.totalLessons,
           doneLessons: unitProgress ? unitProgress.doneLessons : 0,
           totalLessonsOfLevel:
@@ -41,7 +41,7 @@ export class ProgressesHelper {
           unitNId: unit.nId,
           name: unit.name,
           description: unit.description,
-          totalLevels: unit.levels.length - 1,
+          totalLevels: unit.levels.length,
           totalLessonsOfLevel: unit.levels[0].totalLessons,
           totalLessons: unit.totalLessons,
           doneLessons: 0,
