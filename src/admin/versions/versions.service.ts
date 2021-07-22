@@ -50,4 +50,8 @@ export class VersionsService {
     }
     throw new NotFoundException("Can't find version");
   }
+
+  public async getCurrentVersion(): Promise<VersionDocument> {
+    return this.versionModel.findOne({});
+  }
 }

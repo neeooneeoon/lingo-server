@@ -37,4 +37,9 @@ export class VersionsController {
   checkMatchVersion(@Query('tag') tag: string) {
     return this.versionsService.checkMatchVersion(tag);
   }
+
+  @Get('/current')
+  getCurrentVersion() {
+    return this.versionsService.getCurrentVersion();
+  }
 }
