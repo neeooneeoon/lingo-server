@@ -8,6 +8,7 @@ import { AdminService } from './admin.service';
 import { ExportsModule } from './exports/exports.module';
 import { ImportsModule } from './imports/imports.module';
 import { ManagementsModule } from './managements/managements.module';
+import { VersionsModule } from '@admin/versions';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ManagementsModule } from './managements/managements.module';
     ManagementsModule,
     ExportsModule,
     ImportsModule,
+    VersionsModule,
   ],
   controllers: [AdminController],
   providers: [AdminService, UsersHelper],
