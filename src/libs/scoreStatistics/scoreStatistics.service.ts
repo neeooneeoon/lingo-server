@@ -17,6 +17,8 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import * as dayjs from 'dayjs';
 import { Model, Types } from 'mongoose';
+import { Location } from '@utils/enums';
+import { TOP_XP_LENGTH } from '@utils/constants';
 
 @Injectable()
 export class ScoreStatisticsService {
@@ -30,10 +32,9 @@ export class ScoreStatisticsService {
   public async getRankByTime(
     userId: string,
     timeSelect: string,
-    provinceId?: string,
-    districtId?: string,
+    location?: string,
+    locationId?: number,
   ): Promise<UserRank[]> {
-    let topLength = 10;
     timeSelect = timeSelect.trim();
     if (!timeSelect) {
       throw new BadRequestException('timeSelect not entered');
@@ -48,7 +49,10 @@ export class ScoreStatisticsService {
         startTime = dayjs().startOf('month').format();
         break;
       case 'all':
-        xpArr = await this.usersService.getAllTimeUserXpList();
+        xpArr = await this.usersService.getAllTimeUserXpList(
+          location,
+          locationId,
+        );
         break;
       default:
         break;
@@ -61,9 +65,23 @@ export class ScoreStatisticsService {
           $lte: endTime,
         },
       };
-      xpArr = await this.getTotalXp(userId, filter);
+      xpArr = await this.getTotalXp(userId, filter, locationId, location);
     }
-
+    if (
+      !(await this.usersService.isUserInLocation(userId, location, locationId))
+    ) {
+      return xpArr.slice(0, TOP_XP_LENGTH).map((i) => {
+        i.orderNumber = i.orderNumber + 1;
+        return i;
+      });
+    }
+    return await this.handleLastUser(userId, xpArr);
+  }
+  private async handleLastUser(
+    userId: string,
+    xpArr: UserRank[],
+  ): Promise<UserRank[]> {
+    let topLength = TOP_XP_LENGTH;
     const userResult = await this.usersService.queryMe(userId);
     if (xpArr.length == 0) {
       xpArr.push({
@@ -177,37 +195,47 @@ export class ScoreStatisticsService {
     return result;
   }
 
-  // private async getXpStatisticByAddress(
-  //   filter?: any,
-  //   address?: any,
-  // ): Promise<ScoreStatisticDocument[]> {
-  //   let tempArr: ScoreStatisticDocument[];
-  //   if (filter) {
-  //     tempArr = await this.scoreStatisticModel
-  //       .find(filter)
-  //       .populate('user', ['displayName', 'avatar', 'address']);
-  //   } else {
-  //     tempArr = await this.scoreStatisticModel
-  //       .find({})
-  //       .populate('user', ['displayName', 'avatar', 'address']);
-  //   }
-  //
-  // }
+  public async getXpStatisticByAddress(
+    filter?: any,
+    locationId?: number,
+    location?: string,
+  ): Promise<ScoreStatisticDocument[]> {
+    let tempArr: ScoreStatisticDocument[];
+    if (filter) {
+      tempArr = await this.scoreStatisticModel
+        .find(filter)
+        .populate('user', ['displayName', 'avatar', 'address']);
+    } else {
+      tempArr = await this.scoreStatisticModel
+        .find({})
+        .populate('user', ['displayName', 'avatar', 'address']);
+    }
 
-  private async getTotalXp(userId: string, filter?: any): Promise<UserRank[]> {
+    return tempArr.filter((i) => {
+      const user = i.user as unknown as UserDocument;
+      if (!user) return false;
+      switch (location) {
+        case Location.Province:
+          return locationId === user.address.province;
+        case Location.District:
+          return locationId === user.address.district;
+        case Location.All:
+        default:
+          return true;
+      }
+    });
+  }
+
+  private async getTotalXp(
+    userId: string,
+    filter?: any,
+    locationId?: number,
+    location?: string,
+  ): Promise<UserRank[]> {
     try {
       const xpArr: UserRank[] = [];
-      let tempArr: ScoreStatisticDocument[];
-      if (filter) {
-        tempArr = await this.scoreStatisticModel
-          .find(filter)
-          .populate('user', ['displayName', 'avatar', 'address']);
-      } else {
-        tempArr = await this.scoreStatisticModel
-          .find({})
-          .populate('user', ['displayName', 'avatar'], 'address');
-      }
-
+      const tempArr: ScoreStatisticDocument[] =
+        await this.getXpStatisticByAddress(filter, locationId, location);
       if (!tempArr || tempArr.length == 0) {
         return [];
       }
@@ -220,10 +248,10 @@ export class ScoreStatisticsService {
       let prevUser = this.scoreStatisticsHelper.getFirstUserNotNull(tempArr);
       let totalXp = 0;
       for (let i = 0; i < tempArr.length; i++) {
-        if (!prevUser) break;
+        // if (!prevUser) break;
         const item = tempArr[i];
         const currentUser = item.user as unknown as UserDocument;
-        if (!currentUser) continue;
+        // if (!currentUser) continue;
         if (currentUser._id.toHexString() == prevUser._id.toHexString()) {
           totalXp += item.xp;
         } else {
@@ -333,9 +361,4 @@ export class ScoreStatisticsService {
       },
     });
   }
-
-  // public async generateXP() {
-  //     const createdAt = dayjs().subtract(2, 'days').format();
-  //     await new this.scoreStatisticModel({ xp: 35, createdAt: createdAt, user: new Types.ObjectId('60d69b497562563750e9a5a1') }).save();
-  // }
 }

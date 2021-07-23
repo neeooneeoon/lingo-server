@@ -14,7 +14,7 @@ import { AuthenticationService } from '@authentication/authentication.service';
 import { GoogleService } from './google.service';
 import { ProgressesService } from '@libs/progresses/progresses.service';
 import { UsersHelper } from '@helpers/users.helper';
-import { Rank, Role } from '@utils/enums';
+import { Location, Rank, Role } from '@utils/enums';
 import {
   FetchAccountInfo,
   LoginBodyDto,
@@ -410,9 +410,25 @@ export class UsersService {
     );
   }
 
-  public async getAllTimeUserXpList(): Promise<UserRank[]> {
+  public async getAllTimeUserXpList(
+    location: string,
+    locationId?: number,
+  ): Promise<UserRank[]> {
+    let filter = {};
+    switch (location) {
+      case Location.Province:
+        filter = { role: { $ne: Role.Admin }, 'address.province': locationId };
+        break;
+      case Location.District:
+        filter = { role: { $ne: Role.Admin }, 'address.district': locationId };
+        break;
+      case Location.All:
+      default:
+        filter = { role: { $ne: Role.Admin } };
+        break;
+    }
     const userRankList = await this.userModel
-      .find({ role: { $ne: Role.Admin } })
+      .find(filter)
       .sort({ xp: -1 })
       .select({ xp: 1, displayName: 1, avatar: 1 });
     const xpArr: UserRank[] = [];
@@ -509,6 +525,22 @@ export class UsersService {
         throw new BadRequestException('Failed.');
       }),
     );
+  }
+
+  public async isUserInLocation(
+    userId: string,
+    location: string,
+    locationId: number,
+  ): Promise<boolean> {
+    const user = await this.userModel.findById(userId);
+    if (!user) return false;
+    switch (location) {
+      case Location.Province:
+        return user.address.province === locationId;
+      case Location.District:
+        return user.address.district === locationId;
+    }
+    return true;
   }
 
   public logout(currentUser: string) {
