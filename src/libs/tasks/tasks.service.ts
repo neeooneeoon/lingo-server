@@ -20,7 +20,6 @@ export class TasksService {
       users.map((user) => this.usersService.changeUserStreak(String(user._id))),
     );
   }
-  s;
   @Cron('0 0 * * *')
   sendNotification() {
     this.logger.log('Starting send notification');

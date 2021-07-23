@@ -438,7 +438,7 @@ export class UsersService {
   }
 
   public findUser(userId: string): Observable<UserProfile> {
-    const profile$ = from(
+    return from(
       this.userModel
         .findById(userId)
         .populate('address.province', ['name'], Province.name)
@@ -448,11 +448,9 @@ export class UsersService {
         if (!user) {
           throw new BadRequestException(`Can't find user ${userId}`);
         }
-        const userProfile = this.usersHelper.mapToUserProfile(user);
-        return userProfile;
+        return this.usersHelper.mapToUserProfile(user);
       }),
     );
-    return profile$;
   }
 
   public async changeUserStreak(userId: string): Promise<UpdateWriteOpResult> {
@@ -473,7 +471,7 @@ export class UsersService {
   }
 
   public scoresOverview(userId: string): Observable<ScoreOverviewDto> {
-    const overview$: Observable<ScoreOverviewDto> = forkJoin([
+    return forkJoin([
       this.findUser(userId),
       this.progressesService.getAllUserScoresInProgress(userId),
     ]).pipe(
@@ -485,7 +483,6 @@ export class UsersService {
         };
       }),
     );
-    return overview$;
   }
 
   public toggleReceiveNotification(

@@ -3,4 +3,5 @@ export class RestoreSentenceDto {
   content: string;
   meaning?: string;
   audio?: string;
+  active: boolean;
 }

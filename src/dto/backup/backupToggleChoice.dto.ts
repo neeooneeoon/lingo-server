@@ -1,15 +1,11 @@
 import { QuestionTypeCode } from '@utils/enums';
 
-export class BackupDto {
+export class BackupToggleChoiceDto {
   bookId: string;
   unitId: string;
   levelIndex: number;
   focusId: string;
   choiceId: string;
-  content: string;
-  meaning: string;
-  audio?: string;
   code: QuestionTypeCode;
-  newInstance: boolean;
-  active: boolean;
+  currentState: boolean;
 }

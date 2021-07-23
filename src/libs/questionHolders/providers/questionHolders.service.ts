@@ -29,8 +29,8 @@ import { Unit, UnitDocument } from '@entities/unit.entity';
 import { WordDocument } from '@entities/word.entity';
 import { SentenceDocument } from '@entities/sentence.entity';
 import { QuestionTypeCode } from '@utils/enums';
-import { forkJoin, from, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { forkJoin, from, Observable, of } from 'rxjs';
+import { map, mergeMap, switchMap } from 'rxjs/operators';
 import { BackupQuestionInputDto } from '@dto/backup';
 
 @Injectable()
@@ -235,7 +235,7 @@ export class QuestionHoldersService {
     levelIndex: number;
     questionId: string;
     choiceId: string;
-  }): Observable<boolean> {
+  }) {
     return from(
       this.questionHolderModel.findOne({
         bookId: input.bookId,
@@ -261,23 +261,38 @@ export class QuestionHoldersService {
           throw new BadRequestException('Not found choice');
         const status = questions[questionIndex].choices[choiceIndex].active;
         questions[questionIndex].choices[choiceIndex].active = status !== true;
-        return questions;
+        return {
+          questions: questions,
+          choice: questions[questionIndex].choices[choiceIndex],
+          focusQuestion: questions[questionIndex],
+        };
       }),
-      switchMap((questions) => {
-        return this.questionHolderModel.updateOne(
-          {
-            bookId: input.bookId,
-            unitId: input.unitId,
-            level: input.levelIndex,
-          },
-          {
-            $set: {
-              questions: questions,
+      switchMap(({ questions, choice, focusQuestion }) => {
+        return forkJoin([
+          from([choice]),
+          from([focusQuestion]),
+          this.questionHolderModel.updateOne(
+            {
+              bookId: input.bookId,
+              unitId: input.unitId,
+              level: input.levelIndex,
             },
-          },
-        );
+            {
+              $set: {
+                questions: questions,
+              },
+            },
+          ),
+        ]);
       }),
-      map((updateResult) => updateResult.nModified === 1),
+      map(([choice, focusQuestion, updateResult]) => {
+        if (updateResult.nModified === 1) {
+          return {
+            choice,
+            focusQuestion,
+          };
+        }
+      }),
     );
   }
 
@@ -363,7 +378,7 @@ export class QuestionHoldersService {
               const questions = questionHolder.questions;
               if (questions && questions.length > 0) {
                 backupInput[key].map((backupItem) => {
-                  const { focusId, choiceId, code } = backupItem;
+                  const { focusId, choiceId, code, active } = backupItem;
                   const index = questions.findIndex(
                     (question) =>
                       question.code === code && question.focus === focusId,
@@ -376,8 +391,15 @@ export class QuestionHoldersService {
                       setChoices.add(choiceId);
                       questions[index].choices.push({
                         _id: choiceId,
-                        active: true,
+                        active: active,
                       });
+                    } else {
+                      const choiceIndex = questions[index].choices.findIndex(
+                        (item) => item._id === choiceId,
+                      );
+                      if (choiceIndex !== -1) {
+                        questions[index].choices[choiceIndex].active = active;
+                      }
                     }
                   }
                 });

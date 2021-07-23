@@ -73,13 +73,30 @@ export class QuestionsController {
     @Param('levelIndex') levelIndex: number,
     @Body() body: RemoveChoiceDto,
   ) {
-    return this.questionService.toggleChoice({
-      bookId: bookId,
-      unitId: unitId,
-      levelIndex: levelIndex,
-      questionId: body.questionId,
-      choiceId: body.choiceId,
-    });
+    return this.questionService
+      .toggleChoice({
+        bookId: bookId,
+        unitId: unitId,
+        levelIndex: levelIndex,
+        questionId: body.questionId,
+        choiceId: body.choiceId,
+      })
+      .pipe(
+        switchMap(({ choice, focusQuestion }) => {
+          return this.backupsService.restore({
+            bookId: bookId,
+            unitId: unitId,
+            levelIndex: levelIndex,
+            focusId: focusQuestion.focus,
+            choiceId: choice._id,
+            content: '',
+            meaning: '',
+            code: focusQuestion.code,
+            newInstance: false,
+            active: choice.active,
+          });
+        }),
+      );
   }
 
   @CheckPolicies(new UserPermission(Action.Manage))
@@ -109,6 +126,7 @@ export class QuestionsController {
               meaning: word.meaning,
               code: body.code,
               newInstance: false,
+              active: true,
             }),
             this.questionService.addChoice({
               bookId: bookId,
@@ -164,6 +182,7 @@ export class QuestionsController {
             audio: sentence.audio,
             code: body.code,
             newInstance: true,
+            active: true,
           }),
           this.questionService.addChoice({
             bookId: bookId,

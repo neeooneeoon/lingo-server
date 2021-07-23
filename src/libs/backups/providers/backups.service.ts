@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import {
   BackupDto,
   BackupQuestionInputDto,
+  BackupToggleChoiceDto,
   RestoreSentenceDto,
 } from '@dto/backup';
 import { forkJoin, from, Observable } from 'rxjs';
@@ -22,8 +23,42 @@ export class BackupsService {
   ) {}
   public restore(data: BackupDto): Observable<BackupDocument> {
     return from(
-      this.backupModel.create({
-        ...data,
+      this.backupModel.findOne({
+        bookId: data.bookId,
+        unitId: data.unitId,
+        levelIndex: Number(data.levelIndex),
+        focusId: data.focusId,
+        code: data.code,
+        choiceId: data.choiceId,
+      }),
+    ).pipe(
+      switchMap((backup) => {
+        if (backup) {
+          return this.backupModel.findOneAndUpdate(
+            {
+              bookId: data.bookId,
+              unitId: data.unitId,
+              levelIndex: Number(data.levelIndex),
+              focusId: data.focusId,
+              code: data.code,
+              choiceId: data.choiceId,
+            },
+            {
+              $set: {
+                active: data.active,
+              },
+            },
+            {
+              new: true,
+            },
+          );
+        } else {
+          return from(
+            this.backupModel.create({
+              ...data,
+            }),
+          );
+        }
       }),
     );
   }
@@ -43,6 +78,7 @@ export class BackupsService {
               content: sentence.content,
               meaning: sentence.meaning,
               _id: sentence.choiceId,
+              active: sentence.active,
             });
           const path = `${sentence.bookId}/${sentence.unitId}/${sentence.levelIndex}`;
           const choice =
@@ -54,12 +90,14 @@ export class BackupsService {
                 choiceId: choice,
                 code: sentence.code,
                 focusId: sentence.focusId,
+                active: sentence.active,
               })
             : (backupQuestionInput[path] = [
                 {
                   choiceId: choice,
                   code: sentence.code,
                   focusId: sentence.focusId,
+                  active: sentence.active,
                 },
               ]);
         });
@@ -74,4 +112,29 @@ export class BackupsService {
     );
     return result$;
   }
+  // public backupToggleChoice(input: BackupToggleChoiceDto) {
+  //   if (input.currentState) {
+  //     return from(
+  //       this.backupModel.deleteOne({
+  //         bookId: input.bookId,
+  //         unitId: input.unitId,
+  //         levelIndex: Number(input.levelIndex),
+  //         focusId: input.focusId,
+  //         code: input.code,
+  //         choiceId: input.choiceId,
+  //       }),
+  //     );
+  //   } else {
+  //     return from(
+  //       this.backupModel.create({
+  //         bookId: input.bookId,
+  //         unitId: input.unitId,
+  //         levelIndex: input.levelIndex,
+  //         focusId: input.focusId,
+  //         choiceId: input.choiceId,
+  //         content:
+  //       }),
+  //     );
+  //   }
+  // }
 }

@@ -5,6 +5,7 @@ export class BackupQuestionInputDto {
     choiceId: string;
     code: QuestionTypeCode;
     focusId: string;
+    active: boolean;
   }[];
 }
 

@@ -36,6 +36,9 @@ export class Backup {
 
   @Prop({ type: Boolean, required: true })
   newInstance: boolean;
+
+  @Prop({ type: Boolean, required: true })
+  active: boolean;
 }
 export type BackupDocument = Document & Backup;
 export const BackupSchema = SchemaFactory.createForClass(Backup);
