@@ -1,6 +1,6 @@
 import { UsersService } from '@libs/users/providers/users.service';
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { NotificationsService } from '@libs/notifications/providers/notifications.service';
 
 @Injectable()
@@ -11,15 +11,17 @@ export class TasksService {
     private notificationsService: NotificationsService,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron('0 5 * * *')
   async changeStreakScore() {
+    console.log('Start streak');
     this.logger.log('Starting check streak');
     const users = await this.usersService.getAllUsers();
     await Promise.all(
       users.map((user) => this.usersService.changeUserStreak(String(user._id))),
     );
   }
-  @Cron(CronExpression.EVERY_DAY_AT_7PM)
+  s;
+  @Cron('0 0 * * *')
   sendNotification() {
     this.logger.log('Starting send notification');
     return this.notificationsService.scheduleNotifications();

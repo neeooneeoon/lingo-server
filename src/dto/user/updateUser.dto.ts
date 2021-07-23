@@ -19,6 +19,6 @@ export class UpdateUserDto {
   @ApiProperty({ type: Number, required: true })
   provinceId: number;
 
-  @ApiProperty({type: Number, required: true})
+  @ApiProperty({ type: Number, required: true })
   districtId: number;
 }
