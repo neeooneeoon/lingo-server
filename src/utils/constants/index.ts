@@ -62,3 +62,4 @@ export const booksName = [
   'Tiếng Anh 1 2020',
   'Tiếng Anh 2 (CT GDPT 2018)',
 ];
+export const TOP_XP_LENGTH = 10;
