@@ -61,3 +61,9 @@ export enum Action {
   Update = 'update',
   Delete = 'delete',
 }
+
+export enum Location {
+  Province = 'Province',
+  District = 'District',
+  All = 'All',
+}

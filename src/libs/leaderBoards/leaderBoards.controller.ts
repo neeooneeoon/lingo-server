@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards, Body } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -9,9 +9,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UserCtx } from '@utils/decorators/custom.decorator';
-import { Rank, RankingByTime } from '@utils/enums';
+import { Location, Rank, RankingByTime } from '@utils/enums';
 import { JwtPayLoad } from '@utils/types';
 import { LeaderBoardsService } from './leaderBoards.service';
+import { UserAddress } from '@dto/address/userAddress.dto';
 @ApiBearerAuth()
 @ApiTags('LeaderBoards')
 @Controller('api/leaderboard')
@@ -35,14 +36,24 @@ export class LeaderBoardsController {
   @UseGuards(JwtAuthGuard)
   @Get('ranking/bytime')
   @ApiOperation({
-    summary: 'Lấy danh sách xếp hạng theo thời gian tuần, tháng',
+    summary:
+      'Lấy danh sách xếp hạng theo thời gian tuần, tháng, tất cả thời gian và theo vị trí',
   })
   @ApiQuery({ type: String, name: 'time', enum: RankingByTime })
+  @ApiQuery({ type: String, name: 'location', enum: Location })
+  @ApiQuery({ type: Number, name: 'locationId' })
   async getRanksByTime(
     @Query('time') timeSelect: string,
+    @Query('location') location: string,
+    @Query('locationId') locationId: number,
     @UserCtx() user: JwtPayLoad,
   ) {
-    return this.scoreStatisticsService.getRankByTime(user.userId, timeSelect);
+    return this.scoreStatisticsService.getRankByTime(
+      user.userId,
+      timeSelect,
+      location,
+      locationId,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -60,20 +71,4 @@ export class LeaderBoardsController {
       followUserId,
     );
   }
-
-  // @UseGuards(JwtAuthGuard)
-  // @Post('test/addXp')
-  // async addXp() {
-  //     return this.scoreStatisticsService.addXpAfterSaveLesson(15, '60d69b497562563750e9a5a1');
-  //  }
-
-  // @Post('/generate/rank-data')
-  // async generateRank(): Promise<any>{
-  //     return this.leaderBoardsService.generateRank();
-  // }
-
-  // @Post('/add-user')
-  // async addUser(): Promise<any> {
-  //     return this.leaderBoardsService.addUser();
-  // }
 }
