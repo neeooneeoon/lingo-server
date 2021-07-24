@@ -40,8 +40,8 @@ export class LeaderBoardsController {
       'Lấy danh sách xếp hạng theo thời gian tuần, tháng, tất cả thời gian và theo vị trí',
   })
   @ApiQuery({ type: String, name: 'time', enum: RankingByTime })
-  @ApiQuery({ type: String, name: 'location', enum: Location })
-  @ApiQuery({ type: Number, name: 'locationId' })
+  @ApiQuery({ type: String, name: 'location', enum: Location, required: false })
+  @ApiQuery({ type: Number, name: 'locationId', required: false })
   async getRanksByTime(
     @Query('time') timeSelect: string,
     @Query('location') location: string,
