@@ -164,6 +164,7 @@ export class QuestionsController {
         content: body.content,
         meaning: body?.meaning,
         audio: body?.audio,
+        active: true,
       }),
     ).pipe(
       switchMap((sentence) => {
