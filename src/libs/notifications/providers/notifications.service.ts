@@ -74,19 +74,13 @@ export class NotificationsService {
   }
   public async scheduleNotifications() {
     const devices = await this.deviceTokenModel.find({}).populate('user');
-    const enableDevices: Array<string> = [];
-    devices.map((device) => {
-      const user = device.user as unknown as UserDocument;
-      user && user.enableNotification === true
-        ? enableDevices.push(device.token)
-        : null;
-    });
+    const enableDevices = devices.map((device) => device.token);
     await Promise.all(
       enableDevices.map((token) =>
         this.sendNotification({
           token: token,
           title: '⏰ Nhắc nhở hằng ngày. ',
-          body: 'Bạn chỉ cần dành ra 10 phút để nâng cao kỹ năng Tiếng Anh. Bắt đầu thôi!',
+          body: 'Bạn chỉ cần dành ra 10 phút mỗi ngày để nâng cao kỹ năng Tiếng Anh. Bắt đầu thôi!',
         }),
       ),
     );
