@@ -13,6 +13,7 @@ import { AdminModules } from '@admin/admin.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksSModule } from '@libs/tasks/tasks.module';
 import { NotificationsModule } from '@libs/notifications';
+import { StoriesModule } from '@libs/stories';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { NotificationsModule } from '@libs/notifications';
     CaslModule,
     AdminModules,
     NotificationsModule,
+    StoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

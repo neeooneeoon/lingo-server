@@ -5,7 +5,6 @@ import { Model } from 'mongoose';
 import {
   BackupDto,
   BackupQuestionInputDto,
-  BackupToggleChoiceDto,
   RestoreSentenceDto,
 } from '@dto/backup';
 import { forkJoin, from, Observable } from 'rxjs';

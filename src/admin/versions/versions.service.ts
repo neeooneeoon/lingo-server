@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Version, VersionDocument } from '@entities/version.entity';
-import { Model, UpdateWriteOpResult } from 'mongoose';
+import { Model } from 'mongoose';
 import { MatchVersionDto } from '@dto/version';
 
 @Injectable()

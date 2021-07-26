@@ -29,8 +29,8 @@ import { Unit, UnitDocument } from '@entities/unit.entity';
 import { WordDocument } from '@entities/word.entity';
 import { SentenceDocument } from '@entities/sentence.entity';
 import { QuestionTypeCode } from '@utils/enums';
-import { forkJoin, from, Observable, of } from 'rxjs';
-import { map, mergeMap, switchMap } from 'rxjs/operators';
+import { forkJoin, from, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { BackupQuestionInputDto } from '@dto/backup';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
-import { Controller, Get, Param, Query, UseGuards, Body } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -12,7 +12,7 @@ import { UserCtx } from '@utils/decorators/custom.decorator';
 import { Location, Rank, RankingByTime } from '@utils/enums';
 import { JwtPayLoad } from '@utils/types';
 import { LeaderBoardsService } from './leaderBoards.service';
-import { UserAddress } from '@dto/address/userAddress.dto';
+
 @ApiBearerAuth()
 @ApiTags('LeaderBoards')
 @Controller('api/leaderboard')

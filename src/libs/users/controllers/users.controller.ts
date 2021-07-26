@@ -34,7 +34,6 @@ import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
 import { ScoreOverviewDto } from '@dto/progress';
 import { UserAddressService } from '@libs/users/providers/userAddress.service';
-import { Location } from '@utils/enums';
 
 @ApiTags('User')
 @Controller('api/user')
