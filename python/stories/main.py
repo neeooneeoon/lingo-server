@@ -1,9 +1,12 @@
+import random
+
 import nltk
+from nltk.corpus import wordnet as wn
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-from nltk.corpus import wordnet as wn
+
 from drive import database
-from python.common.main import QuestionTypeCode, unused_books, story_question_codes
+from python.common.main import unused_books, story_question_codes
 
 
 def is_noun(tag: str) -> bool:
@@ -32,6 +35,16 @@ def penn_to_wn(tag):
     elif is_verb(tag):
         return wn.VERB
     return wn.NOUN
+
+
+def original_words(query: str):
+    tags = nltk.pos_tag(word_tokenize(query))
+    result = []
+    for tag in tags:
+        wn_tag = penn_to_wn(tag[1])
+        basic_form = WordNetLemmatizer().lemmatize(tag[0], wn_tag).lower().strip()
+        result.append(basic_form)
+    return result
 
 
 def in_unit_words(word_content: str, unit_words: list):
@@ -113,11 +126,11 @@ def stories_in_unit(book_id: str, unit_id: str) -> list:
     return [doc for doc in cursor]
 
 
-def book(book_nId: int):
-    book = database["words"].find_one({
+def get_book(book_nId: int):
+    result = database["words"].find_one({
         "nId": book_nId
     })
-    return book
+    return result
 
 
 def prev_books(curr_grade: int, curr_nId: int) -> list:
@@ -161,7 +174,40 @@ def words_in_prev_unit(book_nId: int, unit_nId: int) -> list:
     return [doc for doc in cursor]
 
 
-def get_choices(word_id: str, choices: list, question_type: int) -> list:
+def matching_types_words(data: dict) -> list:
+    cloned_choices = list(data.choices)
+    curr_len = len(cloned_choices)
+    cursor = database["words"].find({
+        "bookNId": data["book_nId"],
+        "unitNId": {
+            "$lt": data["unit_nId"]
+        },
+        "types": {
+            "elemMatch": {
+                "$in": data["word"]["types"]
+            }
+        }
+    }).sort("unitNId", -1)
+    list_words = [doc for doc in cursor]
+    if list_words:
+        for w in list_words:
+            content = w["content"].lower().strip()
+            meaning = w["meaning"].lower().strip()
+            if len(cloned_choices) >= data["max_choices"]:
+                break
+            item = {"content": content, "meaning": meaning, "rate": 2.0}
+            if not in_choices(cloned_choices, item):
+                cloned_choices.append(item)
+    return cloned_choices[curr_len:]
+
+
+def format_choices(choices: list, question_type: int) -> list:
+    if question_type == 7:
+        return [{"_id": c["content"], "active": True} for c in choices]
+    return [{"_id": c["_id"], "active": True} for c in choices]
+
+
+def get_choices(word_id: str, choices: list) -> list:
     clone_choices = list(choices)
     word = database["words"].find_one({"_id": word_id})
     if word:
@@ -170,7 +216,7 @@ def get_choices(word_id: str, choices: list, question_type: int) -> list:
         correct_choice = {"rate": 2.0, "content": word_content, "meaning": word_meaning}
         clone_choices.append(correct_choice)
         words_unit = words_in_unit(book_nId=int(word["bookNId"]), unit_nId=int(word["unitNId"]))
-        curr_book = book(book_nId=int(word["bookNId"]))
+        curr_book = get_book(book_nId=int(word["bookNId"]))
         max_choices = 11
         if curr_book["grade"] <= 3:
             max_choices = 6
@@ -202,8 +248,68 @@ def get_choices(word_id: str, choices: list, question_type: int) -> list:
                         hypernyms = lowest_common_hypernyms(words_prev_book, word, clone_choices)
                         clone_choices.extend(hypernyms)
         if len(clone_choices) < max_choices:
-            words_prev_unit
+            temp = matching_types_words({
+                "book_nId": word["bookNId"],
+                "unit_nId": word['unitNId'],
+                "word": word,
+                "choices": clone_choices,
+                "max_choices": max_choices,
+            })
+            clone_choices.extend(temp)
+        latest_choices = sorted(clone_choices, key=lambda i: i['rate'], reverse=True)
+        return latest_choices[1:]
+    else:
+        return []
+
+
+def get_stories() -> list:
+    cursor = database["stories"].find()
+    return [doc for doc in cursor]
+
+
+def random_story_question_type() -> dict:
+    index = random.randint(0, 5)
+    code = story_question_codes[index]
+    question_type = 15
+    if index == 1:
+        question_type = 7
+    elif index == 2:
+        question_type = 13
+    elif index == 3:
+        question_type = 12
+    elif index == 4:
+        question_type = 11
+    elif index == 5:
+        question_type = 17
+    return {
+        "code": code,
+        "question_type": question_type,
+    }
 
 
 def main():
-    pass
+    stories = get_stories()
+    for story in stories:
+        curr_book = database["books"].find_one({
+            "_id": story["bookId"]
+        })
+        if curr_book and curr_book["units"] and story["unitId"]:
+            unit_index = next((index for (index, d) in enumerate(curr_book["units"]) if d['_id'] == story["unitId"]))
+            words_unit = words_in_unit(book_nId=curr_book["nId"], unit_nId=curr_book["units"][unit_index]["nId"])
+            words_content = list(map(lambda item: item["content"].lower().strip(), words_unit))
+            asked_index = []
+            # words_content[0]["asked"] = True
+            # print(list(words_content))
+            print(words_content)
+            sentences = story["sentences"]
+            if not words_content:
+                print(words_content)
+                # ..for last sentence
+            else:
+                for s in sentences:
+                    obj = random_story_question_type()
+                    if obj["question_type"] not in [11, 12, 17]:
+                        basic_words = original_words(s["content"])
+
+
+main()

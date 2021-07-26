@@ -31,8 +31,10 @@ unused_books = ['tienganh1macmillan', 'tienganh2macmillan']
 
 story_question_codes = [
     QuestionTypeCode.W15.value,
-    QuestionTypeCode.S15.value,
+    QuestionTypeCode.S7.value,
     QuestionTypeCode.W13.value,
     # QuestionTypeCode.W9.value,
+    QuestionTypeCode.W12.value,
     QuestionTypeCode.W11.value,
+    QuestionTypeCode.S17.value
 ]
