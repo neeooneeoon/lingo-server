@@ -25,3 +25,14 @@ class QuestionTypeCode(Enum):
     S16 = 'A1S1-S2-W'
     S4 = 'A1S1-A1-V'
     S18 = 'S2-S1-W'
+
+
+unused_books = ['tienganh1macmillan', 'tienganh2macmillan']
+
+story_question_codes = [
+    QuestionTypeCode.W15.value,
+    QuestionTypeCode.S15.value,
+    QuestionTypeCode.W13.value,
+    # QuestionTypeCode.W9.value,
+    QuestionTypeCode.W11.value,
+]
