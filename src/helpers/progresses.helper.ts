@@ -34,6 +34,7 @@ export class ProgressesHelper {
           tips: unit.tips,
           blueImage: unit.blueImage,
           normalImage: unit.normalImage,
+          stories: unit?.stories,
         };
       } else {
         return {
@@ -51,6 +52,7 @@ export class ProgressesHelper {
           tips: unit.tips,
           blueImage: unit.blueImage,
           normalImage: unit.normalImage,
+          stories: unit?.stories,
         };
       }
     }

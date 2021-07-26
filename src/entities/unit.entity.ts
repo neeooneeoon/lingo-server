@@ -63,6 +63,9 @@ export class Unit {
     ],
   })
   levels: UnitLevel[];
+
+  @Prop({ type: [Number], required: true, default: [], ref: 'Story' })
+  stories: Array<number>;
 }
 
 export const UnitSchema = SchemaFactory.createForClass(Unit);

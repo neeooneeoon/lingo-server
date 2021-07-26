@@ -42,4 +42,7 @@ export class ProgressUnitMapping {
 
   @ApiProperty({ type: String })
   blueImage: string;
+
+  @ApiProperty({ type: [Number], required: false, default: [] })
+  stories: Array<number>;
 }
