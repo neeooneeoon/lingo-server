@@ -25,7 +25,7 @@ export class NotificationsService {
       clientEmail: this.configsService.get('FIREBASE_CLIENT_EMAIL'),
     };
 
-    console.log(adminConfig);
+    // console.log(adminConfig);
 
     admin.initializeApp({
       credential: admin.credential.cert(adminConfig),

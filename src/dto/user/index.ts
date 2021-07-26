@@ -14,3 +14,4 @@ export {
   ToggleNotificationDto,
   ToggleNotificationRes,
 } from './toggleNotification.dto';
+export { AppleLoginDto } from './appleLogin.dto';
