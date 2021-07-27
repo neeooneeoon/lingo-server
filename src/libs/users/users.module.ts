@@ -22,6 +22,7 @@ import { AddressModule } from '@libs/address';
 import { UserAddressService } from '@libs/users/providers/userAddress.service';
 import { NotificationsModule } from '@libs/notifications';
 import { AppleService } from '@libs/users/providers/apple.service';
+import { LoginService } from '@libs/users/providers/login.service';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { AppleService } from '@libs/users/providers/apple.service';
     FacebookService,
     UserAddressService,
     AppleService,
+    LoginService,
   ],
   exports: [UsersService],
 })

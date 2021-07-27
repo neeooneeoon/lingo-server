@@ -10,8 +10,8 @@ export class User {
   @Prop({ type: String, required: false, default: '' })
   appleId?: string;
 
-  @Prop({ type: String, required: true })
-  email: string;
+  @Prop({ type: String, required: false, default: '' })
+  email?: string;
 
   @Prop({ type: String, required: true, default: '' })
   avatar: string;
@@ -95,3 +95,4 @@ UserSchema.virtual('followings', {
   foreignField: 'listFollowing',
   justOne: false,
 });
+UserSchema.index({ email: 1, facebookId: 1, appleId: 1 }, { unique: 1 });

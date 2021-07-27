@@ -21,6 +21,7 @@ export enum Role {
 export enum Account {
   Google = 'Google',
   Facebook = 'Facebook',
+  Apple = 'Apple',
 }
 
 export enum QuestionTypeCode {

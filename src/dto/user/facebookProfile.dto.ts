@@ -12,6 +12,6 @@ export class FacebookProfile {
     data: PictureDataType;
   };
   first_name: string;
-  name: string;
+  name?: string;
   email: string;
 }

@@ -1,14 +1,14 @@
 import { LoginBodyDto } from '@dto/user';
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UsersService } from '../providers/users.service';
 import { UserLogin } from '@dto/user/userLogin.dto';
 import { LoginResultDto } from '@dto/user/loginResult.dto';
+import { LoginService } from '../providers/login.service';
 
 @ApiTags('Login')
 @Controller('api/login')
 export class LoginController {
-  constructor(private usersService: UsersService) {}
+  constructor(private loginService: LoginService) {}
 
   @Post('google')
   @ApiBody({
@@ -18,7 +18,7 @@ export class LoginController {
   @ApiOperation({ summary: 'Login thông qua accessToken của Google' })
   @ApiResponse({ type: LoginResultDto, status: 201 })
   loginWithGoogleAccount(@Body() body: LoginBodyDto): Promise<UserLogin> {
-    return this.usersService.googleLoginHandle(body);
+    return this.loginService.loginWithGoogle(body);
   }
 
   @Post('facebook')
@@ -29,7 +29,7 @@ export class LoginController {
   @ApiOperation({ summary: 'Login thông qua accessToken của Facebook' })
   @ApiResponse({ type: LoginResultDto, status: 201 })
   loginWithFacebookAccount(@Body() body: LoginBodyDto) {
-    return this.usersService.facebookLoginHandle(body);
+    return this.loginService.loginWithFacebook(body);
   }
 
   @Post('apple')
@@ -40,6 +40,6 @@ export class LoginController {
   @ApiResponse({ type: LoginResultDto, status: 201 })
   @ApiOperation({ summary: 'Login thông qua appleID' })
   loginWithAppleId(@Body() body: LoginBodyDto) {
-    return this.usersService.appleLoginHandle(body);
+    return this.loginService.loginWithApple(body);
   }
 }

@@ -51,6 +51,21 @@ export class NotificationsService {
       throw new InternalServerErrorException(e);
     }
   }
+
+  public async storeDeviceToken(
+    userId: string,
+    token: string,
+  ): Promise<DeviceTokenDocument> {
+    const deviceToken = await this.deviceTokenModel.findOne({
+      token: token,
+    });
+    if (deviceToken) return deviceToken;
+    return this.deviceTokenModel.create({
+      user: Types.ObjectId(userId),
+      token: token,
+    });
+  }
+
   public saveDeviceToken(
     userId: string,
     token: string,
