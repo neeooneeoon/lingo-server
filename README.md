@@ -1,4 +1,6 @@
-<a href="https://github.com/manhhnv/lingo-server/" target="blank"><img src="https://s.sachmem.vn/public//bookcovers/TA1_2020.png" alt="Book" /></a>
+<div>
+  <img src="https://s.sachmem.vn/public//bookcovers/TA1_2020.png" alt="Book" width="500" height="600"/>
+</div>
 
 ## Description
 
