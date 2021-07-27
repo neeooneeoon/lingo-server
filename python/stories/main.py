@@ -330,7 +330,8 @@ def main():
                 # ..for last sentence
             else:
                 for s in sentences:
-                    content_split = list(map(lambda text: {"_id": str(uuid.uuid4()), "text": text}, s["content"].split(' ')))
+                    content_split = list(
+                        map(lambda text: {"_id": str(uuid.uuid4()), "text": text}, s["content"].split(' ')))
                     break_flag = False
                     hidden_index = -1
                     obj = random_story_question_type()
@@ -387,12 +388,26 @@ def main():
                         "hiddenIndex": -1,
                         "focus": '',
                         "choices": [],
-                        "contentSplit": content_split,
+                        "contentSplit": [],
                         "story": story['_id'],
-                        "sentence": s["_id"]
+                        "sentence": ''
                     }
                 if questions:
                     database["storyquestions"].insert_many(questions)
+                else:
+                    content_split = list(
+                        map(lambda text: {"_id": str(uuid.uuid4()), "text": text},
+                            story["sentences"][-1]["content"].split(' ')))
+                    database["storyquestions"].insert_one({
+                        "code": QuestionTypeCode.S17.value,
+                        "content": story["sentences"][-1]["content"],
+                        "hiddenIndex": -1,
+                        "focus": '',
+                        "choices": [],
+                        "contentSplit": content_split,
+                        "story": story["sentences"][-1]["_id"],
+                        "sentence": ''
+                    })
 
 
 main()

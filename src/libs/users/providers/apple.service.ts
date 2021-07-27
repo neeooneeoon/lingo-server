@@ -9,14 +9,15 @@ export class AppleService {
 
   public async verifyUser(payload: any): Promise<any> {
     const clientSecret = appleSignin.getClientSecret({
-      clientID: 'com.saokhuee.lingo-api',
+      clientID: 'com.saokhuee.lingo',
       teamId: 'APMP77F354',
       keyIdentifier: '7S9FN3MVP6',
       privateKeyPath: 'src/utils/keys/AuthKey_7S9FN3MVP6.p8',
+      scope: 'name email',
     });
 
     const tokens = await appleSignin.getAuthorizationToken(payload.code, {
-      clientID: 'com.saokhuee.lingo-api',
+      clientID: 'com.saokhuee.lingo',
       clientSecret: clientSecret,
       redirectUri: 'https://lingo-test.saokhuee.com/apple/redirect',
     });
