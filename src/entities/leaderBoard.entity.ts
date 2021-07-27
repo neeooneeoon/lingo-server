@@ -31,4 +31,4 @@ export class LeaderBoard {
 export const LeaderBoardSchema = SchemaFactory.createForClass(LeaderBoard);
 export type LeaderBoardDocument = Document & LeaderBoard;
 
-LeaderBoardSchema.index({ rank: 1, grade: 1 }, { unique: true });
+LeaderBoardSchema.index({ rank: 1 }, { unique: true });
