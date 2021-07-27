@@ -18,7 +18,7 @@ export class AppleService {
     const tokens = await appleSignin.getAuthorizationToken(payload.code, {
       clientID: 'com.saokhuee.lingo-api',
       clientSecret: clientSecret,
-      redirectUri: 'https://d86a85abaaf3.ngrok.io/apple/redirect',
+      redirectUri: 'https://lingo-test.saokhuee.com/apple/redirect',
     });
 
     if (!tokens.id_token) {

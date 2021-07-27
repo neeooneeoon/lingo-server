@@ -1,9 +1,11 @@
 import random
 import re
+import uuid
 import nltk
 from nltk.corpus import wordnet as wn
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from python.common.main import QuestionTypeCode
 
 from drive import database
 from python.common.main import unused_books, story_question_codes
@@ -43,7 +45,7 @@ def original_words(query: str):
     for tag in tags:
         wn_tag = penn_to_wn(tag[1])
         basic_form = WordNetLemmatizer().lemmatize(tag[0], wn_tag).lower().strip()
-        if not re.search("[!@#$%^&*)(+=.<>{}:;|~`_?,'’…]", basic_form) and len(basic_form) > 1:
+        if not re.search("[!@#$%^&*)(+=.<>{}:;|~`_?,'’…]", basic_form):
             result.append(basic_form)
     return result
 
@@ -93,7 +95,7 @@ def lowest_common_hypernyms(words: list, word: dict, choices: list):
             for w in list(words):
                 content = w["content"].lower().strip()
                 meaning = w["meaning"].lower().strip()
-                id = w["_id"]
+                _id = w["_id"]
                 choice_item = {"content": content, "meaning": meaning}
                 if not in_choices(clone_choices, choice_item):
                     w_synsets = wn.synsets(content.replace(" ", "_"))
@@ -102,7 +104,7 @@ def lowest_common_hypernyms(words: list, word: dict, choices: list):
                             rate = word_synsets[i].path_similarity(ss, simulate_root=False)
                             item = {
                                 "content": content,
-                                "_id": id,
+                                "_id": _id,
                                 "rate": rate,
                                 "meaning": meaning
                             }
@@ -128,7 +130,7 @@ def stories_in_unit(book_id: str, unit_id: str) -> list:
 
 
 def get_book(book_nId: int):
-    result = database["words"].find_one({
+    result = database["books"].find_one({
         "nId": book_nId
     })
     return result
@@ -176,7 +178,7 @@ def words_in_prev_unit(book_nId: int, unit_nId: int) -> list:
 
 
 def matching_types_words(data: dict) -> list:
-    cloned_choices = list(data.choices)
+    cloned_choices = list(data["choices"])
     curr_len = len(cloned_choices)
     cursor = database["words"].find({
         "bookNId": data["book_nId"],
@@ -211,6 +213,7 @@ def format_choices(choices: list, question_type: int) -> list:
 def get_choices(word_id: str, choices: list) -> list:
     clone_choices = list(choices)
     word = database["words"].find_one({"_id": word_id})
+    # print(word["bookNId"])
     if word:
         word_content = word["content"].lower().strip()
         word_meaning = word["meaning"].lower().strip()
@@ -288,6 +291,22 @@ def random_story_question_type() -> dict:
     }
 
 
+def delete_same_choices(choices: list) -> list:
+    cloned_choice = list(choices)
+    set_ids = set()
+    for choice in list(cloned_choice):
+        if choice["_id"] not in set_ids:
+            set_ids.add(choice["_id"])
+        else:
+            cloned_choice.remove(choice)
+    return cloned_choice
+
+
+def format_content(word):
+    word.update({"content": word["content"].lower().strip()})
+    return word
+
+
 def main():
     stories = get_stories()
     for story in stories:
@@ -301,22 +320,79 @@ def main():
                 "unitNId": curr_book["units"][unit_index]["nId"],
                 "isUseToMakeQuestion": True
             })
-            words_content = list(map(lambda item: item["content"].lower().strip(), words_unit))
-            asked_index = []
-            # words_content[0]["asked"] = True
-            # print(list(words_content))
-            # print(words_content)
+            words_content = list(map(format_content, words_unit))
+            asked_index = list()
             sentences = story["sentences"]
+            questions = list()
+            # print(words_content)
             if not words_content:
                 print(words_content)
                 # ..for last sentence
             else:
                 for s in sentences:
+                    content_split = list(map(lambda text: {"_id": str(uuid.uuid4()), "text": text}, s["content"].split(' ')))
+                    break_flag = False
+                    hidden_index = -1
                     obj = random_story_question_type()
-                    if obj["question_type"] not in [11, 12, 17]:
-                        # content = re.sub("[!@#$%^&*)(+=.<>{}:;|~`_?,']", "", s["content"])
+                    if obj["question_type"] != 17:
                         basic_words = original_words(s["content"])
-                        print(basic_words)
+                        if basic_words:
+                            for i in range(len(basic_words)):
+                                for j in range(len(words_content)):
+                                    if j not in asked_index and words_content[j]["content"].lower() == basic_words[i]:
+                                        asked_index.append(j)
+                                        break_flag = True
+                                        hidden_index = i
+                                        choices = get_choices(words_content[j]["_id"], [])
+                                        formatted = format_choices(choices, obj["question_type"])
+                                        ignore_same_choices = delete_same_choices(formatted)
+                                        if obj["question_type"] in [11, 12]:
+                                            ignore_same_choices = []
+                                        question_data = {
+                                            "code": obj["code"],
+                                            "content": s["content"],
+                                            "hiddenIndex": hidden_index,
+                                            "focus": words_content[asked_index[-1]]["_id"],
+                                            "choices": ignore_same_choices,
+                                            "contentSplit": content_split,
+                                            "story": story['_id'],
+                                            "sentence": s["_id"]
+                                        }
+                                        questions.append(question_data)
+                                        break
+                                if break_flag:
+                                    break
+                    else:
+                        question_data = {
+                            "code": obj["code"],
+                            "content": s["content"],
+                            "hiddenIndex": hidden_index,
+                            "focus": '',
+                            "choices": [],
+                            "contentSplit": content_split,
+                            "story": story['_id'],
+                            "sentence": s["_id"]
+                        }
+                        questions.append(question_data)
+                if asked_index and len(asked_index) >= 2:
+                    matching = list()
+                    for item in asked_index:
+                        matching.append({
+                            "_id": words_content[item]["_id"],
+                            "active": True
+                        })
+                    question_data = {
+                        "code": QuestionTypeCode.W9.value,
+                        "content": "",
+                        "hiddenIndex": -1,
+                        "focus": '',
+                        "choices": [],
+                        "contentSplit": content_split,
+                        "story": story['_id'],
+                        "sentence": s["_id"]
+                    }
+                if questions:
+                    database["storyquestions"].insert_many(questions)
 
 
 main()
