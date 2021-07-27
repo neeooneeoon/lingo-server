@@ -21,7 +21,6 @@ import { ScoreStatisticsModule } from '@libs/scoreStatistics/scoreStatistics.mod
 import { AddressModule } from '@libs/address';
 import { UserAddressService } from '@libs/users/providers/userAddress.service';
 import { NotificationsModule } from '@libs/notifications';
-import { AppleController } from '@libs/users/controllers/apple.controller';
 import { AppleService } from '@libs/users/providers/apple.service';
 
 @Module({
@@ -49,7 +48,6 @@ import { AppleService } from '@libs/users/providers/apple.service';
     GoogleController,
     FacebookController,
     LoginController,
-    AppleController,
   ],
   providers: [
     UsersService,

@@ -34,7 +34,6 @@
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/schedule": "^0.4.3",
     "@nestjs/swagger": "^4.8.0",
-    "apple-signin": "^1.0.9",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "class-transformer": "^0.4.0",

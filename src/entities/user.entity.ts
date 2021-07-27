@@ -7,6 +7,9 @@ export class User {
   @Prop({ type: String, required: false, default: '' })
   facebookId?: string;
 
+  @Prop({ type: String, required: false, default: '' })
+  appleId?: string;
+
   @Prop({ type: String, required: true })
   email: string;
 

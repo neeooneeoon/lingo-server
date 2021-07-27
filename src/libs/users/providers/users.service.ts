@@ -113,6 +113,7 @@ export class UsersService {
         lastActive: new Date(),
         address: { province: -1, district: -1 },
         enableNotification: false,
+        appleId: '-1',
       });
       await Promise.all([
         this.progressesService.createUserProgress({
@@ -194,6 +195,70 @@ export class UsersService {
         avatar: `http://graph.facebook.com/${facebookProfile.id}/picture?type=square`,
         deviceToken: body.deviceToken,
       });
+    }
+  }
+
+  public async appleLoginHandle(body: LoginBodyDto): Promise<UserLogin> {
+    if (!body.appleId.trim())
+      throw new BadRequestException('Email, displayName cannot be blank');
+    const existsUser = await this.userModel.findOne({
+      appleId: body.appleId,
+    });
+    if (existsUser) {
+      this.notificationsService
+        .saveDeviceToken(String(existsUser._id), body.deviceToken)
+        .pipe()
+        .subscribe();
+      const userProfile = this.usersHelper.mapToUserProfile(existsUser);
+      const token = this.authService.generateToken({
+        userId: existsUser._id,
+        role: existsUser.role,
+      });
+      return {
+        user: userProfile,
+        token: token,
+        refreshToken: token,
+      };
+    } else {
+      const formattedEmail = body.email.trim();
+      const formattedDisplayName = body.displayName.trim();
+      if (!formattedEmail || !formattedDisplayName)
+        throw new BadRequestException('Email and displayName is required');
+      const newUser = await this.userModel.create({
+        facebookId: '-1',
+        email: formattedEmail,
+        givenName: '',
+        familyName: '',
+        displayName: formattedDisplayName,
+        avatar:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png',
+        grade: 0,
+        xp: 0,
+        level: 0,
+        score: 0,
+        rank: Rank.None,
+        role: Role.Member,
+        loginCount: 0,
+        streak: 0,
+        lastActive: new Date(),
+        address: { province: -1, district: -1 },
+        enableNotification: false,
+        appleId: body.appleId,
+      });
+      this.notificationsService
+        .saveDeviceToken(String(newUser._id), body.deviceToken)
+        .pipe()
+        .subscribe();
+      const userProfile = this.usersHelper.mapToUserProfile(newUser);
+      const token = this.authService.generateToken({
+        userId: newUser._id,
+        role: newUser.role,
+      });
+      return {
+        user: userProfile,
+        token: token,
+        refreshToken: token,
+      };
     }
   }
 

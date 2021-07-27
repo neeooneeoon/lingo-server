@@ -31,4 +31,15 @@ export class LoginController {
   loginWithFacebookAccount(@Body() body: LoginBodyDto) {
     return this.usersService.facebookLoginHandle(body);
   }
+
+  @Post('apple')
+  @ApiBody({
+    type: LoginBodyDto,
+    description: 'Login with appleID, please share email and name',
+  })
+  @ApiResponse({ type: LoginResultDto, status: 201 })
+  @ApiOperation({ summary: 'Login thông qua appleID' })
+  loginWithAppleId(@Body() body: LoginBodyDto) {
+    return this.usersService.appleLoginHandle(body);
+  }
 }
