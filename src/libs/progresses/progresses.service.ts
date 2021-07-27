@@ -11,12 +11,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserProgressDto } from '@dto/progress/createProgress.dto';
 import { BookDocument } from '@entities/book.entity';
 import {
-  ProgressUnitMapping,
-  ProgressBookMapping,
-  ProgressBook,
-  ProgressUnit,
-  ProgressLevel,
   ActiveBookProgress,
+  ProgressBook,
+  ProgressBookMapping,
+  ProgressLevel,
+  ProgressUnit,
+  ProgressUnitMapping,
   ScoreOverviewDto,
 } from '@dto/progress';
 import { ProgressesHelper } from '@helpers/progresses.helper';
@@ -251,17 +251,19 @@ export class ProgressesService {
     ).pipe(
       map((progress) => {
         if (!progress) {
-          // throw new BadRequestException(`Can't find progress with user ${userId}`);
           return [];
         }
         return progress;
       }),
     );
-    const book$ = progress$.pipe(
+    return progress$.pipe(
       switchMap((r: ProgressDocument) => {
-        let books: ProgressBook[] = r?.books;
+        const books: ProgressBook[] = r?.books;
         if (books && books.length > 0) {
-          const lastActiveBooks = books.sort((bookOne, bookTwo) => {
+          const learnedBooks = books.filter(
+            (book) => book.units && book.units.length > 0,
+          );
+          const lastActiveBooks = learnedBooks.sort((bookOne, bookTwo) => {
             if (bookOne.lastDid < bookTwo.lastDid) return 1;
             if (bookOne.lastDid > bookTwo.lastDid) return -1;
             return 0;
@@ -274,12 +276,10 @@ export class ProgressesService {
               ),
           );
         } else {
-          books = [];
           return of([]);
         }
       }),
     );
-    return book$;
   }
 
   public getAllUserScoresInProgress(
