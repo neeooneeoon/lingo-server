@@ -14,6 +14,7 @@ export class FacebookService {
         throw new InternalServerErrorException(error);
       }
     } catch (error) {
+      console.log('error', error);
       throw new InternalServerErrorException(error);
     }
   }

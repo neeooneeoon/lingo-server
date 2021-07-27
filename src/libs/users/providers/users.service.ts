@@ -180,9 +180,11 @@ export class UsersService {
   }
 
   public async facebookLoginHandle(body: LoginBodyDto): Promise<UserLogin> {
+    console.log('access_token', body.access_token);
     const facebookProfile = await this.facebookService.getUserData(
       body.access_token,
     );
+    console.log('Profile', facebookProfile);
 
     if (!facebookProfile) {
       throw new BadRequestException('This account not exists.');
