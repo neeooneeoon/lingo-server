@@ -312,4 +312,35 @@ export class ProgressesService {
     const progresses = await this.progressModel.findOne({});
     return progresses ? true : false;
   }
+
+  public async backupUserProgress() {
+    const progresses = await this.progressModel.find({});
+    if (progresses?.length > 0) {
+      const promises = progresses.map((item) => {
+        const books = item.books;
+        if (books?.length > 0) {
+          const macmillan1Index = books.findIndex(
+            (book) => book.bookId === 'tienganh1macmillan',
+          );
+          const macmillan2Index = books.findIndex(
+            (book) => book.bookId === 'tienganh2macmillan',
+          );
+          if (macmillan1Index !== -1) books.splice(macmillan1Index, 1);
+          if (macmillan2Index !== -1) books.splice(macmillan2Index, 1);
+          if (macmillan1Index !== -1 || macmillan2Index !== -1)
+            return this.progressModel.updateOne(
+              {
+                _id: item._id,
+              },
+              {
+                $set: {
+                  books: books,
+                },
+              },
+            );
+        }
+      });
+      await Promise.all(promises);
+    }
+  }
 }

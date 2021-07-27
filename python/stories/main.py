@@ -1,5 +1,5 @@
 import random
-
+import re
 import nltk
 from nltk.corpus import wordnet as wn
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -43,7 +43,8 @@ def original_words(query: str):
     for tag in tags:
         wn_tag = penn_to_wn(tag[1])
         basic_form = WordNetLemmatizer().lemmatize(tag[0], wn_tag).lower().strip()
-        result.append(basic_form)
+        if not re.search("[!@#$%^&*)(+=.<>{}:;|~`_?,'’…]", basic_form) and len(basic_form) > 1:
+            result.append(basic_form)
     return result
 
 
@@ -295,12 +296,16 @@ def main():
         })
         if curr_book and curr_book["units"] and story["unitId"]:
             unit_index = next((index for (index, d) in enumerate(curr_book["units"]) if d['_id'] == story["unitId"]))
-            words_unit = words_in_unit(book_nId=curr_book["nId"], unit_nId=curr_book["units"][unit_index]["nId"])
+            words_unit = database["words"].find({
+                "bookNId": curr_book["nId"],
+                "unitNId": curr_book["units"][unit_index]["nId"],
+                "isUseToMakeQuestion": True
+            })
             words_content = list(map(lambda item: item["content"].lower().strip(), words_unit))
             asked_index = []
             # words_content[0]["asked"] = True
             # print(list(words_content))
-            print(words_content)
+            # print(words_content)
             sentences = story["sentences"]
             if not words_content:
                 print(words_content)
@@ -309,7 +314,9 @@ def main():
                 for s in sentences:
                     obj = random_story_question_type()
                     if obj["question_type"] not in [11, 12, 17]:
+                        # content = re.sub("[!@#$%^&*)(+=.<>{}:;|~`_?,']", "", s["content"])
                         basic_words = original_words(s["content"])
+                        print(basic_words)
 
 
 main()

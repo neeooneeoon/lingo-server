@@ -222,4 +222,12 @@ export class WorksService {
     const work = this.workModel.findOne({});
     return work ? true : false;
   }
+
+  public async backup() {
+    return this.workModel.deleteMany({
+      bookId: {
+        $in: ['tienganh1macmillan', 'tienganh2macmillan'],
+      },
+    });
+  }
 }
