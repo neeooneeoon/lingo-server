@@ -102,6 +102,7 @@ export class UsersService {
     } else {
       const newUser = await this.userModel.create({
         ...fetchAccount,
+        email: fetchAccount.email,
         grade: 0,
         xp: 0,
         level: 0,

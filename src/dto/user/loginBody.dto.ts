@@ -15,7 +15,7 @@ export class LoginBodyDto {
   })
   appleId?: string;
 
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: false, default: '' })
   email?: string;
 
   @ApiProperty({ type: String, required: false })

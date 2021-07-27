@@ -19,8 +19,8 @@ export class Backup {
   @Prop({ type: String, required: true })
   choiceId: string;
 
-  @Prop({ type: String, required: true })
-  content: string;
+  @Prop({ type: String, required: false, default: '' })
+  content?: string;
 
   @Prop({ type: String, required: false, default: '' })
   meaning?: string;
