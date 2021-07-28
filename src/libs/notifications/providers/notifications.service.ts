@@ -56,14 +56,16 @@ export class NotificationsService {
     userId: string,
     token: string,
   ): Promise<DeviceTokenDocument> {
-    const deviceToken = await this.deviceTokenModel.findOne({
-      token: token,
-    });
-    if (deviceToken) return deviceToken;
-    return this.deviceTokenModel.create({
-      user: Types.ObjectId(userId),
-      token: token,
-    });
+    if (token) {
+      const deviceToken = await this.deviceTokenModel.findOne({
+        token: token,
+      });
+      if (deviceToken) return deviceToken;
+      return this.deviceTokenModel.create({
+        user: Types.ObjectId(userId),
+        token: token,
+      });
+    }
   }
 
   public saveDeviceToken(
