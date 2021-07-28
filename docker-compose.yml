@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  dev:
+    depends_on:
+      - db
+    container_name: lingo_server_dev
+    image: lingo_server_dev:2.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    command: npm run start:debug
+    ports:
+      - 8080:8080
+      - 9229:9229
+    networks:
+      - nesjs-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+  prod:
+    container_name: lingo_server_prod
+    image: lingo_server_prod:2.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    command: npm run start:prod
+    ports:
+      - 8080:8080
+      - 9229:9229
+    networks:
+      - nesjs-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+  db:
+    image: mongo:latest
+    container_name: db_mongo
+    volumes:
+      - mongodata: /data/db
+    ports:
+      - 27017:27017
+
+networks:
+  - nesjs-network
+volumes:
+  mongodata:
