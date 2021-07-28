@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { StorySentence } from '@utils/types';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 @Schema()
 export class Story {
@@ -22,6 +22,7 @@ export class Story {
   @Prop({
     type: [
       {
+        _id: String,
         end: String,
         start: String,
         content: String,
@@ -33,6 +34,12 @@ export class Story {
             content: String,
           },
         ],
+        questions: [
+          {
+            type: Types.ObjectId,
+            ref: 'StoryQuestion',
+          },
+        ],
       },
     ],
   })
@@ -40,4 +47,3 @@ export class Story {
 }
 export type StoryDocument = Document & Story;
 export const StorySchema = SchemaFactory.createForClass(Story);
-StorySchema.index({ bookId: 1, unitId: 1 });

@@ -19,11 +19,11 @@ export class StorySentenceSplit {
 }
 
 export class StorySentence {
-  _id: number;
+  _id: string;
+  begin: string;
   end: string;
-  start: string;
+  speaker: string;
   content: string;
-  splitSentences: Array<StorySentenceSplit>;
-  bookId: string;
-  unitId: string;
+  splitSentences: StorySentenceSplit[];
+  questions: Types.ObjectId[];
 }
