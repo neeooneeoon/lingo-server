@@ -10,6 +10,7 @@ import { FacebookService } from '@libs/users/providers/facebook.service';
 import { UsersHelper } from '@helpers/users.helper';
 import { AuthenticationService } from '@authentication';
 import { ProgressesService } from '@libs/progresses/progresses.service';
+import { DEFAULT_AVATAR } from '@utils/constants';
 
 @Injectable()
 export class LoginService {
@@ -182,8 +183,7 @@ export class LoginService {
         displayName: body.displayName ? body.displayName : '',
         familyName: '',
         givenName: '',
-        avatar:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png',
+        avatar: DEFAULT_AVATAR,
         deviceToken: body.deviceToken,
       },
       Account.Apple,

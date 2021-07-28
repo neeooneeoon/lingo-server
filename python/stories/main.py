@@ -261,7 +261,7 @@ def get_choices(word_id: str, choices: list) -> list:
             })
             clone_choices.extend(temp)
         latest_choices = sorted(clone_choices, key=lambda i: i['rate'], reverse=True)
-        return latest_choices[1:]
+        return latest_choices[1:max_choices+1]
     else:
         return []
 
@@ -303,7 +303,7 @@ def delete_same_choices(choices: list) -> list:
 
 
 def format_content(word):
-    word.update({"content": word["content"].lower().strip()})
+    word.update({"content": word["content"].strip()})
     return word
 
 

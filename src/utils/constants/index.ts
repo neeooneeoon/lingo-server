@@ -63,3 +63,5 @@ export const booksName = [
   'Tiếng Anh 2 (CT GDPT 2018)',
 ];
 export const TOP_XP_LENGTH = 11;
+export const DEFAULT_AVATAR =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png';
