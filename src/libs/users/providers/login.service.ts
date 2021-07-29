@@ -148,7 +148,7 @@ export class LoginService {
   }
 
   public async loginWithFacebook(body: LoginBodyDto): Promise<UserLogin> {
-    if (!body.access_token.trim())
+    if (!body?.access_token?.trim())
       throw new BadRequestException('Invalid accessToken');
     const facebookUser = await this.facebookService.getUserData(
       body.access_token,

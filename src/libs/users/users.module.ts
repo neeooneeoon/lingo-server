@@ -23,6 +23,7 @@ import { UserAddressService } from '@libs/users/providers/userAddress.service';
 import { NotificationsModule } from '@libs/notifications';
 import { AppleService } from '@libs/users/providers/apple.service';
 import { LoginService } from '@libs/users/providers/login.service';
+import { CacheModule } from '@cache';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { LoginService } from '@libs/users/providers/login.service';
     forwardRef(() => LeaderBoardsModule),
     forwardRef(() => FollowingsModule),
     forwardRef(() => ScoreStatisticsModule),
+    CacheModule,
   ],
   controllers: [
     UserController,

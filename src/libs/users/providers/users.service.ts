@@ -6,6 +6,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
+  CACHE_MANAGER,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, UpdateWriteOpResult } from 'mongoose';
@@ -32,13 +33,14 @@ import { WorksService } from '@libs/works/works.service';
 import { FollowingsService } from '@libs/followings/providers/followings.service';
 import { UserRank } from '@dto/leaderBoard/userRank.dto';
 import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
-import { forkJoin, from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { forkJoin, from, Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { ScoreOverviewDto } from '@dto/progress';
 import { FollowingDocument } from '@entities/following.entity';
 import { NotificationsService } from '@libs/notifications/providers/notifications.service';
 import { Province } from '@entities/province.entity';
 import { District } from '@entities/district.entity';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UsersService {
@@ -57,6 +59,7 @@ export class UsersService {
     private scoreStatisticsService: ScoreStatisticsService,
     private followingsService: FollowingsService,
     private readonly notificationsService: NotificationsService,
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
   public async findByIds(
@@ -330,17 +333,31 @@ export class UsersService {
   }
 
   public findUser(userId: string): Observable<UserProfile> {
-    return from(
-      this.userModel
-        .findById(userId)
-        .populate('address.province', ['name'], Province.name)
-        .populate('address.district', ['name'], District.name),
-    ).pipe(
-      map((user) => {
-        if (!user) {
-          throw new BadRequestException(`Can't find user ${userId}`);
-        }
-        return this.usersHelper.mapToUserProfile(user);
+    return from(this.cache.get<UserProfile>(`profile/${userId}`)).pipe(
+      switchMap((r) => {
+        const cachedUser = r as UserProfile;
+        if (cachedUser !== null) return of(cachedUser);
+        return from(
+          this.userModel
+            .findById(userId)
+            .populate('address.province', ['name'], Province.name)
+            .populate('address.district', ['name'], District.name),
+        ).pipe(
+          map((user) => {
+            if (!user)
+              throw new BadRequestException(`Can't find user ${userId}`);
+            const userProfile = this.usersHelper.mapToUserProfile(user);
+            this.cache
+              .set<UserProfile>(`profile/${userId}`, userProfile, {
+                ttl: 3600,
+              })
+              .then((r) => r)
+              .catch((e) => {
+                throw e;
+              });
+            return userProfile;
+          }),
+        );
       }),
     );
   }

@@ -66,6 +66,12 @@
       ],
       "@admin": [
         "src/admin"
+      ],
+      "@cache/*": [
+        "src/cache/*"
+      ],
+      "@cache": [
+        "src/cache"
       ]
     }
   }

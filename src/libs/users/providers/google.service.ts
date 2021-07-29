@@ -15,7 +15,7 @@ export class GoogleService {
     };
   }
 
-  getUserData(accessToken: string): Promise<GoogleProfile> {
+  async getUserData(accessToken: string): Promise<GoogleProfile> {
     return new Promise((resolve, reject) => {
       const OAuth2Client = new google.auth.OAuth2({});
       OAuth2Client.setCredentials({ access_token: accessToken });
