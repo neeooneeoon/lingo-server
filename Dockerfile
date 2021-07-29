@@ -4,11 +4,13 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --only=development
+RUN yarn add glob rimraf
+
+RUN yarn install --only=development
 
 COPY . .
 
-RUN npm run build
+RUN yarn build
 
 FROM node:12.19.0-alpine3.9 AS production
 
@@ -19,10 +21,10 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --only=production
+RUN yarn install --only=production
 
 COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
 EXPOSE 8080
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main"]
