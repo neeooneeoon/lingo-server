@@ -9,13 +9,13 @@ import {
 import { StoriesService } from '../providers/stories.service';
 
 @UseGuards(JwtAuthGuard)
-@Controller('api/stories')
+@Controller('api')
 @ApiBearerAuth()
 @ApiTags('Stories')
 export class StoriesController {
   constructor(private readonly storiesService: StoriesService) {}
 
-  @Get('/:bookId/:unitId')
+  @Get('api/stories/:bookId/:unitId')
   @ApiParam({ type: String, name: 'bookId', required: true })
   @ApiParam({ type: String, name: 'unitId', required: true })
   @ApiOperation({ summary: 'Lấy danh sách stories có trong book/unit' })
@@ -24,5 +24,12 @@ export class StoriesController {
     @Param('unitId') unitId,
   ) {
     return this.storiesService.getStoriesInUnit(bookId, unitId);
+  }
+
+  @Get('/story/:storyId')
+  @ApiParam({ type: Number, name: 'storyId', required: true })
+  @ApiOperation({ summary: 'Chi tiết story và các câu hỏi' })
+  public getStoryQuestions(@Param('storyId') storyId: number) {
+    return this.storiesService.getStoryQuestions(storyId);
   }
 }

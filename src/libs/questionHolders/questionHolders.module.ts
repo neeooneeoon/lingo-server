@@ -30,6 +30,11 @@ import { Unit, UnitSchema } from '@entities/unit.entity';
     PointService,
     QuestionsHelper,
   ],
-  exports: [QuestionHoldersService, AnswerService, PointService],
+  exports: [
+    QuestionHoldersService,
+    AnswerService,
+    PointService,
+    QuestionsHelper,
+  ],
 })
 export class QuestionHoldersModule {}

@@ -13,7 +13,6 @@ export class TasksService {
 
   @Cron('0 5 * * *')
   async changeStreakScore() {
-    console.log('Start streak');
     this.logger.log('Starting check streak');
     const users = await this.usersService.getAllUsers();
     await Promise.all(
@@ -21,7 +20,7 @@ export class TasksService {
     );
   }
   @Cron('0 0 * * *')
-  sendNotification() {
+  async sendNotification() {
     this.logger.log('Starting send notification');
     return this.notificationsService.scheduleNotifications();
   }

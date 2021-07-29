@@ -32,7 +32,7 @@ export class StoryQuestion {
     type: [
       {
         _id: String,
-        text: Boolean,
+        text: String,
       },
     ],
     required: false,

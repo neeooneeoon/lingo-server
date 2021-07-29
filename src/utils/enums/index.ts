@@ -36,6 +36,7 @@ export enum QuestionTypeCode {
   W8 = 'W1-W2-W',
   W13 = 'W2-W1-C',
   W14 = 'W2-W1-W',
+  W15 = 'W1-W2-C',
   S12 = 'S1-S2-R',
   S10 = 'S2-S1-C',
   S1 = 'A1-S1-R',

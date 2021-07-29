@@ -43,7 +43,7 @@ export class Story {
       },
     ],
   })
-  sentences: StorySentence;
+  sentences: StorySentence[];
 }
 export type StoryDocument = Document & Story;
 export const StorySchema = SchemaFactory.createForClass(Story);

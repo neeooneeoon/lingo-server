@@ -28,6 +28,8 @@ export class QuestionsHelper {
         return 'Tìm từ tiếng Anh tương ứng';
       case QuestionTypeCode.W14:
         return 'Điền từ tiếng Anh tương ứng';
+      case QuestionTypeCode.W15:
+        return 'Chọn nghĩa tương ứng với từ.';
       case QuestionTypeCode.S12:
         return 'Sắp xếp thành bản dịch đúng';
       case QuestionTypeCode.S10:
@@ -64,6 +66,7 @@ export class QuestionsHelper {
       case QuestionTypeCode.W13:
       case QuestionTypeCode.S7:
       case QuestionTypeCode.S10:
+      case QuestionTypeCode.W15:
         return 'Choice';
       case QuestionTypeCode.W12:
       case QuestionTypeCode.S4:

@@ -7,6 +7,7 @@ import {
   StoryQuestion,
   StoryQuestionSchema,
 } from '@entities/storyQuestion.entity';
+import { WordsModule } from '@libs/words';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import {
       { name: Story.name, schema: StorySchema },
       { name: StoryQuestion.name, schema: StoryQuestionSchema },
     ]),
+    WordsModule,
   ],
   controllers: [StoriesController],
   providers: [StoriesService],

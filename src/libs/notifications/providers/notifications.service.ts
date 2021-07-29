@@ -6,9 +6,8 @@ import { PushNotificationDto } from '@dto/notification';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeviceToken, DeviceTokenDocument } from '@entities/deviceToken.entity';
 import { Model, Types } from 'mongoose';
-import { forkJoin, from, Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { UserDocument } from '@entities/user.entity';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class NotificationsService {
@@ -24,9 +23,6 @@ export class NotificationsService {
         .replace(/\\n/g, '\n'),
       clientEmail: this.configsService.get('FIREBASE_CLIENT_EMAIL'),
     };
-
-    // console.log(adminConfig);
-
     admin.initializeApp({
       credential: admin.credential.cert(adminConfig),
     });
@@ -44,7 +40,6 @@ export class NotificationsService {
         },
       };
       await admin.messaging().sendToDevice(token, payload);
-      // await Promise.all([admin.messaging().sendToDevice(token, payload)]);
       return;
     } catch (e) {
       console.log(e);
@@ -68,27 +63,6 @@ export class NotificationsService {
     }
   }
 
-  public saveDeviceToken(
-    userId: string,
-    token: string,
-  ): Observable<DeviceTokenDocument> {
-    return from(
-      this.deviceTokenModel.findOne({
-        token: token,
-      }),
-    ).pipe(
-      switchMap((deviceToken) => {
-        if (deviceToken) {
-          return of(deviceToken);
-        } else {
-          return this.deviceTokenModel.create({
-            user: Types.ObjectId(userId),
-            token: token,
-          });
-        }
-      }),
-    );
-  }
   public async scheduleNotifications() {
     const devices = await this.deviceTokenModel.find({}).populate('user');
     const enableDevices = devices.map((device) => device.token);
@@ -100,27 +74,6 @@ export class NotificationsService {
           body: 'Bạn chỉ cần dành ra 10 phút mỗi ngày để nâng cao kỹ năng Tiếng Anh. Bắt đầu thôi!',
         }),
       ),
-    );
-    return from(this.deviceTokenModel.find({}).populate('user')).pipe(
-      map((deviceTokens) => {
-        const enableDevices: string[] = [];
-        deviceTokens.map((deviceToken) => {
-          const user = deviceToken.user as unknown as UserDocument;
-          user.enableNotification && enableDevices.push(deviceToken.token);
-        });
-        return enableDevices;
-      }),
-      switchMap((enableDevices) => {
-        return forkJoin([
-          ...enableDevices.map((device) => {
-            return this.sendNotification({
-              token: device,
-              title: 'Nhắc nhở mỗi ngày',
-              body: 'Lingo xin chào!',
-            });
-          }),
-        ]);
-      }),
     );
   }
   public removeDeviceToken(currentUser: string): Observable<boolean> {
