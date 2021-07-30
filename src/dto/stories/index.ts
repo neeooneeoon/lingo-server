@@ -1,0 +1,1 @@
+export { StoryQuestionResults } from './StoryQuestionResults';

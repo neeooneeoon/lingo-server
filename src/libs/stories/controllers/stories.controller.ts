@@ -1,12 +1,14 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { StoriesService } from '../providers/stories.service';
+import { StoryQuestionResults } from '@dto/stories';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api')
@@ -32,4 +34,13 @@ export class StoriesController {
   public getStoryQuestions(@Param('storyId') storyId: number) {
     return this.storiesService.getStoryQuestions(storyId);
   }
+
+  @Put('/story/:storyId/sendResults')
+  @ApiParam({ type: Number, name: 'storyId', required: true })
+  @ApiBody({ type: StoryQuestionResults, required: true })
+  @ApiOperation({ summary: 'Tính điểm kinh nghiệm của story question' })
+  public sendStoryQuestionResults(
+    @Param('storyId') storyId: number,
+    @Body() body: StoryQuestionResults,
+  ) {}
 }
