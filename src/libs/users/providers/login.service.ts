@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '@entities/user.entity';
 import { Model } from 'mongoose';
@@ -11,6 +16,7 @@ import { UsersHelper } from '@helpers/users.helper';
 import { AuthenticationService } from '@authentication';
 import { ProgressesService } from '@libs/progresses/progresses.service';
 import { DEFAULT_AVATAR } from '@utils/constants';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class LoginService {
@@ -22,6 +28,7 @@ export class LoginService {
     private authService: AuthenticationService,
     private usersHelper: UsersHelper,
     private progressesService: ProgressesService,
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
   public async getUserByIdentifier(
@@ -69,15 +76,18 @@ export class LoginService {
   ): Promise<UserLogin> {
     const user = await this.getUserByIdentifier(info.identifier, account);
     if (user) {
-      await this.notificationsService.storeDeviceToken(
-        String(user._id),
-        info.deviceToken,
-      );
       const profile = this.usersHelper.mapToUserProfile(user);
       const token = this.authService.generateToken({
         userId: user._id,
         role: user.role,
       });
+      await Promise.all([
+        this.notificationsService.storeDeviceToken(
+          String(user._id),
+          info.deviceToken,
+        ),
+        this.cache.set(`profile/${String(user._id)}`, profile, { ttl: 3600 }),
+      ]);
       return {
         user: profile,
         token: token,
@@ -85,6 +95,11 @@ export class LoginService {
       };
     } else {
       const newUser = await this.storeNewUser(info);
+      const profile = this.usersHelper.mapToUserProfile(newUser);
+      const token = this.authService.generateToken({
+        userId: newUser._id,
+        role: newUser.role,
+      });
       await Promise.all([
         this.progressesService.createUserProgress({
           userId: newUser._id,
@@ -94,12 +109,8 @@ export class LoginService {
           String(newUser._id),
           info.deviceToken,
         ),
+        this.cache.set(`profile/${String(user._id)}`, profile, { ttl: 3600 }),
       ]);
-      const profile = this.usersHelper.mapToUserProfile(newUser);
-      const token = this.authService.generateToken({
-        userId: newUser._id,
-        role: newUser.role,
-      });
       return {
         user: profile,
         token: token,

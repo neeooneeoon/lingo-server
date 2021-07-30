@@ -141,31 +141,28 @@ export class UsersService {
           loginCount++;
         }
       }
-
-      if (isFinishLevel) {
-        await this.userModel.updateOne(
-          { _id: user._id },
-          {
+      const userDidUpdated = await this.userModel.findOneAndUpdate(
+        { _id: user._id },
+        {
+          $set: {
             streak: streak,
             lastActive: workInfo.timeStart,
             loginCount: loginCount,
-            level: user.level + 1,
+            level: isFinishLevel ? user.level + 1 : user.level,
             score: user.score + 1,
             xp: xp + point,
           },
-        );
-      } else {
-        await this.userModel.updateOne(
-          { _id: user._id },
-          {
-            streak: streak,
-            lastActive: workInfo.timeStart,
-            loginCount: loginCount,
-            score: user.score + 1,
-            xp: xp + point,
-          },
-        );
-      }
+        },
+        {
+          new: true,
+        },
+      );
+      const profile = this.usersHelper.mapToUserProfile(userDidUpdated);
+      await this.cache.set<UserProfile>(
+        `profile/${String(userDidUpdated._id)}`,
+        profile,
+        { ttl: 3600 },
+      );
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

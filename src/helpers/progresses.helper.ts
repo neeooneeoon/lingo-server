@@ -16,6 +16,7 @@ export class ProgressesHelper {
         if (userLevel) {
           currentLesson = userLevel.lessons.length;
         }
+        const totalLessons = unit.levels[currentLevel]?.lessons?.length;
         return {
           _id: unit._id,
           unitNId: unit.nId,
@@ -24,10 +25,7 @@ export class ProgressesHelper {
           totalLevels: unit.levels.length,
           totalLessons: unit.totalLessons,
           doneLessons: unitProgress ? unitProgress.doneLessons : 0,
-          totalLessonsOfLevel:
-            currentLevel === 0
-              ? unit.levels[0].totalLessons
-              : unit.levels[currentLevel - 1].totalLessons,
+          totalLessonsOfLevel: totalLessons ? totalLessons : 0,
           userLevel: currentLevel,
           userLesson: currentLesson,
           grammar: unit.grammar,

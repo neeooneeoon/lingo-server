@@ -220,7 +220,7 @@ export class WorksService {
   }
   public async isExist(): Promise<boolean> {
     const work = this.workModel.findOne({});
-    return work ? true : false;
+    return !!work;
   }
 
   public async backup() {
