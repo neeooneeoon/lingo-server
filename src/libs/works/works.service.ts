@@ -43,11 +43,10 @@ export class WorksService {
     bookId: string,
   ): Promise<WorkDocument | undefined> {
     try {
-      const userWork = await this.workModel.findOne({
+      return this.workModel.findOne({
         bookId: bookId,
         userId: Types.ObjectId(userId),
       });
-      return userWork;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -58,7 +57,7 @@ export class WorksService {
     lessonTree: LessonTree,
     workInfo: WorkInfo,
     results: AnswerResult[],
-  ): Promise<number> {
+  ): Promise<{ point: number; levelIncorrectList: string[] }> {
     try {
       const {
         bookId,
@@ -204,16 +203,21 @@ export class WorksService {
         timeEnd: workInfo.timeEnd,
       });
       await userWork.save();
-      // const bonusStreak = this.pointService.getBonusStreak(user.streak);
       const accuracy = lessonTotalQuestions / workInfo.doneQuestions;
       questionPoint = Number.isNaN(accuracy)
         ? questionPoint
         : questionPoint * accuracy;
       const bonusLevel = levelIndex + 1;
       const bonusLesson = isLastLesson ? 1 : 0;
-      return Number.isNaN(Math.floor(questionPoint + bonusLevel + bonusLesson))
+      const point = Number.isNaN(
+        Math.floor(questionPoint + bonusLevel + bonusLesson),
+      )
         ? 0
         : Math.floor(questionPoint + bonusLevel + bonusLesson);
+      return {
+        point,
+        levelIncorrectList,
+      };
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

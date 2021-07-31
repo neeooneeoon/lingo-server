@@ -174,7 +174,7 @@ export class AnswerService {
     question: QuestionDocument,
   ): Promise<boolean> {
     try {
-      let isCorrect = false;
+      let isCorrect: boolean;
       if (ListWorQuestionCodes.includes(question.code)) {
         isCorrect = await this.checkAnswerWordQuestion(result, question);
       } else {

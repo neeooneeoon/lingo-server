@@ -197,21 +197,22 @@ export class QuestionHoldersService {
     incorrectPercent: number,
     incorrectList: string[],
     rootQuestions: QuestionDocument[],
-  ): Array<string> {
+    maxSize: number,
+  ): Set<string> {
     if (incorrectPercent < 20) {
-      return incorrectList;
+      return new Set<string>();
     } else if (incorrectPercent < 40) {
       const mediumQuestions = rootQuestions
         .filter((q) => q.rank == 2 || q.rank == 3)
         .sort(() => 0.5 - Math.random())
         .map((q) => String(q._id));
-      return [...incorrectList, ...mediumQuestions].slice(0, 10);
+      return new Set<string>(mediumQuestions.slice(0, maxSize));
     } else {
       const hardQuestions = rootQuestions
         .filter((q) => q.rank == 1 || q.rank == 4)
         .sort(() => 0.5 - Math.random())
         .map((q) => String(q._id));
-      return [...incorrectList, ...hardQuestions].slice(0, 10);
+      return new Set<string>(hardQuestions.slice(0, maxSize));
     }
   }
 

@@ -67,15 +67,11 @@ export class BooksService {
   }
 
   public async getBook(bookId: string): Promise<BookDocument> {
-    try {
-      const book = await this.bookModel.findById(bookId);
-      if (!book) {
-        throw new BadRequestException(`Can't find book ${bookId}`);
-      }
-      return book;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
+    const book = await this.bookModel.findById(bookId);
+    if (!book) {
+      throw new BadRequestException(`Can't find book ${bookId}`);
     }
+    return book;
   }
 
   public async getBooksByGrade(
@@ -173,62 +169,58 @@ export class BooksService {
       const userWorkUnit = userWork?.units?.find(
         (item) => item.unitId === unitId,
       );
+      const userWorkLevel = userWorkUnit?.levels?.find(
+        (item) => item.levelIndex === levelIndex,
+      );
       if (lessonIndex === lessons.length - 1) {
-        const userWorkLevel = userWorkUnit?.levels?.find(
-          (item) => item.levelIndex === levelIndex,
-        );
         const incorrectList = userWorkLevel ? userWorkLevel.incorrectList : [];
-
+        const incorrectListLength = incorrectList.length;
+        const questionsLength = questions.length;
         const incorrectPercent =
-          Math.floor(incorrectList.length / questions.length) * 100;
-        const questionsForLatestLesson =
+          Math.floor(incorrectListLength / questionsLength) * 100;
+        const maxSize = book.grade <= 2 ? 5 : 10;
+        const setReviewQuestions =
           this.questionHoldersService.questionsLatestLesson(
             incorrectPercent,
             incorrectList,
             questions,
+            maxSize,
           );
-        lesson.questionIds = questionsForLatestLesson;
-        if (questionsForLatestLesson.length < 7) {
-          const setIndexes = new Set<number>();
-          let counter = lesson.questionIds.length;
-          while (lesson.questionIds.length < 7 && counter < questions.length) {
+        if ([...setReviewQuestions].length < maxSize) {
+          const counter = lesson.questionIds.length;
+          while (
+            [...setReviewQuestions].length < maxSize &&
+            counter < questionsLength
+          ) {
             const index = Math.floor(Math.random() * questions.length);
-            if (!setIndexes.has(index)) {
-              lesson.questionIds.push(String(questions[index]._id));
-              setIndexes.add(index);
-              counter++;
-            }
+            setReviewQuestions.add(String(questions[index]._id));
           }
         }
-      } else {
-        const incorrectList = userWorkUnit?.incorrectList;
-        const didList = userWorkUnit?.didList;
-        const leftOver = incorrectList.filter((q) => didList.indexOf(q) === -1);
-        if (leftOver.length <= 7) {
-          lesson.questionIds.push(...leftOver);
-        } else {
-          const leftOverLength = leftOver.length;
-          const setIndexes = new Set<number>();
-          while (lesson.questionIds.length < 7) {
-            const index = Math.floor(Math.random() * leftOverLength);
-            if (!setIndexes.has(index)) {
-              lesson.questionIds.push(leftOver[index]);
-              setIndexes.add(index);
-            }
-          }
-        }
-        const setIndexes = new Set<number>();
-        let counter = lesson.questionIds.length;
-
-        while (lesson.questionIds.length < 10 && counter < questions.length) {
-          const index = Math.floor(Math.random() * questions.length);
-          if (!setIndexes.has(index)) {
-            lesson.questionIds.push(String(questions[index]._id));
-            setIndexes.add(index);
-            counter++;
-          }
-        }
+        lesson.questionIds = [...setReviewQuestions];
       }
+      // else {
+      //   const setIncorrectInPrevLesson: Set<string> = new Set<string>();
+      //   if (userWorkLevel) {
+      //     const userWorkLesson = userWorkLevel?.lessons?.find(
+      //       (item) => item.lessonIndex === lessonIndex - 1,
+      //     );
+      //     if (userWorkLesson?.works?.length > 0) {
+      //       userWorkLesson.works.map((work) => {
+      //         if (work?.results?.length > 0) {
+      //           work.results.map((result: any) => {
+      //             if (!result?.status && result?._id) {
+      //               setIncorrectInPrevLesson.add(result._id);
+      //             }
+      //           });
+      //         }
+      //       });
+      //     }
+      //   }
+      //   const incorrectList = [...setIncorrectInPrevLesson];
+      //   const didList = userWorkUnit?.didList;
+      //   const leftOver = incorrectList.filter((q) => didList.indexOf(q) === -1);
+      //   lesson.questionIds.push(...leftOver);
+      // }
     }
     const reducingOutput =
       await this.questionHoldersService.reduceByQuestionIds({
@@ -245,59 +237,52 @@ export class BooksService {
   }
 
   public async getLessonTree(input: GetLessonInput): Promise<LessonTree> {
-    try {
-      const { bookId, unitId, levelIndex, lessonIndex } = input;
-      let isLastLesson = false;
+    const { bookId, unitId, levelIndex, lessonIndex } = input;
+    let isLastLesson = false;
 
-      const book = await this.getBook(bookId);
-      const units = book.units;
-      if (!units || units.length === 0) {
-        throw new BadRequestException(`No unit in book ${bookId}`);
-      }
-      const unit = units.find((item) => item._id === unitId);
-      if (!unit) {
-        throw new BadRequestException(`Can't find unit ${unitId}`);
-      }
-      const levels = unit.levels;
-      if (!levels || levels.length === 0) {
-        throw new BadRequestException(`No level in unit ${unitId}`);
-      }
-      const level = levels.find((item) => item.levelIndex === levelIndex);
-      if (!level) {
-        throw new BadRequestException(`Can't find level ${levelIndex}`);
-      }
-      const lessons = level.lessons;
-      if (!lessons || lessons.length === 0) {
-        throw new BadRequestException(`No lesson in ${levelIndex}`);
-      }
-      let lesson: LessonDocument;
-      if (
-        levelIndex == unit.levels.length - 1 &&
-        lessonIndex == lessons.length
-      ) {
-        isLastLesson = true;
-        lesson = lessons[lessons.length - 1];
-      } else {
-        lesson = lessons.find((item) => item.lessonIndex === lessonIndex);
-      }
-      if (!lesson) {
-        throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
-      }
-      return {
-        isLastLesson: isLastLesson,
-        grade: book.grade,
-        bookId: book._id,
-        unitId: unit._id,
-        levelIndex: levelIndex,
-        lessonIndex: lessonIndex,
-        unitTotalLevels: unit.levels.length,
-        levelTotalLessons: level.lessons.length,
-        lessonTotalQuestions: lesson.totalQuestions,
-        book: book,
-      };
-    } catch (error) {
-      throw new InternalServerErrorException(error);
+    const book = await this.getBook(bookId);
+    const units = book.units;
+    if (!units || units.length === 0) {
+      throw new BadRequestException(`No unit in book ${bookId}`);
     }
+    const unit = units.find((item) => item._id === unitId);
+    if (!unit) {
+      throw new BadRequestException(`Can't find unit ${unitId}`);
+    }
+    const levels = unit.levels;
+    if (!levels || levels.length === 0) {
+      throw new BadRequestException(`No level in unit ${unitId}`);
+    }
+    const level = levels.find((item) => item.levelIndex === levelIndex);
+    if (!level) {
+      throw new BadRequestException(`Can't find level ${levelIndex}`);
+    }
+    const lessons = level.lessons;
+    if (!lessons || lessons.length === 0) {
+      throw new BadRequestException(`No lesson in ${levelIndex}`);
+    }
+    let lesson: LessonDocument;
+    if (levelIndex == unit.levels.length - 1 && lessonIndex == lessons.length) {
+      isLastLesson = true;
+      lesson = lessons[lessons.length - 1];
+    } else {
+      lesson = lessons.find((item) => item.lessonIndex === lessonIndex);
+    }
+    if (!lesson) {
+      throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
+    }
+    return {
+      isLastLesson: isLastLesson,
+      grade: book.grade,
+      bookId: book._id,
+      unitId: unit._id,
+      levelIndex: levelIndex,
+      lessonIndex: lessonIndex,
+      unitTotalLevels: unit.levels.length,
+      levelTotalLessons: level.lessons.length,
+      lessonTotalQuestions: lesson.totalQuestions,
+      book: book,
+    };
   }
   public async importBook(rows: string[][]): Promise<void> {
     for (let i = 1; i < rows.length; i++) {

@@ -105,6 +105,7 @@ export class ProgressesService {
     userId: string,
     lessonTree: LessonTree,
     workInfo: WorkInfo,
+    isPassedLevel: boolean,
   ): Promise<boolean> {
     try {
       let hasLesson = false;
@@ -165,7 +166,7 @@ export class ProgressesService {
             {
               levelIndex: levelIndex,
               totalLessons: levelTotalLessons,
-              passed: levelTotalLessons === 1,
+              passed: isPassedLevel,
               doneLessons: 1,
               lessons: [lessonIndex],
             },
@@ -183,7 +184,7 @@ export class ProgressesService {
             levelIndex: levelIndex,
             totalLessons: levelTotalLessons,
             doneLessons: 1,
-            passed: levelTotalLessons === 1,
+            passed: isPassedLevel,
             lessons: [lessonIndex],
           };
           progressUnit.levels.push(newProgressLevel);
@@ -193,8 +194,7 @@ export class ProgressesService {
           );
           if (!userLesson) {
             progressLevel.lessons.push(lessonIndex);
-            progressLevel.passed =
-              progressLevel.lessons.length == progressLevel.totalLessons;
+            progressLevel.passed = isPassedLevel;
             if (progressLevel.passed === true) {
               progressUnit.passedLevels++;
               progressBook.level++;

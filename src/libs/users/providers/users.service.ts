@@ -171,7 +171,7 @@ export class UsersService {
   public async saveUserLesson(
     userCtx: JwtPayLoad,
     input: SaveLessonDto,
-  ): Promise<string> {
+  ): Promise<{ isPassedLevel: boolean; message: string }> {
     const userProfile = await this.userModel.findById(userCtx.userId);
     if (!userProfile) {
       throw new UnauthorizedException('Not authorized');
@@ -204,48 +204,56 @@ export class UsersService {
     if (!lessonTree) {
       throw new NotFoundException(`Can't find lessonTree with ${input}`);
     }
-    const saveUserProgressPromise = this.progressesService.saveUserProgress(
-      userCtx.userId,
-      lessonTree,
-      userWork,
-    );
-    const saveUserWorkPromise = this.worksService.saveUserWork(
+    const unit = lessonTree.book?.units?.find((unit) => unit?._id == unitId);
+    let totalQuestionsInLevel = 0;
+    if (unit) {
+      const level = unit?.levels?.find(
+        (level) => level?.levelIndex == levelIndex,
+      );
+      totalQuestionsInLevel = level?.totalLessons ? level.totalLessons : 0;
+    }
+    const { point, levelIncorrectList } = await this.worksService.saveUserWork(
       userProfile,
       lessonTree,
       userWork,
       lessonResult,
     );
-
-    let isPassedLevel = false;
-    let point = 0;
-    await Promise.all([saveUserProgressPromise, saveUserWorkPromise])
-      .then(([promiseOneResult, promiseTwoResult]) => {
-        isPassedLevel = promiseOneResult;
-        point = promiseTwoResult;
-      })
-      .catch((error) => {
-        throw new InternalServerErrorException(error);
-      });
+    let incorrectPercent = 0;
+    if (totalQuestionsInLevel && levelIncorrectList?.length) {
+      incorrectPercent =
+        Math.floor(levelIncorrectList?.length / totalQuestionsInLevel) * 100;
+    }
+    const isPassedLevel = incorrectPercent < 20;
+    await this.progressesService.saveUserProgress(
+      userCtx.userId,
+      lessonTree,
+      userWork,
+      isPassedLevel,
+    );
     await this.scoreStatisticsService.addXpAfterSaveLesson(
       point,
       userCtx.userId,
     );
-    const updateUserStatusPromise = this.updateUserStatus({
-      user: userProfile,
-      workInfo: userWork,
-      isFinishLevel: isPassedLevel,
-      point: point,
-    });
-    const updateUserPointPromise = this.leaderBoardsService.updateUserPointDto(
-      userProfile,
-      point,
-    );
-    await Promise.all([updateUserStatusPromise, updateUserPointPromise]).catch(
-      (error) => {
-        throw new InternalServerErrorException(error);
-      },
-    );
-    return 'save user work';
+    await Promise.all([
+      this.progressesService.saveUserProgress(
+        userCtx.userId,
+        lessonTree,
+        userWork,
+        isPassedLevel,
+      ),
+      this.scoreStatisticsService.addXpAfterSaveLesson(point, userCtx.userId),
+      this.updateUserStatus({
+        user: userProfile,
+        workInfo: userWork,
+        isFinishLevel: isPassedLevel,
+        point: point,
+      }),
+      this.leaderBoardsService.updateUserPointDto(userProfile, point),
+    ]);
+    return {
+      isPassedLevel: isPassedLevel,
+      message: 'Save user work success',
+    };
   }
 
   public searchUser(

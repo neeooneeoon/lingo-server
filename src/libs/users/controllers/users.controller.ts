@@ -81,7 +81,7 @@ export class UserController {
   async saveUserLesson(
     @Body() input: SaveLessonDto,
     @UserCtx() user: JwtPayLoad,
-  ): Promise<string> {
+  ) {
     return this.usersService.saveUserLesson(user, input);
   }
 
