@@ -26,10 +26,9 @@ export class WordsService {
           $in: ids,
         },
       });
-      const result = words.map((word) => {
+      return words.map((word) => {
         return this.wordsHelper.mapWordToWordInLesson(word);
       });
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

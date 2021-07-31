@@ -27,10 +27,9 @@ export class SentencesService {
           $in: ids,
         },
       });
-      const result = sentences.map((sentence) => {
+      return sentences.map((sentence) => {
         return this.sentencesHelper.mapSentenceToSentenceInLesson(sentence);
       });
-      return result;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

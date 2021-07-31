@@ -38,7 +38,9 @@ export class CacheModule implements OnModuleInit {
 
         args = args.slice(0, 2);
         logger.log(
-          `${commandName.toUpperCase()} ${args.join(', ')} - ${duration}ms`,
+          `${commandName.toUpperCase()} ${args
+            .join(', ')
+            .slice(0, 100)} - ${duration}ms`,
         );
         return result;
       };

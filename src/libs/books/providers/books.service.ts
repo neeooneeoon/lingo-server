@@ -156,14 +156,27 @@ export class BooksService {
     if (!lesson) {
       throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
     }
-    const questions: QuestionDocument[] = questionHolder?.questions;
-    const questionHolder = await this.questionHoldersService.getQuestionHolder({
-      bookId: bookId,
-      unitId: unitId,
-      level: levelIndex,
-    });
+    let questions = await this.cacheManager.get<QuestionDocument[] | null>(
+      `questionHolder/${bookId}/${unitId}/${levelIndex}`,
+    );
+    if (!questions || questions?.length === 0) {
+      const questionHolder =
+        await this.questionHoldersService.getQuestionHolder({
+          bookId: bookId,
+          unitId: unitId,
+          level: levelIndex,
+        });
+      questions = questionHolder?.questions;
+      if (questions?.length > 0) {
+        await this.cacheManager.set<QuestionDocument[]>(
+          `questionHolder/${bookId}/${unitId}/${levelIndex}`,
+          questions,
+          { ttl: 7200 },
+        );
+      }
+    }
 
-    if (lesson?.questionIds?.length == 0 && questions.length !== 0) {
+    if (lesson?.questionIds?.length == 0 && questions?.length !== 0) {
       const userWork = await this.worksService.getUserWork(userId, bookId);
       const userWorkUnit = userWork?.units?.find(
         (item) => item.unitId === unitId,
