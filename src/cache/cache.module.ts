@@ -26,7 +26,7 @@ export class CacheModule implements OnModuleInit {
 
   public onModuleInit(): any {
     const logger = new Logger('Cache');
-    const commands = ['get', 'set', 'del'];
+    const commands = ['get', 'set', 'del', 'store'];
     const cache = this.cache;
     commands.forEach((commandName) => {
       const oldCommand = cache[commandName];

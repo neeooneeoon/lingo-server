@@ -86,7 +86,7 @@ export class LoginService {
           String(user._id),
           info.deviceToken,
         ),
-        this.cache.set(`profile/${String(user._id)}`, profile, { ttl: 3600 }),
+        this.cache.set(`profile/${String(user._id)}`, profile, { ttl: 7200 }),
       ]);
       return {
         user: profile,
@@ -109,7 +109,7 @@ export class LoginService {
           String(newUser._id),
           info.deviceToken,
         ),
-        this.cache.set(`profile/${String(user._id)}`, profile, { ttl: 3600 }),
+        this.cache.set(`profile/${String(user._id)}`, profile, { ttl: 7200 }),
       ]);
       return {
         user: profile,

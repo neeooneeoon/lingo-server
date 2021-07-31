@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  CACHE_MANAGER,
   forwardRef,
   Inject,
   Injectable,
@@ -32,6 +33,8 @@ import { SentenceDocument } from '@entities/sentence.entity';
 import { WordsService } from '@libs/words/words.service';
 import { SentencesService } from '@libs/sentences/sentences.service';
 import { WordInLesson } from '@dto/word/wordInLesson.dto';
+import { Cache } from 'cache-manager';
+import { QuestionDocument } from '@entities/question.entity';
 
 @Injectable()
 export class BooksService {
@@ -44,6 +47,7 @@ export class BooksService {
     private sentencesService: SentencesService,
     private booksHelper: BooksHelper,
     private questionHoldersService: QuestionHoldersService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   public findBookWithProgressBook(
@@ -67,11 +71,7 @@ export class BooksService {
   }
 
   public async getBook(bookId: string): Promise<BookDocument> {
-    const book = await this.bookModel.findById(bookId);
-    if (!book) {
-      throw new BadRequestException(`Can't find book ${bookId}`);
-    }
-    return book;
+    return this.bookModel.findById(bookId);
   }
 
   public async getBooksByGrade(
@@ -81,10 +81,9 @@ export class BooksService {
     try {
       // eslint-disable-next-line prefer-const
       let [books, userProgress] = await Promise.all([
-        this.bookModel.find({ grade: grade }),
+        this.bookModel.find({ grade: grade }).sort({ nId: 1 }),
         this.progressesService.getUserProgress(userId),
       ]);
-      books.sort((bookOne, bookTwo) => bookOne.nId - bookTwo.nId);
       if (!userProgress) {
         userProgress = await this.progressesService.createUserProgress({
           userId: userId,
@@ -124,6 +123,7 @@ export class BooksService {
     userId: string,
     input: GetLessonInput,
   ): Promise<GetLessonOutput> {
+    console.log(input);
     const { bookId, unitId, levelIndex, lessonIndex } = input;
     const book = await this.getBook(bookId);
     const units = book.units;
@@ -156,13 +156,12 @@ export class BooksService {
     if (!lesson) {
       throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
     }
-
+    const questions: QuestionDocument[] = questionHolder?.questions;
     const questionHolder = await this.questionHoldersService.getQuestionHolder({
       bookId: bookId,
       unitId: unitId,
       level: levelIndex,
     });
-    const questions = questionHolder?.questions;
 
     if (lesson?.questionIds?.length == 0 && questions.length !== 0) {
       const userWork = await this.worksService.getUserWork(userId, bookId);
@@ -187,40 +186,20 @@ export class BooksService {
             maxSize,
           );
         if ([...setReviewQuestions].length < maxSize) {
-          const counter = lesson.questionIds.length;
           while (
             [...setReviewQuestions].length < maxSize &&
-            counter < questionsLength
+            questions.length > 0
           ) {
             const index = Math.floor(Math.random() * questions.length);
             setReviewQuestions.add(String(questions[index]._id));
+            if (!setReviewQuestions.has(String(questions[index]._id))) {
+              setReviewQuestions.add(String(questions[index]._id));
+              questions.splice(index, 1);
+            }
           }
         }
         lesson.questionIds = [...setReviewQuestions];
       }
-      // else {
-      //   const setIncorrectInPrevLesson: Set<string> = new Set<string>();
-      //   if (userWorkLevel) {
-      //     const userWorkLesson = userWorkLevel?.lessons?.find(
-      //       (item) => item.lessonIndex === lessonIndex - 1,
-      //     );
-      //     if (userWorkLesson?.works?.length > 0) {
-      //       userWorkLesson.works.map((work) => {
-      //         if (work?.results?.length > 0) {
-      //           work.results.map((result: any) => {
-      //             if (!result?.status && result?._id) {
-      //               setIncorrectInPrevLesson.add(result._id);
-      //             }
-      //           });
-      //         }
-      //       });
-      //     }
-      //   }
-      //   const incorrectList = [...setIncorrectInPrevLesson];
-      //   const didList = userWorkUnit?.didList;
-      //   const leftOver = incorrectList.filter((q) => didList.indexOf(q) === -1);
-      //   lesson.questionIds.push(...leftOver);
-      // }
     }
     const reducingOutput =
       await this.questionHoldersService.reduceByQuestionIds({

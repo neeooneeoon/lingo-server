@@ -11,6 +11,7 @@ import { BookPrivateService } from './private/private.service';
 import { WordsModule } from '@libs/words';
 import { UnitsModule } from '@libs/units/units.module';
 import { SentencesModule } from '@libs/sentences';
+import { CacheModule } from '@cache';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SentencesModule } from '@libs/sentences';
     SentencesModule,
     QuestionHoldersModule,
     forwardRef(() => UnitsModule),
+    CacheModule,
   ],
   providers: [BooksService, BooksHelper, BookPrivateService],
   controllers: [BooksController],

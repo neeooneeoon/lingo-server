@@ -24,6 +24,7 @@ import { NotificationsModule } from '@libs/notifications';
 import { AppleService } from '@libs/users/providers/apple.service';
 import { LoginService } from '@libs/users/providers/login.service';
 import { CacheModule } from '@cache';
+import { ConnectModule } from '@connect';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { CacheModule } from '@cache';
     forwardRef(() => FollowingsModule),
     forwardRef(() => ScoreStatisticsModule),
     CacheModule,
+    ConnectModule,
   ],
   controllers: [
     UserController,

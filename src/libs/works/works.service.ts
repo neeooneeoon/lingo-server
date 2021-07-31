@@ -10,6 +10,7 @@ import { LevelWork, UnitWork, WorkInfo } from '@dto/works';
 import { QuestionHolderDocument } from '@entities/questionHolder.entity';
 import { AnswerService } from '@libs/questionHolders/providers/answer.service';
 import { PointService } from '@libs/questionHolders/providers/point.service';
+import { UserProfile } from '@dto/user';
 
 @Injectable()
 export class WorksService {
@@ -53,11 +54,11 @@ export class WorksService {
   }
 
   public async saveUserWork(
-    user: UserDocument,
+    user: UserProfile & { _id: string },
     lessonTree: LessonTree,
     workInfo: WorkInfo,
     results: AnswerResult[],
-  ): Promise<{ point: number; levelIncorrectList: string[] }> {
+  ): Promise<number> {
     try {
       const {
         bookId,
@@ -203,21 +204,16 @@ export class WorksService {
         timeEnd: workInfo.timeEnd,
       });
       await userWork.save();
+      // const bonusStreak = this.pointService.getBonusStreak(user.streak);
       const accuracy = lessonTotalQuestions / workInfo.doneQuestions;
       questionPoint = Number.isNaN(accuracy)
         ? questionPoint
         : questionPoint * accuracy;
       const bonusLevel = levelIndex + 1;
       const bonusLesson = isLastLesson ? 1 : 0;
-      const point = Number.isNaN(
-        Math.floor(questionPoint + bonusLevel + bonusLesson),
-      )
+      return Number.isNaN(Math.floor(questionPoint + bonusLevel + bonusLesson))
         ? 0
         : Math.floor(questionPoint + bonusLevel + bonusLesson);
-      return {
-        point,
-        levelIncorrectList,
-      };
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

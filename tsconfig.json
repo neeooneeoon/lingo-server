@@ -72,6 +72,12 @@
       ],
       "@cache": [
         "src/cache"
+      ],
+      "@connect/*": [
+        "src/connect/*"
+      ],
+      "@connect": [
+        "src/connect"
       ]
     }
   }

@@ -10,6 +10,7 @@ import { Model, Types } from 'mongoose';
 import { UsersService } from '@libs/users/providers/users.service';
 import { Rank } from '@utils/enums';
 import { User, UserDocument } from '@entities/user.entity';
+import { UserProfile } from '@dto/user';
 
 @Injectable()
 export class LeaderBoardsService {
@@ -62,7 +63,7 @@ export class LeaderBoardsService {
   }
 
   public async updateUserPointDto(
-    user: UserDocument,
+    user: UserProfile & { _id: string },
     point: number,
   ): Promise<void> {
     try {
@@ -89,7 +90,7 @@ export class LeaderBoardsService {
         for (const leaderBoard of leaderBoards) {
           if (leaderBoard.champions.length > 50) continue;
           leaderBoard.champions.push({
-            userId: user._id,
+            userId: Types.ObjectId(user._id),
             point: point,
             image: '',
             displayName: '',

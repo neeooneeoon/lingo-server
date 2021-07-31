@@ -5,7 +5,6 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException,
   CACHE_MANAGER,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -41,6 +40,7 @@ import { NotificationsService } from '@libs/notifications/providers/notification
 import { Province } from '@entities/province.entity';
 import { District } from '@entities/district.entity';
 import { Cache } from 'cache-manager';
+import { TransactionService } from '@connect';
 
 @Injectable()
 export class UsersService {
@@ -60,6 +60,7 @@ export class UsersService {
     private followingsService: FollowingsService,
     private readonly notificationsService: NotificationsService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
+    private transactionService: TransactionService,
   ) {}
 
   public async findByIds(
@@ -115,39 +116,12 @@ export class UsersService {
   public async updateUserStatus(input: UpdateUserStatusDto): Promise<void> {
     try {
       const { user, workInfo, isFinishLevel, point } = input;
-
-      let streak = user.streak;
-      let loginCount = user.loginCount;
       const xp = user.xp;
-
-      const newActive = workInfo.timeStart;
-      const lastActive = user.lastActive;
-
-      const newActiveDay = Number(newActive.toLocaleDateString().split('/')[1]);
-      const lastActiveDay = Number(
-        lastActive.toLocaleDateString().split('/')[1],
-      );
-      const checker = newActiveDay - lastActiveDay;
-
-      if (checker === 1) {
-        streak++;
-        loginCount++;
-      } else if (checker > 1) {
-        streak = 0;
-        loginCount++;
-      } else if (checker === 0) {
-        if (streak === 0 && loginCount === 0) {
-          streak++;
-          loginCount++;
-        }
-      }
       const userDidUpdated = await this.userModel.findOneAndUpdate(
         { _id: user._id },
         {
           $set: {
-            streak: streak,
             lastActive: workInfo.timeStart,
-            loginCount: loginCount,
             level: isFinishLevel ? user.level + 1 : user.level,
             score: user.score + 1,
             xp: xp + point,
@@ -161,7 +135,7 @@ export class UsersService {
       await this.cache.set<UserProfile>(
         `profile/${String(userDidUpdated._id)}`,
         profile,
-        { ttl: 3600 },
+        { ttl: 7200 },
       );
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -171,89 +145,62 @@ export class UsersService {
   public async saveUserLesson(
     userCtx: JwtPayLoad,
     input: SaveLessonDto,
-  ): Promise<{ isPassedLevel: boolean; message: string }> {
-    const userProfile = await this.userModel.findById(userCtx.userId);
+  ): Promise<string> {
+    // eslint-disable-next-line prefer-const
+    let [userProfile, lessonTree] = await Promise.all([
+      this.cache.get<UserProfile | null>(`profile/${String(userCtx.userId)}`),
+      this.booksService.getLessonTree({
+        bookId: input.bookId,
+        unitId: input.unitId,
+        levelIndex: input.levelIndex,
+        lessonIndex: input.lessonIndex,
+      }),
+    ]);
+    if (!lessonTree) {
+      throw new NotFoundException(`Can't find lessonTree with ${input}`);
+    }
     if (!userProfile) {
-      throw new UnauthorizedException('Not authorized');
+      userProfile = await this.findUser(userCtx.userId).toPromise();
     }
     const lessonResult: AnswerResult[] = input.results.map((result) => ({
       ...result,
       status: false,
     }));
-    const {
-      doneQuestions,
-      timeEnd,
-      timeStart,
-      bookId,
-      unitId,
-      levelIndex,
-      lessonIndex,
-    } = input;
+    const { doneQuestions, timeEnd, timeStart } = input;
     const userWork: WorkInfo = {
       doneQuestions: doneQuestions,
       timeStart: new Date(timeStart),
       timeEnd: new Date(timeEnd),
     };
-
-    const lessonTree = await this.booksService.getLessonTree({
-      bookId: bookId,
-      unitId: unitId,
-      levelIndex: levelIndex,
-      lessonIndex: lessonIndex,
-    });
-    if (!lessonTree) {
-      throw new NotFoundException(`Can't find lessonTree with ${input}`);
-    }
-    const unit = lessonTree.book?.units?.find((unit) => unit?._id == unitId);
-    let totalQuestionsInLevel = 0;
-    if (unit) {
-      const level = unit?.levels?.find(
-        (level) => level?.levelIndex == levelIndex,
-      );
-      totalQuestionsInLevel = level?.totalLessons ? level.totalLessons : 0;
-    }
-    const { point, levelIncorrectList } = await this.worksService.saveUserWork(
-      userProfile,
-      lessonTree,
-      userWork,
-      lessonResult,
-    );
-    let incorrectPercent = 0;
-    if (totalQuestionsInLevel && levelIncorrectList?.length) {
-      incorrectPercent =
-        Math.floor(levelIncorrectList?.length / totalQuestionsInLevel) * 100;
-    }
-    const isPassedLevel = incorrectPercent < 20;
-    await this.progressesService.saveUserProgress(
-      userCtx.userId,
-      lessonTree,
-      userWork,
-      isPassedLevel,
-    );
-    await this.scoreStatisticsService.addXpAfterSaveLesson(
-      point,
-      userCtx.userId,
-    );
-    await Promise.all([
+    const [isPassedLevel, point] = await Promise.all([
       this.progressesService.saveUserProgress(
         userCtx.userId,
         lessonTree,
         userWork,
-        isPassedLevel,
       ),
+      this.worksService.saveUserWork(
+        { ...userProfile, _id: userCtx.userId },
+        lessonTree,
+        userWork,
+        lessonResult,
+      ),
+    ]);
+    await Promise.all([
       this.scoreStatisticsService.addXpAfterSaveLesson(point, userCtx.userId),
       this.updateUserStatus({
-        user: userProfile,
+        user: { ...userProfile, _id: userCtx.userId },
         workInfo: userWork,
         isFinishLevel: isPassedLevel,
         point: point,
       }),
-      this.leaderBoardsService.updateUserPointDto(userProfile, point),
-    ]);
-    return {
-      isPassedLevel: isPassedLevel,
-      message: 'Save user work success',
-    };
+      this.leaderBoardsService.updateUserPointDto(
+        { ...userProfile, _id: userCtx.userId },
+        point,
+      ),
+    ]).catch((error) => {
+      throw new InternalServerErrorException(error);
+    });
+    return 'save user work';
   }
 
   public searchUser(
@@ -337,10 +284,10 @@ export class UsersService {
     return this.userModel.find({});
   }
 
-  public findUser(userId: string): Observable<UserProfile> {
+  public findUser(userId: string) {
     return from(this.cache.get<UserProfile>(`profile/${userId}`)).pipe(
       switchMap((r) => {
-        const cachedUser = r as UserProfile;
+        const cachedUser = r;
         if (cachedUser !== null) return of(cachedUser);
         return from(
           this.userModel
@@ -354,7 +301,7 @@ export class UsersService {
             const userProfile = this.usersHelper.mapToUserProfile(user);
             this.cache
               .set<UserProfile>(`profile/${userId}`, userProfile, {
-                ttl: 3600,
+                ttl: 7200,
               })
               .then((r) => r)
               .catch((e) => {

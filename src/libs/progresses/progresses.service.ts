@@ -37,10 +37,9 @@ export class ProgressesService {
   async createUserProgress(
     input: CreateUserProgressDto,
   ): Promise<ProgressDocument> {
-    const { userId, books } = input;
     return this.progressModel.create({
-      userId: Types.ObjectId(String(userId)),
-      books: books,
+      userId: Types.ObjectId(String(input.userId)),
+      books: input.books,
     });
   }
 
@@ -105,7 +104,6 @@ export class ProgressesService {
     userId: string,
     lessonTree: LessonTree,
     workInfo: WorkInfo,
-    isPassedLevel: boolean,
   ): Promise<boolean> {
     try {
       let hasLesson = false;
@@ -166,7 +164,7 @@ export class ProgressesService {
             {
               levelIndex: levelIndex,
               totalLessons: levelTotalLessons,
-              passed: isPassedLevel,
+              passed: levelTotalLessons === 1,
               doneLessons: 1,
               lessons: [lessonIndex],
             },
@@ -184,7 +182,7 @@ export class ProgressesService {
             levelIndex: levelIndex,
             totalLessons: levelTotalLessons,
             doneLessons: 1,
-            passed: isPassedLevel,
+            passed: levelTotalLessons === 1,
             lessons: [lessonIndex],
           };
           progressUnit.levels.push(newProgressLevel);
@@ -194,7 +192,8 @@ export class ProgressesService {
           );
           if (!userLesson) {
             progressLevel.lessons.push(lessonIndex);
-            progressLevel.passed = isPassedLevel;
+            progressLevel.passed =
+              progressLevel.lessons.length == progressLevel.totalLessons;
             if (progressLevel.passed === true) {
               progressUnit.passedLevels++;
               progressBook.level++;
