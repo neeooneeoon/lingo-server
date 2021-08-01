@@ -284,7 +284,7 @@ export class ProgressesService {
   public getAllUserScoresInProgress(
     userId: string,
   ): Observable<Pick<ScoreOverviewDto, 'correctQuestions' | 'doneLessons'>> {
-    const score$ = from(
+    return from(
       this.progressModel.findOne({
         userId: Types.ObjectId(userId),
       }),
@@ -305,11 +305,10 @@ export class ProgressesService {
         }
       }),
     );
-    return score$;
   }
   public async isExist(): Promise<boolean> {
     const progresses = await this.progressModel.findOne({});
-    return progresses ? true : false;
+    return !!progresses;
   }
 
   public async backupUserProgress() {

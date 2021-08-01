@@ -53,7 +53,7 @@ export class BooksService {
   public findBookWithProgressBook(
     book: Partial<ProgressBook>,
   ): Observable<ActiveBookProgress> {
-    const unSelect = ['name', 'grade', 'cover', '-_id'];
+    const unSelect = ['name', 'grade', 'cover', '-_id', 'units._id'];
     return from(this.bookModel.findById(book.bookId).select(unSelect)).pipe(
       map((result) => {
         return {
@@ -79,9 +79,24 @@ export class BooksService {
     userId: string,
   ): Promise<BookGrade[]> {
     try {
+      const selectedFields = [
+        '_id',
+        'nId',
+        'name',
+        'grade',
+        'cover',
+        'totalWords',
+        'description',
+        'totalQuestions',
+        'totalLessons',
+        'units._id',
+      ];
       // eslint-disable-next-line prefer-const
       let [books, userProgress] = await Promise.all([
-        this.bookModel.find({ grade: grade }).sort({ nId: 1 }),
+        this.bookModel
+          .find({ grade: grade })
+          .select(selectedFields)
+          .sort({ nId: 1 }),
         this.progressesService.getUserProgress(userId),
       ]);
       if (!userProgress) {
@@ -123,7 +138,6 @@ export class BooksService {
     userId: string,
     input: GetLessonInput,
   ): Promise<GetLessonOutput> {
-    console.log(input);
     const { bookId, unitId, levelIndex, lessonIndex } = input;
     const book = await this.getBook(bookId);
     const units = book.units;
@@ -142,7 +156,6 @@ export class BooksService {
     if (!level) {
       throw new BadRequestException(`No level ${levelIndex} in unit ${unitId}`);
     }
-
     const lessons = level.lessons;
     if (!lessons || lessons.length == 0) {
       throw new BadRequestException(`No lessons in level index ${levelIndex}`);

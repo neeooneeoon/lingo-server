@@ -23,17 +23,12 @@ export class WorksService {
 
   public async createUserWork(userId: string, bookId: string): Promise<void> {
     try {
-      const userWork = await this.workModel.findOne({
+      await this.workModel.create({
         userId: Types.ObjectId(userId),
         bookId: bookId,
+        units: [],
       });
-      if (!userWork) {
-        await this.workModel.create({
-          userId: Types.ObjectId(userId),
-          bookId: bookId,
-          units: [],
-        });
-      }
+      return;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
