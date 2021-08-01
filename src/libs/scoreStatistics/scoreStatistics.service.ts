@@ -122,7 +122,7 @@ export class ScoreStatisticsService {
           displayName: userResult.displayName,
           avatar: userResult.avatar,
           userId: new Types.ObjectId(userId),
-          xp: userResult.xp,
+          xp: 0,
           isCurrentUser: true,
         };
       }
