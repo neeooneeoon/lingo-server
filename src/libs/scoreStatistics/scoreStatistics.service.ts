@@ -39,6 +39,7 @@ export class ScoreStatisticsService {
     if (!timeSelect) {
       throw new BadRequestException('timeSelect not entered');
     }
+    
     let startTime: string;
     let xpArr: UserRank[] = [];
     switch (timeSelect) {
@@ -89,7 +90,7 @@ export class ScoreStatisticsService {
         displayName: userResult.displayName,
         avatar: userResult.avatar,
         userId: new Types.ObjectId(userId),
-        xp: userResult.xp,
+        xp: 0,
         isCurrentUser: true,
       });
       return xpArr;
@@ -122,7 +123,7 @@ export class ScoreStatisticsService {
           displayName: userResult.displayName,
           avatar: userResult.avatar,
           userId: new Types.ObjectId(userId),
-          xp: userResult.xp,
+          xp: 0,
           isCurrentUser: true,
         };
       }
