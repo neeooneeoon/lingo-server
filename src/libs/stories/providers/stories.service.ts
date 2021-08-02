@@ -7,12 +7,16 @@ import { mergeMap } from 'rxjs/operators';
 import { StoryQuestionDocument } from '@entities/storyQuestion.entity';
 import { QuestionTypeCode } from '@utils/enums';
 import { WordsService } from '@libs/words/words.service';
+import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
+import { UsersService } from '@libs/users/providers/users.service';
 
 @Injectable()
 export class StoriesService {
   constructor(
     @InjectModel(Story.name) private storiesModel: Model<StoryDocument>,
     private readonly wordsService: WordsService,
+    private readonly scoreStatisticsService: ScoreStatisticsService,
+    private readonly usersService: UsersService,
   ) {}
 
   public getStoriesInUnit(
@@ -68,5 +72,12 @@ export class StoriesService {
       story,
       words: [],
     };
+  }
+
+  public async updateXp(xp: number, userId: string): Promise<void> {
+    await Promise.all([
+      this.scoreStatisticsService.addXpAfterSaveLesson(xp, userId),
+      this.usersService.updateXp(xp, userId),
+    ]);
   }
 }
