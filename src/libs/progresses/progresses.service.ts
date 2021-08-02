@@ -267,13 +267,15 @@ export class ProgressesService {
             if (bookOne.lastDid > bookTwo.lastDid) return -1;
             return 0;
           });
-          return forkJoin(
-            lastActiveBooks
-              .slice(0, 5)
-              .map((book: ProgressBook) =>
-                this.booksService.findBookWithProgressBook(book),
-              ),
-          );
+          if (lastActiveBooks?.length >= 5)
+            return forkJoin(
+              lastActiveBooks
+                .slice(0, 5)
+                .map((book: ProgressBook) =>
+                  this.booksService.findBookWithProgressBook(book),
+                ),
+            );
+          return of([]);
         } else {
           return of([]);
         }
