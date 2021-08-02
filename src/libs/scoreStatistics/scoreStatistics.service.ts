@@ -39,7 +39,7 @@ export class ScoreStatisticsService {
     if (!timeSelect) {
       throw new BadRequestException('timeSelect not entered');
     }
-    
+
     let startTime: string;
     let xpArr: UserRank[] = [];
     switch (timeSelect) {

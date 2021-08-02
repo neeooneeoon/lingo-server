@@ -19,7 +19,6 @@ import {
   SaveLessonDto,
   SearchUser,
   UpdateUserDto,
-  UpdateUserStatusDto,
   UserProfile,
 } from '@dto/user';
 import { FacebookService } from './facebook.service';
@@ -41,6 +40,7 @@ import { Province } from '@entities/province.entity';
 import { District } from '@entities/district.entity';
 import { Cache } from 'cache-manager';
 import { TransactionService } from '@connect';
+import { UserScoresService } from '@libs/users/providers/userScores.service';
 
 @Injectable()
 export class UsersService {
@@ -61,6 +61,7 @@ export class UsersService {
     private readonly notificationsService: NotificationsService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
     private transactionService: TransactionService,
+    private usersScoreService: UserScoresService,
   ) {}
 
   public async findByIds(
@@ -114,35 +115,6 @@ export class UsersService {
     }
   }
 
-  public async updateUserStatus(input: UpdateUserStatusDto): Promise<void> {
-    try {
-      const { user, workInfo, isFinishLevel, point } = input;
-      const xp = user.xp;
-      const userDidUpdated = await this.userModel.findOneAndUpdate(
-        { _id: user._id },
-        {
-          $set: {
-            lastActive: workInfo.timeStart,
-            level: isFinishLevel ? user.level + 1 : user.level,
-            score: user.score + 1,
-            xp: xp + point,
-          },
-        },
-        {
-          new: true,
-        },
-      );
-      const profile = this.usersHelper.mapToUserProfile(userDidUpdated);
-      await this.cache.set<UserProfile>(
-        `profile/${String(userDidUpdated._id)}`,
-        profile,
-        { ttl: 7200 },
-      );
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-
   public async saveUserLesson(
     userCtx: JwtPayLoad,
     input: SaveLessonDto,
@@ -188,7 +160,7 @@ export class UsersService {
     ]);
     await Promise.all([
       this.scoreStatisticsService.addXpAfterSaveLesson(point, userCtx.userId),
-      this.updateUserStatus({
+      this.usersScoreService.updateUserStatus({
         user: { ...userProfile, _id: userCtx.userId },
         workInfo: userWork,
         isFinishLevel: isPassedLevel,

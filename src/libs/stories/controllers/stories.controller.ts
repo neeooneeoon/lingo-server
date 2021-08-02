@@ -1,23 +1,14 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Put,
-  UseGuards,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { StoriesService } from '../providers/stories.service';
-import { StoryQuestionResults } from '@dto/stories';
+import { StoryResult } from '@dto/stories';
 import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
 
@@ -46,19 +37,19 @@ export class StoriesController {
     return this.storiesService.getStoryQuestions(storyId);
   }
 
-  @Put('/story/:storyId/sendResults')
+  @Put('/story/:storyId/submitResults')
   @ApiParam({ type: Number, name: 'storyId', required: true })
-  @ApiBody({ type: StoryQuestionResults, required: true })
+  @ApiBody({ type: StoryResult, required: true })
   @ApiOperation({ summary: 'Tính điểm kinh nghiệm của story question' })
   public sendStoryQuestionResults(
     @Param('storyId') storyId: number,
-    @Body() body: StoryQuestionResults,
-  ) {}
-
-  @Put('story/update-xp')
-  @ApiQuery({ type: Number, name: 'xp', required: true })
-  @ApiOperation({ summary: 'Cập nhật xp' })
-  public updateXp(@UserCtx() userCtx: JwtPayLoad, @Query('xp') xp: number) {
-    return this.storiesService.updateXp(xp, userCtx.userId);
+    @Body() body: StoryResult,
+    @UserCtx() userCtx: JwtPayLoad,
+  ) {
+    return this.storiesService.checkStoryResult({
+      ...body,
+      userId: userCtx.userId,
+      storyId: storyId,
+    });
   }
 }

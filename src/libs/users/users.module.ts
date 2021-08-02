@@ -23,6 +23,7 @@ import { UserAddressService } from '@libs/users/providers/userAddress.service';
 import { NotificationsModule } from '@libs/notifications';
 import { AppleService } from '@libs/users/providers/apple.service';
 import { LoginService } from '@libs/users/providers/login.service';
+import { UserScoresService } from '@libs/users/providers/userScores.service';
 import { CacheModule } from '@cache';
 import { ConnectModule } from '@connect';
 
@@ -62,7 +63,8 @@ import { ConnectModule } from '@connect';
     UserAddressService,
     AppleService,
     LoginService,
+    UserScoresService,
   ],
-  exports: [UsersService],
+  exports: [UsersService, UserScoresService],
 })
 export class UsersModule {}

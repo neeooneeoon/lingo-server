@@ -19,7 +19,7 @@ export class StorySentenceSplit {
 }
 
 export class StorySentence {
-  _id: string;
+  _id: Types.ObjectId;
   begin: string;
   end: string;
   speaker: string;

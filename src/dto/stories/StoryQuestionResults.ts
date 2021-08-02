@@ -1,33 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-class ItemResult {
-  @ApiProperty({ type: String })
-  _id: string;
-
-  @ApiProperty({ type: String })
-  answer: string;
-}
-
-export class StoryQuestionResults {
-  @ApiProperty({ type: String, format: 'date-time' })
-  timeStart: string;
-
-  @ApiProperty({ type: String, format: 'date-time' })
-  timeEnd: string;
-
-  @ApiProperty({ type: Number })
-  doneQuestions: number;
+export class ResultItem {
+  @ApiProperty({ type: String, required: true, description: 'Sentence Id' })
+  sentenceId: string;
 
   @ApiProperty({
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        _id: { type: 'string' },
-        sentenceId: { type: 'string' },
-        answer: { type: 'string', default: 'string/array/boolean/object' },
-      },
-    },
+    type: Number,
+    required: true,
+    description: 'Question score',
+    default: 1,
   })
-  results: Array<ItemResult>;
+  score: number;
+}
+
+export class StoryResult {
+  @ApiProperty({ type: [ResultItem] })
+  results: ResultItem[];
 }

@@ -1,1 +1,1 @@
-export { StoryQuestionResults } from './StoryQuestionResults';
+export { StoryResult, ResultItem } from './StoryQuestionResults';

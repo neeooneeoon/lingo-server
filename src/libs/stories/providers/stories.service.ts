@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Story, StoryDocument } from '@entities/story.entity';
 import { Model } from 'mongoose';
-import { from, Observable, of } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { from, Observable } from 'rxjs';
 import { StoryQuestionDocument } from '@entities/storyQuestion.entity';
 import { QuestionTypeCode } from '@utils/enums';
 import { WordsService } from '@libs/words/words.service';
 import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
-import { UsersService } from '@libs/users/providers/users.service';
+import { UserScoresService } from '@libs/users/providers/userScores.service';
+import { StoryResult } from '@dto/stories';
 
 @Injectable()
 export class StoriesService {
@@ -16,7 +16,7 @@ export class StoriesService {
     @InjectModel(Story.name) private storiesModel: Model<StoryDocument>,
     private readonly wordsService: WordsService,
     private readonly scoreStatisticsService: ScoreStatisticsService,
-    private readonly usersService: UsersService,
+    private readonly userScoresService: UserScoresService,
   ) {}
 
   public getStoriesInUnit(
@@ -74,10 +74,32 @@ export class StoriesService {
     };
   }
 
-  public async updateXp(xp: number, userId: string): Promise<void> {
-    await Promise.all([
-      this.scoreStatisticsService.addXpAfterSaveLesson(xp, userId),
-      this.usersService.updateXp(xp, userId),
-    ]);
+  public async checkStoryResult(
+    input: StoryResult & { storyId: number; userId: string },
+  ) {
+    if (input?.results?.length > 0) {
+      const story = await this.storiesModel.findById(input.storyId);
+      if (!story) throw new BadRequestException('Story not found');
+      if (story?.sentences?.length > 0) {
+        const setIds: Set<string> = new Set(
+          input.results.map((result) => result.sentenceId),
+        );
+        let totalScore = 0;
+        [...setIds].map((id) => {
+          const index = story.sentences.findIndex(
+            (item) => String(item._id) === id && item.questions.length > 0,
+          );
+          if (index !== -1) totalScore += 1;
+        });
+        if (totalScore > 0)
+          await Promise.all([
+            this.scoreStatisticsService.addXpAfterSaveLesson(
+              totalScore,
+              input.userId,
+            ),
+            this.userScoresService.bonusStoryScores(input.userId, totalScore),
+          ]);
+      }
+    }
   }
 }

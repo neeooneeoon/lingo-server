@@ -22,7 +22,7 @@ export class Story {
   @Prop({
     type: [
       {
-        _id: String,
+        _id: Types.ObjectId,
         end: String,
         start: String,
         content: String,
