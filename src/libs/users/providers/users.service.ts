@@ -389,4 +389,14 @@ export class UsersService {
   public logout(currentUser: string) {
     return this.notificationsService.removeDeviceToken(currentUser);
   }
+  public async updateXp(xp: number, userId: string): Promise<void> {
+    try {
+      await this.userModel.findOneAndUpdate(
+        { _id: new Types.ObjectId(userId) },
+        { $inc: { xp: xp } },
+      );
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
 }

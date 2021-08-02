@@ -8,6 +8,8 @@ import {
   StoryQuestionSchema,
 } from '@entities/storyQuestion.entity';
 import { WordsModule } from '@libs/words';
+import { ScoreStatisticsModule } from '@libs/scoreStatistics/scoreStatistics.module';
+import { UsersModule } from '@libs/users';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { WordsModule } from '@libs/words';
       { name: StoryQuestion.name, schema: StoryQuestionSchema },
     ]),
     WordsModule,
+    ScoreStatisticsModule,
+    UsersModule,
   ],
   controllers: [StoriesController],
   providers: [StoriesService],

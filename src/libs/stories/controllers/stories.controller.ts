@@ -1,14 +1,25 @@
-import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Put,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { StoriesService } from '../providers/stories.service';
 import { StoryQuestionResults } from '@dto/stories';
+import { UserCtx } from '@utils/decorators/custom.decorator';
+import { JwtPayLoad } from '@utils/types';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api')
@@ -43,4 +54,11 @@ export class StoriesController {
     @Param('storyId') storyId: number,
     @Body() body: StoryQuestionResults,
   ) {}
+
+  @Put('story/update-xp')
+  @ApiQuery({ type: Number, name: 'xp', required: true })
+  @ApiOperation({ summary: 'Cập nhật xp' })
+  public updateXp(@UserCtx() userCtx: JwtPayLoad, @Query('xp') xp: number) {
+    return this.storiesService.updateXp(xp, userCtx.userId);
+  }
 }
