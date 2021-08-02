@@ -106,8 +106,9 @@ export class UsersService {
         .findByIdAndUpdate(userId, { ...userData }, { new: true })
         .populate('address.province', ['name'], Province.name)
         .populate('address.district', ['name'], District.name);
-      // .populate('address.district', ['name']);
-      return this.usersHelper.mapToUserProfile(updatedUser);
+      const profile = this.usersHelper.mapToUserProfile(updatedUser);
+      await this.cache.set<UserProfile>(`profile/${String(userId)}`, profile);
+      return profile;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
