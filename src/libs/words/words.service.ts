@@ -7,7 +7,10 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  CACHE_MANAGER,
+  Inject,
 } from '@nestjs/common';
+import { Cache } from 'cache-manager';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { from, Observable } from 'rxjs';
@@ -17,6 +20,7 @@ export class WordsService {
   constructor(
     @InjectModel(Word.name) private wordModel: Model<WordDocument>,
     private wordsHelper: WordsHelper,
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {}
 
   async findByIds(ids: string[]): Promise<WordInLesson[]> {
@@ -50,14 +54,26 @@ export class WordsService {
     unitNId: number,
   ): Promise<WordInLesson[]> {
     try {
-      const words = await this.wordModel.find({
-        bookNId: bookNId,
-        unitNId: unitNId,
-      });
-      const result = words.map((word) =>
-        this.wordsHelper.mapWordToWordInLesson(word),
+      const cacheWords = await this.cache.get<WordInLesson[]>(
+        `words/in-unit/${bookNId}/${unitNId}`,
       );
-      return result;
+      if (cacheWords) {
+        return cacheWords;
+      } else {
+        const words = await this.wordModel.find({
+          bookNId: bookNId,
+          unitNId: unitNId,
+        });
+        const result = words.map((word) =>
+          this.wordsHelper.mapWordToWordInLesson(word),
+        );
+        await this.cache.set<WordInLesson[]>(
+          `words/in-unit/${bookNId}/${unitNId}`,
+          result,
+          { ttl: 7200 },
+        );
+        return result;
+      }
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
