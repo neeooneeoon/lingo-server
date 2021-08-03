@@ -27,7 +27,7 @@ export class FriendsService {
         })
         .select(unSelect),
     );
-    const followers$ = forkJoin([
+    return forkJoin([
       total$,
       this.followingModel
         .find({
@@ -57,7 +57,6 @@ export class FriendsService {
         };
       }),
     );
-    return followers$;
   }
 
   public getFollowingsOtherUser(userId: string, currentPage: number) {

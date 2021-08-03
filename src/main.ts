@@ -8,12 +8,14 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { AppClusterService } from './app-cluster.service';
+import MongoStore from 'connect-mongo';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configsService: ConfigsService = app.get(ConfigsService);
 
   const port = configsService.get('PORT');
+  const dbUrl = configsService.get('MONGODB_URI_LOCAL');
   const sessionSecret = configsService.get('SESSION_SECRET');
 
   app.useGlobalPipes(
@@ -21,11 +23,20 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  console.log(process.env.MONGODB_URI_LOCAL);
   app.use(
     session({
+      cookie: {
+        secure: true,
+        maxAge: 60000,
+      },
       secret: sessionSecret,
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: true,
+      store: MongoStore.create({
+        mongoUrl: dbUrl,
+        autoRemove: 'disabled',
+      }),
     }),
   );
   app.use(bodyParser.json());
