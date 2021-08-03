@@ -23,7 +23,6 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  console.log(process.env.MONGODB_URI_LOCAL);
   app.use(
     session({
       cookie: {

@@ -11,7 +11,7 @@ export class TasksService {
     private notificationsService: NotificationsService,
   ) {}
 
-  @Cron('0 0 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  @Cron('5 0 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
   async changeStreakScore() {
     this.logger.log('Starting check streak');
     const users = await this.usersService.getAllUsers();

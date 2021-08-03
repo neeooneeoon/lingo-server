@@ -42,7 +42,7 @@
     "class-validator": "^0.13.1",
     "connect-mongo": "^4.4.1",
     "cross-env": "^7.0.3",
-    "dayjs": "^1.10.5",
+    "dayjs": "^1.10.6",
     "dotenv": "^10.0.0",
     "express-session": "^1.17.2",
     "firebase-admin": "^9.10.0",
