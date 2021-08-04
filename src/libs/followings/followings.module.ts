@@ -9,6 +9,7 @@ import { TagsController } from './controllers/tags.controller';
 import { TagsService } from './providers/tags.service';
 import { FollowingsHelper } from '@helpers/followings.helper';
 import { FriendsService } from './providers/friends.service';
+import { CacheModule } from '@cache';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { FriendsService } from './providers/friends.service';
       { name: Tag.name, schema: TagSchema },
     ]),
     forwardRef(() => UsersModule),
+    CacheModule,
   ],
   providers: [FollowingsService, TagsService, FollowingsHelper, FriendsService],
   controllers: [FollowingsController, TagsController],

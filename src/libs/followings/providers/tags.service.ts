@@ -2,17 +2,24 @@ import { CreateTagDto } from '@dto/following';
 import { Tag, TagDocument } from '@entities/tag.entity';
 import {
   BadRequestException,
+  CACHE_MANAGER,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { from, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { from, Observable, of } from 'rxjs';
+import { map, mergeMap, switchMap } from 'rxjs/operators';
+import { Cache } from 'cache-manager';
+import { log } from 'util';
 
 @Injectable()
 export class TagsService {
-  constructor(@InjectModel(Tag.name) private tagModel: Model<TagDocument>) {}
+  constructor(
+    @InjectModel(Tag.name) private tagModel: Model<TagDocument>,
+    @Inject(CACHE_MANAGER) private cache: Cache,
+  ) {}
 
   public findTag(currentUser: string, tagId: string): Observable<TagDocument> {
     return from(
@@ -40,22 +47,40 @@ export class TagsService {
     }
   }
 
-  public getUserTags(currentUser: string): Observable<TagDocument[]> {
+  public getUserTags(currentUser: string): Observable<Partial<TagDocument>[]> {
     const unSelect = ['-__v', '-createdAt', '-updatedAt'];
-    const tags$ = from(
-      this.tagModel
-        .find({
-          user: Types.ObjectId(currentUser),
-        })
-        .select(unSelect),
+    return from(
+      this.cache.get<Partial<TagDocument>[]>(`tags/${currentUser}`),
+    ).pipe(
+      switchMap((tags) => {
+        if (!tags) {
+          return from(
+            this.tagModel
+              .find({
+                user: Types.ObjectId(currentUser),
+              })
+              .select(unSelect),
+          ).pipe(
+            switchMap((userTags) => {
+              this.cache
+                .set<Partial<TagDocument>[]>(`tags/${currentUser}`, userTags, {
+                  ttl: 3600,
+                })
+                .then((r) => {
+                  console.log(r);
+                });
+              return of(userTags);
+            }),
+          );
+        } else return of(tags);
+      }),
     );
-    return tags$;
   }
 
   public createTag(
     currentUser: string,
     input: CreateTagDto,
-  ): Observable<TagDocument> {
+  ): Observable<Partial<TagDocument>> {
     return this.getUserTags(currentUser).pipe(
       map((tags) => {
         if (tags.length >= 15) {
@@ -63,18 +88,45 @@ export class TagsService {
         }
         return tags;
       }),
-      switchMap(() => {
-        return this.tagModel.create({
-          user: Types.ObjectId(currentUser),
-          name: input.name,
-          color: input.color,
-          _id:
-            Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15),
-        });
+      switchMap((tags) => {
+        return from(
+          this.tagModel
+            .create({
+              user: Types.ObjectId(currentUser),
+              name: input.name,
+              color: input.color,
+              _id:
+                Math.random().toString(36).substring(2, 15) +
+                Math.random().toString(36).substring(2, 15),
+            })
+            .then((result) => {
+              delete result?.__v;
+              delete result?.createdAt;
+              delete result?.updatedAt;
+              return result;
+            }),
+        ).pipe(
+          switchMap((tag) => {
+            const leanTag: Partial<TagDocument> = {
+              _id: tag._id,
+              user: tag.user,
+              name: tag.name,
+              color: tag.color,
+            };
+            this.cache
+              .set<Partial<TagDocument>[]>(
+                `tags/${currentUser}`,
+                [...tags, leanTag],
+                { ttl: 3600 },
+              )
+              .then((r) => console.log(r));
+            return of(leanTag);
+          }),
+        );
       }),
     );
   }
+
   public removeTag(id: string): Observable<string> {
     return from(
       this.tagModel.deleteOne({
