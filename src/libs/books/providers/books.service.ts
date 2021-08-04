@@ -211,10 +211,9 @@ export class BooksService {
             questions,
             maxSize,
           );
-        if ([...setReviewQuestions].length < maxSize) {
+        if (setReviewQuestions.size < maxSize) {
           while (
-            [...setReviewQuestions].length < maxSize &&
-            questions.length > 0 &&
+            setReviewQuestions.size < maxSize &&
             questions.length > maxSize
           ) {
             const index = Math.floor(Math.random() * questions.length);
@@ -225,7 +224,7 @@ export class BooksService {
             }
           }
         }
-        lesson.questionIds = [...setReviewQuestions];
+        lesson.questionIds = Array.from(setReviewQuestions);
       }
     }
     const reducingOutput =
