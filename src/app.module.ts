@@ -14,12 +14,10 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TasksSModule } from '@libs/tasks/tasks.module';
 import { NotificationsModule } from '@libs/notifications';
 import { StoriesModule } from '@libs/stories';
-import { CacheModule } from '@cache';
 
 @Module({
   imports: [
     ConfigsModule,
-    CacheModule,
     MongooseModule.forRootAsync({
       inject: [ConfigsService],
       useFactory: async (configsService: ConfigsService) =>

@@ -214,7 +214,8 @@ export class BooksService {
         if ([...setReviewQuestions].length < maxSize) {
           while (
             [...setReviewQuestions].length < maxSize &&
-            questions.length > 0
+            questions.length > 0 &&
+            questions.length > maxSize
           ) {
             const index = Math.floor(Math.random() * questions.length);
             setReviewQuestions.add(String(questions[index]._id));
