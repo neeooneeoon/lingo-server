@@ -9,10 +9,9 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { from, Observable, of } from 'rxjs';
-import { map, mergeMap, switchMap } from 'rxjs/operators';
+import { forkJoin, from, Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { Cache } from 'cache-manager';
-import { log } from 'util';
 
 @Injectable()
 export class TagsService {
@@ -127,40 +126,69 @@ export class TagsService {
     );
   }
 
-  public removeTag(id: string): Observable<string> {
-    return from(
+  public removeTag(id: string, currentUser: string): Observable<string> {
+    return forkJoin([
       this.tagModel.deleteOne({
         _id: id,
       }),
-    ).pipe(
-      map((deleteResult) => {
-        if (deleteResult.deletedCount === 1) {
-          return 'Remove tag success';
-        } else {
-          throw new BadRequestException('Remove tag failed');
+      this.cache.get<Partial<TagDocument>[]>(`tags/${currentUser}`),
+    ]).pipe(
+      switchMap(([deleteResult, tags]) => {
+        if (deleteResult?.deletedCount === 1) {
+          if (tags !== null) {
+            const index = tags.findIndex((item) => item._id === id);
+            if (index !== -1) {
+              tags.splice(index, 1);
+              this.cache
+                .set<Partial<TagDocument>[]>(`tags/${currentUser}`, tags, {
+                  ttl: 3600,
+                })
+                .then((r) => console.log(r));
+            }
+          }
+          return of('Remove tag success');
         }
+        throw new BadRequestException();
       }),
     );
   }
-  public editTag(id: string, tagName: string): Observable<TagDocument> {
-    return from(
-      this.tagModel.findOneAndUpdate(
-        {
-          _id: id,
-        },
-        {
-          name: tagName,
-        },
-        {
-          new: true,
-        },
-      ),
-    ).pipe(
-      map((updatedTag: TagDocument) => {
-        if (!updatedTag) {
-          throw new BadRequestException('Update tag failed');
+  public editTag(
+    id: string,
+    tagName: string,
+    currentUser: string,
+  ): Observable<TagDocument> {
+    return forkJoin([
+      this.tagModel
+        .findOneAndUpdate(
+          {
+            _id: id,
+          },
+          {
+            name: tagName,
+          },
+          {
+            new: true,
+          },
+        )
+        .select(['-__v', '-createdAt', '-updatedAt']),
+      this.cache.get<Partial<TagDocument>[]>(`tags/${currentUser}`),
+    ]).pipe(
+      switchMap(([updatedTag, tags]) => {
+        if (updatedTag) {
+          if (tags !== null) {
+            const index = tags.findIndex((item) => item._id === id);
+            if (index !== -1) {
+              tags[index] = updatedTag;
+              this.cache
+                .set<Partial<TagDocument>[]>(`tags/${currentUser}`, tags, {
+                  ttl: 3600,
+                })
+                .then((r) => console.log(r));
+            }
+            return of(updatedTag);
+          }
         }
-        return updatedTag;
+        throw new BadRequestException();
       }),
     );
   }

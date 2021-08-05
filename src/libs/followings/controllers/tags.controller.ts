@@ -50,15 +50,19 @@ export class TagsController {
   @ApiOperation({ summary: 'Xóa thẻ đã tạo' })
   @ApiParam({ type: String, name: 'id', required: true })
   @ApiResponse({ type: String, description: 'Message', status: 200 })
-  removeTag(@Param('id') id: string) {
-    return this.tagsService.removeTag(id);
+  removeTag(@Param('id') id: string, @UserCtx() user: JwtPayLoad) {
+    return this.tagsService.removeTag(id, user.userId);
   }
 
   @Put('/editTag/:id')
   @ApiOperation({ summary: 'Edit tag' })
   @ApiParam({ type: String, name: 'id', required: true })
   @ApiQuery({ type: String, name: 'tagName', required: true })
-  editTag(@Param('id') id: string, @Query('tagName') tagName: string) {
-    return this.tagsService.editTag(id, tagName);
+  editTag(
+    @Param('id') id: string,
+    @Query('tagName') tagName: string,
+    @UserCtx() user: JwtPayLoad,
+  ) {
+    return this.tagsService.editTag(id, tagName, user.userId);
   }
 }
