@@ -69,3 +69,4 @@ export enum Location {
   District = 'District',
   All = 'All',
 }
+

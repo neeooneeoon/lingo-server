@@ -65,3 +65,5 @@ export const booksName = [
 export const TOP_XP_LENGTH = 11;
 export const DEFAULT_AVATAR =
   'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png';
+
+export const VIETNAM_TIME_ZONE = 'Asia/Ho_Chi_Minh';
