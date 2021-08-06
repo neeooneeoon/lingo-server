@@ -17,6 +17,8 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
+import * as timezone from 'dayjs/plugin/timezone';
+import { VIETNAM_TIME_ZONE } from '@utils/constants';
 import { Model, Types } from 'mongoose';
 import { Location } from '@utils/enums';
 import { TOP_XP_LENGTH } from '@utils/constants';
@@ -36,18 +38,19 @@ export class ScoreStatisticsService {
     locationId?: number,
   ): Promise<UserRank[]> {
     timeSelect = timeSelect.trim();
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
     if (!timeSelect) {
       throw new BadRequestException('timeSelect not entered');
     }
-    dayjs.extend(utc);
-    let startTime: string;
+    let startTime: Date;
     let xpArr: UserRank[] = [];
     switch (timeSelect) {
       case 'week':
-        startTime = dayjs().startOf('week').utc().format();
+        startTime = dayjs().tz(VIETNAM_TIME_ZONE).startOf('week').toDate();
         break;
       case 'month':
-        startTime = dayjs().startOf('month').utc().format();
+        startTime = dayjs().tz(VIETNAM_TIME_ZONE).startOf('month').toDate();
         break;
       case 'all':
         xpArr = await this.usersService.getAllTimeUserXpList(
@@ -58,12 +61,12 @@ export class ScoreStatisticsService {
       default:
         break;
     }
-    const endTime = dayjs().utc().format();
+    const endTime = dayjs().toDate();
     if (timeSelect != 'all') {
       const filter = {
         createdAt: {
-          $gte: new Date(startTime),
-          $lte: new Date(endTime),
+          $gte: startTime,
+          $lte: endTime,
         },
       };
       xpArr = await this.getTotalXp(filter, locationId, location);
@@ -138,6 +141,7 @@ export class ScoreStatisticsService {
     followUserId: string,
   ): Promise<Statistic> {
     dayjs.extend(utc);
+    dayjs.extend(timezone);
     currentUserId = currentUserId.trim();
     followUserId = followUserId.trim();
     if (!currentUserId || !followUserId) {
@@ -145,8 +149,8 @@ export class ScoreStatisticsService {
         'currentUserId or followUserId not entered ',
       );
     }
-    const startTime = dayjs().startOf('week').utc().format();
-    const endTime = dayjs().utc().format();
+    const startTime = dayjs().tz(VIETNAM_TIME_ZONE).startOf('week').toDate();
+    const endTime = dayjs().toDate();
     const filter = {
       user: {
         $in: [
@@ -155,8 +159,8 @@ export class ScoreStatisticsService {
         ],
       },
       createdAt: {
-        $gte: new Date(startTime),
-        $lte: new Date(endTime),
+        $gte: startTime,
+        $lte: endTime,
       },
     };
     const promises = await Promise.all([
@@ -295,13 +299,14 @@ export class ScoreStatisticsService {
   public async addXpAfterSaveLesson(xp: number, userId: string): Promise<void> {
     try {
       dayjs.extend(utc);
-      const startTime = dayjs().startOf('day').utc().format();
-      const endTime = dayjs().utc().format();
+      dayjs.extend(timezone);
+      const startTime = dayjs().tz(VIETNAM_TIME_ZONE).startOf('day').toDate();
+      const endTime = dayjs().toDate();
       const filter = {
         user: new Types.ObjectId(userId),
         createdAt: {
-          $gte: new Date(startTime),
-          $lte: new Date(endTime),
+          $gte: startTime,
+          $lte: endTime,
         },
       };
       const userXpRecord = await this.scoreStatisticModel.findOne(filter);
@@ -321,20 +326,24 @@ export class ScoreStatisticsService {
   }
   private async getXpStatistic(
     userId: string,
-    startTime: string,
-    endTime: string,
+    startTime: Date,
+    endTime: Date,
   ): Promise<number[]> {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
     const statisticLength = 7;
     const xpStatistic = await this.scoreStatisticModel.find({
       user: new Types.ObjectId(userId),
       createdAt: {
-        $gte: new Date(startTime),
-        $lte: new Date(endTime),
+        $gte: startTime,
+        $lte: endTime,
       },
     });
     const xpStatisticResult: number[] = new Array(statisticLength).fill(0);
     for (const item of xpStatistic) {
-      xpStatisticResult[dayjs(item.createdAt).get('day')] = item.xp;
+      xpStatisticResult[
+        dayjs(item.createdAt).tz(VIETNAM_TIME_ZONE).get('day')
+      ] = item.xp;
     }
 
     return xpStatisticResult;
@@ -344,14 +353,18 @@ export class ScoreStatisticsService {
     userId: string,
   ): Promise<ScoreStatisticDocument[]> {
     dayjs.extend(utc);
-    const startDateAsString = dayjs()
+    dayjs.extend(timezone);
+    const startDate = dayjs()
+      .tz(VIETNAM_TIME_ZONE)
       .startOf('day')
       .subtract(1, 'day')
-      .utc()
-      .format();
-    const endDateAsString = dayjs().endOf('day').subtract(1, 'day').format();
-    const startDate = new Date(startDateAsString);
-    const endDate = new Date(endDateAsString);
+      .toDate();
+    const endDate = dayjs()
+      .tz(VIETNAM_TIME_ZONE)
+      .endOf('day')
+      .subtract(1, 'day')
+      .toDate();
+
     return this.scoreStatisticModel.find({
       user: Types.ObjectId(userId),
       createdAt: {
