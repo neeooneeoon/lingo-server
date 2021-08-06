@@ -34,7 +34,7 @@ export class FollowingsService {
     const tagRef = ['color', 'name'];
     const unSelect = ['-__v'];
     const total$ = from(
-      this.followingModel.count({ user: Types.ObjectId(currentUser) }),
+      this.followingModel.countDocuments({ user: Types.ObjectId(currentUser) }),
     );
 
     if (!tagIds || tagIds?.includes('all')) {
@@ -95,10 +95,9 @@ export class FollowingsService {
 
   public async followings(currentUser: string) {
     try {
-      const listFollowings = await this.followingModel.find({
+      return await this.followingModel.find({
         user: Types.ObjectId(currentUser),
       });
-      return listFollowings;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

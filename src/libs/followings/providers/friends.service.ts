@@ -22,7 +22,7 @@ export class FriendsService {
     const unSelect = ['-__v', '-tags', '-followUser'];
     const total$ = from(
       this.followingModel
-        .count({
+        .countDocuments({
           followUser: Types.ObjectId(userId),
         })
         .select(unSelect),
@@ -65,7 +65,7 @@ export class FriendsService {
     const followUserRef = ['displayName', 'avatar', 'xp'];
     const unSelect = ['-__v', '-tags', '-user'];
     const total$ = from(
-      this.followingModel.count({
+      this.followingModel.countDocuments({
         user: Types.ObjectId(userId),
       }),
     );
