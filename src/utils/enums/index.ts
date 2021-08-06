@@ -69,3 +69,8 @@ export enum Location {
   District = 'District',
   All = 'All',
 }
+
+export enum Notification {
+  UpdateVersion = 'UpdateVersion',
+  DailyReminder = 'DailyReminder',
+}

@@ -5,9 +5,15 @@ import { ConfigsService } from '@configs';
 import { PushNotificationDto } from '@dto/notification';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeviceToken, DeviceTokenDocument } from '@entities/deviceToken.entity';
-import { Model, Types } from 'mongoose';
+import { LeanDocument, Model, Types } from 'mongoose';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import {
+  NotificationDocument,
+  Notification,
+} from '@entities/notification.entity';
+import { CreateNotificationTemplateDto } from '@dto/notification/createNotificationTemplate.dto';
+import { messaging } from 'firebase-admin/lib/messaging';
 
 @Injectable()
 export class NotificationsService {
@@ -15,6 +21,8 @@ export class NotificationsService {
     private readonly configsService: ConfigsService,
     @InjectModel(DeviceToken.name)
     private deviceTokenModel: Model<DeviceTokenDocument>,
+    @InjectModel(Notification.name)
+    private notificationModel: Model<NotificationDocument>,
   ) {
     const adminConfig: ServiceAccount = {
       projectId: this.configsService.get('FIREBASE_PROJECT_ID'),
@@ -26,6 +34,52 @@ export class NotificationsService {
     admin.initializeApp({
       credential: admin.credential.cert(adminConfig),
     });
+  }
+
+  public async getListNotifications(): Promise<{
+    notifications: LeanDocument<NotificationDocument>[];
+    total: number;
+  }> {
+    const list = await this.notificationModel
+      .find({})
+      .select({ __v: 0 })
+      .lean();
+    return {
+      notifications: list,
+      total: list?.length,
+    };
+  }
+
+  public async pushNotification(id: string) {
+    const [notification, devices] = (await Promise.all([
+      this.notificationModel.findById(id).select({ __v: 0, _id: 0 }).lean(),
+      this.deviceTokenModel
+        .find({ user: Types.ObjectId('60e3b8ea1f2d656c247424c6') })
+        .lean(),
+    ])) as [
+      messaging.NotificationMessagePayload,
+      LeanDocument<DeviceTokenDocument>[],
+    ];
+    if (notification && devices?.length > 0) {
+      for (const key in notification) {
+        if (notification.hasOwnProperty(key) && !notification[key])
+          delete notification[key];
+      }
+      const tokens = devices.map((device) => device?.token);
+      console.log(tokens);
+      console.log(notification);
+      await Promise.all(
+        tokens.map((token) =>
+          admin.messaging().sendToDevice(token, {
+            notification: { ...notification },
+            // notification: {
+            //   title: notification.title,
+            //   body: 'Bạn chỉ cần dành ra 10 phút mỗi ngày để nâng cao kỹ năng Tiếng Anh. Bắt đầu thôi!',
+            // },
+          }),
+        ),
+      );
+    }
   }
 
   public async sendNotification(
@@ -70,7 +124,7 @@ export class NotificationsService {
       enableDevices.map((token) =>
         this.sendNotification({
           token: token,
-          title: '⏰ Nhắc nhở hằng ngày. ',
+          title: '⏰ Nhắc nhở hằng ngày.',
           body: 'Bạn chỉ cần dành ra 10 phút mỗi ngày để nâng cao kỹ năng Tiếng Anh. Bắt đầu thôi!',
         }),
       ),
@@ -87,5 +141,73 @@ export class NotificationsService {
         throw new InternalServerErrorException();
       }),
     );
+  }
+  public async noticeNewVersionUpdate() {
+    await Promise;
+    const devices = await this.deviceTokenModel.find({});
+    const deviceIds = devices.map((device) => device.token);
+    // await Promise.all(deviceIds.map);
+  }
+
+  public async createNewNotification(
+    body: CreateNotificationTemplateDto,
+  ): Promise<NotificationDocument> {
+    try {
+      return this.notificationModel.create(body);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  public async deleteNotification(
+    notificationId: string,
+  ): Promise<{ success: boolean; status: number }> {
+    try {
+      const deleteResult = await this.notificationModel.deleteOne({
+        _id: Types.ObjectId(notificationId),
+      });
+      if (deleteResult?.ok === 1) {
+        return {
+          success: true,
+          status: 200,
+        };
+      }
+      return {
+        success: false,
+        status: 500,
+      };
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  public async updateNotificationTemplate(
+    id: string,
+    body: CreateNotificationTemplateDto,
+  ): Promise<{ success: boolean; status: number }> {
+    try {
+      const updateResult = await this.notificationModel.updateOne(
+        {
+          _id: Types.ObjectId(id),
+        },
+        {
+          $set: {
+            ...body,
+          },
+        },
+      );
+      if (updateResult.nModified === 1) {
+        return {
+          success: true,
+          status: 200,
+        };
+      }
+      return {
+        success: false,
+        status: 500,
+      };
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
   }
 }
