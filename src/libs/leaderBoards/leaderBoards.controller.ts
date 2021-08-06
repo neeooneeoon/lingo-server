@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -71,4 +71,5 @@ export class LeaderBoardsController {
       followUserId,
     );
   }
+
 }
