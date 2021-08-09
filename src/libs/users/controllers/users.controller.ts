@@ -41,7 +41,7 @@ export class UserController {
   constructor(
     private readonly usersService: UsersService,
     private readonly userAddressService: UserAddressService,
-  ) {}
+  ) { }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -109,6 +109,7 @@ export class UserController {
     return this.usersService.scoresOverview(userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('changeAddress')
   @ApiBody({ type: ChangeAddressDto, required: true })
   @ApiResponse({ type: UserProfile, status: 200 })
@@ -121,6 +122,7 @@ export class UserController {
       currentUser: user.userId,
       provinceId: body.provinceId,
       districtId: body.districtId,
+      schoolId: body.schoolId,
     });
   }
 

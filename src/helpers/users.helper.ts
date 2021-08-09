@@ -3,11 +3,13 @@ import { UserProfile } from '@dto/user/userProfile.dto';
 import { SearchUser } from '@dto/user';
 import { ProvinceDocument } from '@entities/province.entity';
 import { DistrictDocument } from '@entities/district.entity';
+import { SchoolDocument } from '@entities/school.entity';
 
 export class UsersHelper {
   public mapToUserProfile(user: UserDocument): UserProfile {
     const province = user.address.province as unknown as ProvinceDocument;
     const district = user.address.district as unknown as DistrictDocument;
+    const school = user.address.school as unknown as SchoolDocument;
     return {
       email: user.email,
       avatar: user.avatar,
@@ -25,6 +27,7 @@ export class UsersHelper {
       address: {
         province: province ? province.name : '',
         district: district ? district.name : '',
+        school: school ? school.name : '',
       },
       enableNotification: user.enableNotification,
     };
