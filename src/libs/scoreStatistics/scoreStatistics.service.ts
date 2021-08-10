@@ -224,6 +224,8 @@ export class ScoreStatisticsService {
           return locationId === user.address.province;
         case Location.District:
           return locationId === user.address.district;
+        case Location.School:
+          return locationId === user.address.school;  
         case Location.All:
         default:
           return true;

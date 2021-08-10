@@ -7,11 +7,6 @@ export enum Rank {
   None = 'None',
 }
 
-export enum RankingByTime {
-  week = 'week',
-  month = 'month',
-  all = 'all',
-}
 
 export enum Role {
   Member = 'Member',
@@ -67,7 +62,13 @@ export enum Action {
 export enum Location {
   Province = 'Province',
   District = 'District',
-  All = 'All',
+  School = 'School',
+  All = 'Nationwide',
+}
+export enum RankingByTime {
+  week = 'week',
+  month = 'month',
+  all = 'all',
 }
 
 export enum Notification {

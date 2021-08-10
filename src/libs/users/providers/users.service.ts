@@ -41,6 +41,7 @@ import { District } from '@entities/district.entity';
 import { Cache } from 'cache-manager';
 import { TransactionService } from '@connect';
 import { UserScoresService } from '@libs/users/providers/userScores.service';
+import { School } from '@entities/school.entity';
 
 @Injectable()
 export class UsersService {
@@ -98,15 +99,18 @@ export class UsersService {
         address: {
           province: data.provinceId,
           district: data.districtId,
+          school: data.schoolId,
         },
       };
       delete data.provinceId;
       delete data.districtId;
+      delete data.schoolId;
       const userData = { ...data, ...address };
       const updatedUser = await this.userModel
         .findByIdAndUpdate(userId, { ...userData }, { new: true })
         .populate('address.province', ['name'], Province.name)
-        .populate('address.district', ['name'], District.name);
+        .populate('address.district', ['name'], District.name)
+        .populate('address.school', ['name'], School.name);
       const profile = this.usersHelper.mapToUserProfile(updatedUser);
       await this.cache.set<UserProfile>(`profile/${String(userId)}`, profile);
       return profile;
@@ -226,6 +230,9 @@ export class UsersService {
       case Location.District:
         filter = { role: { $ne: Role.Admin }, 'address.district': locationId };
         break;
+      case Location.School:
+        filter = { role: { $ne: Role.Admin }, 'address.district': locationId };
+        break;
       case Location.All:
       default:
         filter = { role: { $ne: Role.Admin } };
@@ -266,7 +273,8 @@ export class UsersService {
           this.userModel
             .findById(userId)
             .populate('address.province', ['name'], Province.name)
-            .populate('address.district', ['name'], District.name),
+            .populate('address.district', ['name'], District.name)
+            .populate('address.school', ['name'], School.name),
         ).pipe(
           map((user) => {
             if (!user)
@@ -354,6 +362,8 @@ export class UsersService {
         return user.address.province === locationId;
       case Location.District:
         return user.address.district === locationId;
+      case Location.School:
+        return user.address.school === locationId;
     }
     return true;
   }

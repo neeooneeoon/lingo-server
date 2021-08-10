@@ -47,6 +47,7 @@ export class UserProfile {
   address: {
     province: string;
     district: string;
+    school: string;
   };
 
   @ApiProperty({ type: Boolean })
