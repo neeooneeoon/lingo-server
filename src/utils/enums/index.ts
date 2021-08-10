@@ -7,7 +7,6 @@ export enum Rank {
   None = 'None',
 }
 
-
 export enum Role {
   Member = 'Member',
   Admin = 'Admin',
@@ -63,6 +62,7 @@ export enum Location {
   Province = 'Province',
   District = 'District',
   School = 'School',
+  Grade = 'Grade',
   All = 'Nationwide',
 }
 export enum RankingByTime {

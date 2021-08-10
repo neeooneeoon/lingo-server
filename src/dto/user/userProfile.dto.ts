@@ -48,6 +48,7 @@ export class UserProfile {
     province: string;
     district: string;
     school: string;
+    grade: number;
   };
 
   @ApiProperty({ type: Boolean })

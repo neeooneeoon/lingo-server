@@ -41,7 +41,7 @@ export class UserController {
   constructor(
     private readonly usersService: UsersService,
     private readonly userAddressService: UserAddressService,
-  ) { }
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -123,6 +123,7 @@ export class UserController {
       provinceId: body.provinceId,
       districtId: body.districtId,
       schoolId: body.schoolId,
+      grade: body.grade,
     });
   }
 

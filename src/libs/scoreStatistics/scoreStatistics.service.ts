@@ -22,6 +22,7 @@ import { VIETNAM_TIME_ZONE } from '@utils/constants';
 import { Model, Types } from 'mongoose';
 import { Location } from '@utils/enums';
 import { TOP_XP_LENGTH } from '@utils/constants';
+import { CreateRecordDto } from '@dto/leaderBoard/createRecord.dto';
 @Injectable()
 export class ScoreStatisticsService {
   constructor(
@@ -225,7 +226,7 @@ export class ScoreStatisticsService {
         case Location.District:
           return locationId === user.address.district;
         case Location.School:
-          return locationId === user.address.school;  
+          return locationId === user.address.school;
         case Location.All:
         default:
           return true;
@@ -373,6 +374,15 @@ export class ScoreStatisticsService {
         $gte: startDate,
         $lte: endDate,
       },
+    });
+  }
+
+  public async createRecord(body: CreateRecordDto) {
+    return this.scoreStatisticModel.create({
+      user: Types.ObjectId(body.user),
+      xp: Number(body.xp),
+      createdAt: new Date(body.createdAt),
+      updatedAt: new Date(body.updatedAt),
     });
   }
 

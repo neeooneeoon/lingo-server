@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Province, ProvinceDocument } from '@entities/province.entity';
@@ -23,10 +24,10 @@ export class AddressService {
   public async getProvinces(): Promise<ProvinceDocument[]> {
     try {
       const cacheProvinces = await this.cacheManager.get<ProvinceDocument[]>(
-        `address/provinces`
+        `address/provinces`,
       );
       if (cacheProvinces) return cacheProvinces;
-      const provinces = await this.provinceModel.find()
+      const provinces = await this.provinceModel.find();
       await this.cacheManager.set<ProvinceDocument[]>(
         `address/provinces`,
         provinces,
@@ -74,8 +75,13 @@ export class AddressService {
       );
       return schools;
     } catch (error) {
-      throw new InternalServerErrorException(error)
+      throw new InternalServerErrorException(error);
     }
   }
 
+  public async findSchool(schoolId: number): Promise<SchoolDocument> {
+    const school = await this.schoolModel.findById(schoolId);
+    if (!school) throw new NotFoundException(`School ${schoolId} not found.`);
+    return school;
+  }
 }

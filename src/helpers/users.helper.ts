@@ -7,9 +7,10 @@ import { SchoolDocument } from '@entities/school.entity';
 
 export class UsersHelper {
   public mapToUserProfile(user: UserDocument): UserProfile {
-    const province = user.address.province as unknown as ProvinceDocument;
-    const district = user.address.district as unknown as DistrictDocument;
-    const school = user.address.school as unknown as SchoolDocument;
+    const province = user?.address?.province as unknown as ProvinceDocument;
+    const district = user?.address?.district as unknown as DistrictDocument;
+    const school = user?.address?.school as unknown as SchoolDocument;
+    const grade = user?.address?.grade;
     return {
       email: user.email,
       avatar: user.avatar,
@@ -28,6 +29,7 @@ export class UsersHelper {
         province: province ? province.name : '',
         district: district ? district.name : '',
         school: school ? school.name : '',
+        grade: grade ? grade : -1,
       },
       enableNotification: user.enableNotification,
     };
@@ -37,7 +39,7 @@ export class UsersHelper {
     listFollowings: string[],
     searchUserResult: UserDocument[],
   ): SearchUser[] {
-    const result = searchUserResult.map((user): SearchUser => {
+    return searchUserResult.map((user): SearchUser => {
       const userId = String(user._id);
       return {
         userId: userId,
@@ -47,6 +49,5 @@ export class UsersHelper {
         followed: listFollowings.includes(userId),
       };
     });
-    return result;
   }
 }

@@ -1,6 +1,14 @@
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
-import { Controller, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -9,9 +17,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UserCtx } from '@utils/decorators/custom.decorator';
-import { Location, Rank, RankingByTime } from '@utils/enums';
+import { Action, Location, Rank, RankingByTime } from '@utils/enums';
 import { JwtPayLoad } from '@utils/types';
 import { LeaderBoardsService } from './leaderBoards.service';
+import { PoliciesGuard } from '@middlewares/policy/policy.guard';
+import { CheckPolicies } from '@middlewares/policy/policy.decorator';
+import { UserPermission } from '@middlewares/policy/permissions/user.permission';
+import { CreateRecordDto } from '@dto/leaderBoard/createRecord.dto';
 
 @ApiBearerAuth()
 @ApiTags('LeaderBoards')
@@ -44,7 +56,7 @@ export class LeaderBoardsController {
   @ApiQuery({ type: Number, name: 'locationId', required: false })
   async getRanksByTime(
     @Query('time') timeSelect: string,
-    @Query('location') location: string,
+    @Query('location') location: Location,
     @Query('locationId') locationId: number,
     @UserCtx() user: JwtPayLoad,
   ) {
@@ -71,5 +83,10 @@ export class LeaderBoardsController {
       followUserId,
     );
   }
-
+  @Post('create/record')
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies(new UserPermission(Action.Manage))
+  createRecord(@Body() body: CreateRecordDto) {
+    return this.scoreStatisticsService.createRecord(body);
+  }
 }
