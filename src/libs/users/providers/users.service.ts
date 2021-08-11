@@ -95,16 +95,20 @@ export class UsersService {
     data: UpdateUserDto,
   ): Promise<UserProfile> {
     try {
+      if (data.grade <= 0 || data.grade > 12)
+        throw new BadRequestException('Grade invalid');
       const address = {
         address: {
           province: data.provinceId,
           district: data.districtId,
           school: data.schoolId,
+          grade: data.grade
         },
       };
       delete data.provinceId;
       delete data.districtId;
       delete data.schoolId;
+      delete data.grade;
       const userData = { ...data, ...address };
       const updatedUser = await this.userModel
         .findByIdAndUpdate(userId, { ...userData }, { new: true })
@@ -221,6 +225,7 @@ export class UsersService {
   public async getAllTimeUserXpList(
     location: string,
     locationId?: number,
+    schoolId?: number,
   ): Promise<UserRank[]> {
     let filter = {};
     switch (location) {
@@ -231,7 +236,14 @@ export class UsersService {
         filter = { role: { $ne: Role.Admin }, 'address.district': locationId };
         break;
       case Location.School:
-        filter = { role: { $ne: Role.Admin }, 'address.district': locationId };
+        filter = { role: { $ne: Role.Admin }, 'address.school': locationId };  
+        break;
+      case Location.Grade:
+        filter = {
+          role: { $ne: Role.Admin },
+          'address.grade': locationId,
+          'address.school': schoolId,
+        };
         break;
       case Location.All:
       default:
@@ -354,6 +366,7 @@ export class UsersService {
     userId: string,
     location: string,
     locationId: number,
+    schoolId?: number
   ): Promise<boolean> {
     const user = await this.userModel.findById(userId);
     if (!user) return false;
@@ -364,6 +377,10 @@ export class UsersService {
         return user.address.district === locationId;
       case Location.School:
         return user.address.school === locationId;
+      case Location.Grade:
+        return (
+          user.address.grade === locationId && user.address.school === schoolId
+        );
     }
     return true;
   }

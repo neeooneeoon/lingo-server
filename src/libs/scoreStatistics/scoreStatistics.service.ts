@@ -37,6 +37,7 @@ export class ScoreStatisticsService {
     timeSelect: string,
     location?: string,
     locationId?: number,
+    schoolId?: number, 
   ): Promise<UserRank[]> {
     timeSelect = timeSelect.trim();
     dayjs.extend(utc);
@@ -57,6 +58,7 @@ export class ScoreStatisticsService {
         xpArr = await this.usersService.getAllTimeUserXpList(
           location,
           locationId,
+          schoolId,
         );
         break;
       default:
@@ -70,10 +72,15 @@ export class ScoreStatisticsService {
           $lte: endTime,
         },
       };
-      xpArr = await this.getTotalXp(filter, locationId, location);
+      xpArr = await this.getTotalXp(filter, locationId, location, schoolId);
     }
     if (
-      !(await this.usersService.isUserInLocation(userId, location, locationId))
+      !(await this.usersService.isUserInLocation(
+        userId,
+        location,
+        locationId,
+        schoolId,
+      ))
     ) {
       return xpArr.slice(0, TOP_XP_LENGTH).map((i) => {
         i.orderNumber = i.orderNumber + 1;
@@ -205,6 +212,7 @@ export class ScoreStatisticsService {
     filter?: any,
     locationId?: number,
     location?: string,
+    schoolId?: number
   ): Promise<ScoreStatisticDocument[]> {
     let tempArr: ScoreStatisticDocument[];
     if (filter) {
@@ -227,6 +235,11 @@ export class ScoreStatisticsService {
           return locationId === user.address.district;
         case Location.School:
           return locationId === user.address.school;
+        case Location.Grade:  
+          return (
+            locationId === user.address.grade &&
+            schoolId === user.address.school
+          );
         case Location.All:
         default:
           return true;
@@ -238,11 +251,17 @@ export class ScoreStatisticsService {
     filter?: any,
     locationId?: number,
     location?: string,
+    schoolId?: number
   ): Promise<UserRank[]> {
     try {
       const xpArr: UserRank[] = [];
       const tempArr: ScoreStatisticDocument[] =
-        await this.getXpStatisticByAddress(filter, locationId, location);
+        await this.getXpStatisticByAddress(
+          filter,
+          locationId,
+          location,
+          schoolId,
+        );
       if (!tempArr || tempArr.length == 0) {
         return [];
       }
