@@ -3,4 +3,5 @@ export class UpdateUserAddressInput {
   provinceId: number;
   districtId: number;
   schoolId: number;
+  grade: number;
 }

@@ -30,17 +30,12 @@ import { CreateNotificationTemplateDto } from '@dto/notification/createNotificat
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
-  @Get('enable/:notificationId')
+  @Post('enable/:notificationId')
   @CheckPolicies(new UserPermission(Action.Manage))
   @ApiParam({ type: String, required: true, name: 'notificationId' })
   @ApiOperation({ summary: 'Push thông báo' })
   pushNotification(@Param('notificationId') notificationId: string) {
     return this.notificationsService.pushNotification(notificationId);
-  }
-  @Get('enable')
-  @CheckPolicies(new UserPermission(Action.Manage))
-  all() {
-    return this.notificationsService.scheduleNotifications();
   }
 
   @Get('listNotifications')

@@ -66,16 +66,10 @@ export class NotificationsService {
           delete notification[key];
       }
       const tokens = devices.map((device) => device?.token);
-      console.log(tokens);
-      console.log(notification);
       await Promise.all(
         tokens.map((token) =>
           admin.messaging().sendToDevice(token, {
             notification: { ...notification },
-            // notification: {
-            //   title: notification.title,
-            //   body: 'Bạn chỉ cần dành ra 10 phút mỗi ngày để nâng cao kỹ năng Tiếng Anh. Bắt đầu thôi!',
-            // },
           }),
         ),
       );

@@ -7,6 +7,9 @@ export class ChangeAddressDto {
   @ApiProperty({ type: Number, required: true })
   districtId: number;
 
-  @ApiProperty({type: Number, required: true})
+  @ApiProperty({ type: Number, required: true })
   schoolId: number;
+
+  @ApiProperty({ type: Number, required: true })
+  grade: number;
 }

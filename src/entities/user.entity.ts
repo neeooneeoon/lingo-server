@@ -56,9 +56,10 @@ export class User {
 
   @Prop({
     type: {
-      province: { type: Number, ref: 'Province', required: false, },
-      district: { type: Number, ref: 'District', required: false, },
-      school: { type: Number, ref: 'School', required: false, },
+      province: { type: Number, ref: 'Province', required: false },
+      district: { type: Number, ref: 'District', required: false },
+      school: { type: Number, ref: 'School', required: false },
+      grade: { type: Number, required: false },
     },
     required: true,
     default: {},
@@ -67,6 +68,7 @@ export class User {
     province?: number;
     district?: number;
     school?: number;
+    grade?: number;
   };
 
   @Prop({ type: Number, required: false, default: 0 })
