@@ -27,7 +27,7 @@ export class AddressService {
         `address/provinces`,
       );
       if (cacheProvinces) return cacheProvinces;
-      const provinces = await this.provinceModel.find();
+      const provinces = await this.provinceModel.find().sort({ name: 1 });
       await this.cacheManager.set<ProvinceDocument[]>(
         `address/provinces`,
         provinces,
@@ -47,7 +47,8 @@ export class AddressService {
       if (cacheDistricts) return cacheDistricts;
       const districts = await this.districtModel
         .find({ province: provinceId })
-        .select(['-province']);
+        .select(['-province'])
+        .sort({ name: 1 });
       await this.cacheManager.set<DistrictDocument[]>(
         `address/${provinceId}'/districts`,
         districts,
@@ -67,7 +68,8 @@ export class AddressService {
       if (cacheSchools) return cacheSchools;
       const schools = await this.schoolModel
         .find({ district: districtId })
-        .select(['-province', '-district']);
+        .select(['-province', '-district'])
+        .sort({ name: 1 });
       await this.cacheManager.set<SchoolDocument[]>(
         `address/${districtId}/schools`,
         schools,

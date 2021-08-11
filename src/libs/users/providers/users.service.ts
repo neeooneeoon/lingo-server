@@ -102,7 +102,7 @@ export class UsersService {
           province: data.provinceId,
           district: data.districtId,
           school: data.schoolId,
-          grade: data.grade
+          grade: data.grade,
         },
       };
       delete data.provinceId;
