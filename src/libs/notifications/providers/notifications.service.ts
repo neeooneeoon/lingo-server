@@ -53,9 +53,7 @@ export class NotificationsService {
   public async pushNotification(id: string) {
     const [notification, devices] = (await Promise.all([
       this.notificationModel.findById(id).select({ __v: 0, _id: 0 }).lean(),
-      this.deviceTokenModel
-        .find({ user: Types.ObjectId('60e3b8ea1f2d656c247424c6') })
-        .lean(),
+      this.deviceTokenModel.find().lean(),
     ])) as [
       messaging.NotificationMessagePayload,
       LeanDocument<DeviceTokenDocument>[],
@@ -65,6 +63,7 @@ export class NotificationsService {
         if (notification.hasOwnProperty(key) && !notification[key])
           delete notification[key];
       }
+      console.log(notification);
       const tokens = devices.map((device) => device?.token);
       await Promise.all(
         tokens.map((token) =>
