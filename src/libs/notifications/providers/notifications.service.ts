@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { ServiceAccount } from 'firebase-admin';
 import { ConfigsService } from '@configs';
@@ -14,6 +19,10 @@ import {
 } from '@entities/notification.entity';
 import { CreateNotificationTemplateDto } from '@dto/notification/createNotificationTemplate.dto';
 import { messaging } from 'firebase-admin/lib/messaging';
+import { FollowingsService } from '@libs/followings/providers/followings.service';
+import { UsersService } from '@libs/users/providers/users.service';
+import { FriendsService } from '@libs/followings/providers/friends.service';
+import { UserDocument } from '@entities/user.entity';
 
 @Injectable()
 export class NotificationsService {
@@ -23,6 +32,8 @@ export class NotificationsService {
     private deviceTokenModel: Model<DeviceTokenDocument>,
     @InjectModel(Notification.name)
     private notificationModel: Model<NotificationDocument>,
+    private friendsService: FriendsService,
+    @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
   ) {
     const adminConfig: ServiceAccount = {
       projectId: this.configsService.get('FIREBASE_PROJECT_ID'),
@@ -201,6 +212,61 @@ export class NotificationsService {
       };
     } catch (e) {
       throw new InternalServerErrorException(e);
+    }
+  }
+
+  public async scoreReminderNotification() {
+    const users = await this.usersService.findAll();
+    const followingResults = await Promise.all(
+      users.map((user) =>
+        this.friendsService.getAllFollowings(String(user._id)),
+      ),
+    );
+    const messageObject: Array<{ currentUser: string; message: string }> = [];
+    followingResults.map((item) => {
+      if (item) {
+        const followings = item?.followings;
+        const firstUser = followings[0].followUser as unknown as UserDocument;
+        const total = followings?.length;
+        let message: string;
+        if (total == 1) {
+          message = `${firstUser.displayName} đã vượt qua số điểm của bạn. Hãy bắt đầu thi đua ngay.`;
+          messageObject.push({
+            currentUser: item.currentUser,
+            message: message,
+          });
+        } else if (total > 1) {
+          message = `${firstUser.displayName} và ${
+            total - 1
+          } người dùng khác đã vượt qua số điểm của bạn. Hãy bắt đầu thi đua ngay.`;
+          messageObject.push({
+            currentUser: item.currentUser,
+            message: message,
+          });
+        }
+      }
+    });
+    if (messageObject.length > 0) {
+      await Promise.all(
+        messageObject.map(async (object) => {
+          const devices = await this.deviceTokenModel.find({
+            user: Types.ObjectId(object.currentUser),
+          });
+          if (devices.length > 0) {
+            const tokens = devices.map((device) => device.token);
+            return await Promise.all(
+              tokens.map((token) => {
+                return admin.messaging().sendToDevice(token, {
+                  notification: {
+                    title: 'Lingo xin chào.',
+                    body: object.message,
+                  },
+                });
+              }),
+            );
+          }
+        }),
+      );
     }
   }
 }

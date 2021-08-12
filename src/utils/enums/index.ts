@@ -74,4 +74,5 @@ export enum RankingByTime {
 export enum Notification {
   UpdateVersion = 'UpdateVersion',
   DailyReminder = 'DailyReminder',
+  ScoreReminder = 'ScoreReminder',
 }

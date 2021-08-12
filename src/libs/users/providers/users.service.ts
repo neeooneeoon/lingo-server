@@ -8,10 +8,8 @@ import {
   CACHE_MANAGER,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types, UpdateWriteOpResult } from 'mongoose';
+import { LeanDocument, Model, Types, UpdateWriteOpResult } from 'mongoose';
 import { User, UserDocument } from '@entities/user.entity';
-import { AuthenticationService } from '@authentication/authentication.service';
-import { GoogleService } from './google.service';
 import { ProgressesService } from '@libs/progresses/progresses.service';
 import { UsersHelper } from '@helpers/users.helper';
 import { Location, Role } from '@utils/enums';
@@ -21,7 +19,6 @@ import {
   UpdateUserDto,
   UserProfile,
 } from '@dto/user';
-import { FacebookService } from './facebook.service';
 import { JwtPayLoad } from '@utils/types';
 import { AnswerResult } from '@dto/lesson';
 import { WorkInfo } from '@dto/works';
@@ -48,9 +45,6 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly usersHelper: UsersHelper,
-    private authService: AuthenticationService,
-    private googleService: GoogleService,
-    private facebookService: FacebookService,
     private progressesService: ProgressesService,
     private booksService: BooksService,
     private worksService: WorksService,
@@ -74,6 +68,25 @@ export class UsersService {
           $in: ids,
         },
       });
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  public async findById(userId: string): Promise<LeanDocument<UserDocument>> {
+    try {
+      return this.userModel.findById(Types.ObjectId(userId)).lean();
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  public async findAll(): Promise<LeanDocument<UserDocument>[]> {
+    try {
+      return this.userModel
+        .find({})
+        .select(['_id', 'xp', 'displayName'])
+        .lean();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -236,7 +249,7 @@ export class UsersService {
         filter = { role: { $ne: Role.Admin }, 'address.district': locationId };
         break;
       case Location.School:
-        filter = { role: { $ne: Role.Admin }, 'address.school': locationId };  
+        filter = { role: { $ne: Role.Admin }, 'address.school': locationId };
         break;
       case Location.Grade:
         filter = {
@@ -366,7 +379,7 @@ export class UsersService {
     userId: string,
     location: string,
     locationId: number,
-    schoolId?: number
+    schoolId?: number,
   ): Promise<boolean> {
     const user = await this.userModel.findById(userId);
     if (!user) return false;
