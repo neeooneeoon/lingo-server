@@ -24,4 +24,16 @@ export class TasksService {
     this.logger.log('Starting send notification');
     return this.notificationsService.scheduleNotifications();
   }
+
+  @Cron('0 15 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async scoreReminderAfternoon() {
+    this.logger.log('Score reminder');
+    return this.notificationsService.scoreReminderNotification();
+  }
+
+  @Cron('0 9 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async scoreReminderMorning() {
+    this.logger.log('Score reminder');
+    return this.notificationsService.scoreReminderNotification();
+  }
 }
