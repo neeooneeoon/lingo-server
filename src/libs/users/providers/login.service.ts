@@ -17,6 +17,9 @@ import { AuthenticationService } from '@authentication';
 import { ProgressesService } from '@libs/progresses/progresses.service';
 import { DEFAULT_AVATAR } from '@utils/constants';
 import { Cache } from 'cache-manager';
+import { Province } from '@entities/province.entity';
+import { District } from '@entities/district.entity';
+import { School } from '@entities/school.entity';
 
 @Injectable()
 export class LoginService {
@@ -37,17 +40,29 @@ export class LoginService {
   ): Promise<UserDocument | null> {
     switch (account) {
       case Account.Google:
-        return this.userModel.findOne({
-          email: identifier,
-        });
+        return this.userModel
+          .findOne({
+            email: identifier,
+          })
+          .populate('address.province', ['name'], Province.name)
+          .populate('address.district', ['name'], District.name)
+          .populate('address.school', ['name'], School.name);
       case Account.Facebook:
-        return this.userModel.findOne({
-          facebookId: identifier,
-        });
+        return this.userModel
+          .findOne({
+            facebookId: identifier,
+          })
+          .populate('address.province', ['name'], Province.name)
+          .populate('address.district', ['name'], District.name)
+          .populate('address.school', ['name'], School.name);
       case Account.Apple:
-        return this.userModel.findOne({
-          appleId: identifier,
-        });
+        return this.userModel
+          .findOne({
+            appleId: identifier,
+          })
+          .populate('address.province', ['name'], Province.name)
+          .populate('address.district', ['name'], District.name)
+          .populate('address.school', ['name'], School.name);
       default:
         return undefined;
     }
