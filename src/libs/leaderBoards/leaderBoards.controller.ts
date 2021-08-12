@@ -54,10 +54,12 @@ export class LeaderBoardsController {
   @ApiQuery({ type: String, name: 'time', enum: RankingByTime })
   @ApiQuery({ type: String, name: 'location', enum: Location, required: false })
   @ApiQuery({ type: Number, name: 'locationId', required: false })
+  @ApiQuery({ type: Number, name: 'schoolId', required: false })
   async getRanksByTime(
     @Query('time') timeSelect: string,
     @Query('location') location: Location,
     @Query('locationId') locationId: number,
+    @Query('schoolId') schoolId: number,
     @UserCtx() user: JwtPayLoad,
   ) {
     return this.scoreStatisticsService.getRankByTime(
@@ -65,6 +67,7 @@ export class LeaderBoardsController {
       timeSelect,
       location,
       locationId,
+      schoolId,
     );
   }
 

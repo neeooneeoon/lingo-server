@@ -29,7 +29,8 @@ export class UserAddressService {
     input: UpdateUserAddressInput,
   ): Promise<UserProfile> {
     const { currentUser, provinceId, districtId, schoolId, grade } = input;
-    if (grade <= 0) throw new BadRequestException('Grade invalid');
+    if (grade <= 0 || grade > 12)
+      throw new BadRequestException('Grade invalid');
     const school = await this.addressService.findSchool(schoolId);
     if (school.province !== provinceId && school.district !== districtId)
       throw new BadRequestException('School invalid');
