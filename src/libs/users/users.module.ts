@@ -26,6 +26,9 @@ import { LoginService } from '@libs/users/providers/login.service';
 import { UserScoresService } from '@libs/users/providers/userScores.service';
 import { CacheModule } from '@cache';
 import { ConnectModule } from '@connect';
+import { MailModule } from 'src/mail/mail.module';
+import { InvitationService } from './providers/invitation.service';
+import { MailHelper } from '@helpers/mail.helper';
 
 @Module({
   imports: [
@@ -48,6 +51,7 @@ import { ConnectModule } from '@connect';
     forwardRef(() => ScoreStatisticsModule),
     CacheModule,
     ConnectModule,
+    MailModule,
   ],
   controllers: [
     UserController,
@@ -58,9 +62,11 @@ import { ConnectModule } from '@connect';
   providers: [
     UsersService,
     UsersHelper,
+    MailHelper,
     GoogleService,
     FacebookService,
     UserAddressService,
+    InvitationService,
     AppleService,
     LoginService,
     UserScoresService,
