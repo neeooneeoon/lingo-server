@@ -37,7 +37,7 @@ export class ScoreStatisticsService {
     timeSelect: string,
     location?: string,
     locationId?: number,
-    schoolId?: number, 
+    schoolId?: number,
   ): Promise<UserRank[]> {
     timeSelect = timeSelect.trim();
     dayjs.extend(utc);
@@ -212,7 +212,7 @@ export class ScoreStatisticsService {
     filter?: any,
     locationId?: number,
     location?: string,
-    schoolId?: number
+    schoolId?: number,
   ): Promise<ScoreStatisticDocument[]> {
     let tempArr: ScoreStatisticDocument[];
     if (filter) {
@@ -235,7 +235,7 @@ export class ScoreStatisticsService {
           return locationId === user.address.district;
         case Location.School:
           return locationId === user.address.school;
-        case Location.Grade:  
+        case Location.Grade:
           return (
             locationId === user.address.grade &&
             schoolId === user.address.school
@@ -251,7 +251,7 @@ export class ScoreStatisticsService {
     filter?: any,
     locationId?: number,
     location?: string,
-    schoolId?: number
+    schoolId?: number,
   ): Promise<UserRank[]> {
     try {
       const xpArr: UserRank[] = [];

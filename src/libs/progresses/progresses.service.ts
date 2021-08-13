@@ -1,4 +1,4 @@
-import { Model, Types } from 'mongoose';
+import { LeanDocument, Model, Types } from 'mongoose';
 import { Progress, ProgressDocument } from '@entities/progress.entity';
 import {
   BadRequestException,
@@ -246,7 +246,8 @@ export class ProgressesService {
         .findOne({
           userId: Types.ObjectId(userId),
         })
-        .select(unSelect),
+        .select(unSelect)
+        .lean(),
     ).pipe(
       map((progress) => {
         if (!progress) {
@@ -256,7 +257,7 @@ export class ProgressesService {
       }),
     );
     return progress$.pipe(
-      switchMap((r: ProgressDocument) => {
+      switchMap((r: LeanDocument<ProgressDocument>) => {
         const books: ProgressBook[] = r?.books;
         if (books && books.length > 0) {
           const learnedBooks = books.filter(

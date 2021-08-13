@@ -19,7 +19,6 @@ import {
 } from '@entities/notification.entity';
 import { CreateNotificationTemplateDto } from '@dto/notification/createNotificationTemplate.dto';
 import { messaging } from 'firebase-admin/lib/messaging';
-import { FollowingsService } from '@libs/followings/providers/followings.service';
 import { UsersService } from '@libs/users/providers/users.service';
 import { FriendsService } from '@libs/followings/providers/friends.service';
 import { UserDocument } from '@entities/user.entity';
@@ -136,21 +135,15 @@ export class NotificationsService {
   }
   public removeDeviceToken(currentUser: string): Observable<boolean> {
     return from(
-      this.deviceTokenModel.deleteOne({
+      this.deviceTokenModel.deleteMany({
         user: Types.ObjectId(currentUser),
       }),
     ).pipe(
       map((deleteResult) => {
-        if (deleteResult.deletedCount === 1) return true;
+        if (deleteResult.deletedCount >= 1) return true;
         throw new InternalServerErrorException();
       }),
     );
-  }
-  public async noticeNewVersionUpdate() {
-    await Promise;
-    const devices = await this.deviceTokenModel.find({});
-    const deviceIds = devices.map((device) => device.token);
-    // await Promise.all(deviceIds.map);
   }
 
   public async createNewNotification(
