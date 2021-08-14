@@ -1,7 +1,7 @@
-import { MailHelper } from "@helpers/mail.helper";
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { MailService } from "src/mail/mail.service";
-import { UsersService } from "./users.service";
+import { MailHelper } from '@helpers/mail.helper';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { MailService } from 'src/mail/mail.service';
+import { UsersService } from './users.service';
 
 @Injectable()
 export class InvitationService {
@@ -17,5 +17,4 @@ export class InvitationService {
     const inviter = await this.usersService.findById(userId);
     await this.mailService.sendInvitationEmail(inviter.displayName, receiver);
   }
-
 }

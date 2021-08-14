@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common'
+import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { MailProcessor } from './mail.processor';
-import { MailerModule } from '@nestjs-modules/mailer'
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
-import { BullModule } from '@nestjs/bull'
-import { ConfigsModule } from 'src/configs/configs.module'
-import { ConfigsService } from 'src/configs/configs.service'
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { BullModule } from '@nestjs/bull';
+import { ConfigsModule } from 'src/configs/configs.module';
+import { ConfigsService } from 'src/configs/configs.service';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { ConfigsService } from 'src/configs/configs.service'
           from: {
             name: configService.get('APP_NAME'),
             address: configService.get('MAIL_USERNAME'),
-          }
+          },
         },
         template: {
           dir: __dirname + '/templates',

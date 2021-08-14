@@ -6,7 +6,6 @@ import { Queue } from 'bull';
 export class MailService {
   constructor(@InjectQueue('mail') private mailQueue: Queue) {}
 
-
   async sendInvitationEmail(
     inviter: string,
     receiver: string,
@@ -15,7 +14,7 @@ export class MailService {
       await this.mailQueue.add('invitation', {
         inviter,
         receiver,
-      })
+      });
       return true;
     } catch (error) {
       return false;

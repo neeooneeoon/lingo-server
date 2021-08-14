@@ -167,7 +167,7 @@ export class UserController {
   @Get('test/get/image')
   getImg() {
     return {
-      image: `http://localhost:8080/public/logo.jpg`
-   }
+      image: `http://localhost:8080/public/logo.jpg`,
+    };
   }
 }

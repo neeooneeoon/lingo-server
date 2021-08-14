@@ -1,18 +1,17 @@
-import { MailerService } from '@nestjs-modules/mailer'
+import { MailerService } from '@nestjs-modules/mailer';
 import { Process, Processor } from '@nestjs/bull';
-import { Logger } from '@nestjs/common'
+import { Logger } from '@nestjs/common';
 import {
   ANDROID_URL,
   DEFAULT_AVATAR,
   IOS_URL,
   WEB_URL,
 } from '@utils/constants';
-import { Job } from 'bull'
-
+import { Job } from 'bull';
 
 @Processor('mail')
 export class MailProcessor {
-  private readonly logger = new Logger(this.constructor.name)
+  private readonly logger = new Logger(this.constructor.name);
 
   constructor(private readonly mailerService: MailerService) {}
 
@@ -20,7 +19,7 @@ export class MailProcessor {
   async sendInvitationEmail(
     job: Job<{ inviter: string; receiver: string }>,
   ): Promise<any> {
-    this.logger.log(`Sending invitation email to '${job.data.receiver}'`)
+    this.logger.log(`Sending invitation email to '${job.data.receiver}'`);
     try {
       const result = await this.mailerService.sendMail({
         template: './invitation',
@@ -37,9 +36,8 @@ export class MailProcessor {
         },
         subject: `Chào mừng đến với lingo`,
         to: job.data.receiver,
-      })
+      });
       return result;
-
     } catch (error) {
       this.logger.error(
         `Failed to send invitation email to '${job.data.receiver}'`,

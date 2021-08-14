@@ -1,10 +1,10 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class MailInputDto {
   @ApiProperty({
     type: String,
     required: true,
-    description: 'Email người muốn mời'
+    description: 'Email người muốn mời',
   })
   email: string;
 }
