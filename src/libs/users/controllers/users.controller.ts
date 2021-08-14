@@ -8,6 +8,7 @@ import {
   UseGuards,
   Param,
   Delete,
+  Post,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -34,6 +35,9 @@ import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
 import { ScoreOverviewDto } from '@dto/progress';
 import { UserAddressService } from '@libs/users/providers/userAddress.service';
+import { MailService } from 'src/mail/mail.service';
+import { InvitationService } from '../providers/invitation.service';
+import { MailInputDto } from '@dto/mail/mailInput.dto';
 
 @ApiTags('User')
 @Controller('api/user')
@@ -41,6 +45,7 @@ export class UserController {
   constructor(
     private readonly usersService: UsersService,
     private readonly userAddressService: UserAddressService,
+    private readonly invitationService: InvitationService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -144,9 +149,25 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('send/invitation/mail')
+  @ApiBearerAuth()
+  @ApiBody({ type: MailInputDto })
+  @ApiOperation({ summary: 'Gửi mail mời người khác sử dụng ứng dụng' })
+  invite(@Body('email') email: string, @UserCtx() user: JwtPayLoad) {
+    return this.invitationService.sendInvitation(email, user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Delete('logout')
   @ApiBearerAuth()
   logout(@UserCtx() user: JwtPayLoad) {
     return this.usersService.logout(user.userId);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('test/get/image')
+  getImg() {
+    return {
+      image: `http://localhost:8080/public/logo.jpg`
+   }
   }
 }

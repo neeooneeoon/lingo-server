@@ -274,7 +274,7 @@ export class UsersService {
     for (let i = 0; i < userRankList.length; i++) {
       const item = userRankList[i];
       xpArr.push({
-        orderNumber: i + 1,
+        orderNumber: 0,
         displayName: item.displayName,
         avatar: item.avatar,
         userId: item._id,

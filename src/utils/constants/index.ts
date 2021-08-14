@@ -67,3 +67,7 @@ export const DEFAULT_AVATAR =
   'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png';
 
 export const VIETNAM_TIME_ZONE = 'Asia/Ho_Chi_Minh';
+
+export const ANDROID_URL = 'https://bit.ly/3AEDnXs';
+export const IOS_URL = 'https://apple.co/2VNliY8';
+export const WEB_URL = 'https://bit.ly/3m0Y9gc';
