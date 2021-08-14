@@ -14,9 +14,15 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TasksSModule } from '@libs/tasks/tasks.module';
 import { NotificationsModule } from '@libs/notifications';
 import { StoriesModule } from '@libs/stories';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      serveRoot: '/images',
+      rootPath: join(__dirname, '..', 'src/mail/templates'),
+    }),
     ConfigsModule,
     MongooseModule.forRootAsync({
       inject: [ConfigsService],

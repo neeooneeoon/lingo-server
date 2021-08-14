@@ -82,9 +82,9 @@ export class ScoreStatisticsService {
         schoolId,
       ))
     ) {
-      return xpArr.slice(0, TOP_XP_LENGTH).map((i) => {
-        i.orderNumber = i.orderNumber + 1;
-        return i;
+      return xpArr.slice(0, TOP_XP_LENGTH).map((element, index) => {
+        element.orderNumber = index + 1;
+        return element;
       });
     }
     return await this.handleLastUser(userId, xpArr);

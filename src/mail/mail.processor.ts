@@ -30,7 +30,10 @@ export class MailProcessor {
           androidUrl: ANDROID_URL,
           iosUrl: IOS_URL,
           webUrl: WEB_URL,
-          logo: DEFAULT_AVATAR,
+          logo:
+            process.env.NODE_ENV == 'production'
+              ? 'https://lingo-api.saokhuee.com/images/logo.svg'
+              : 'http://localhost:8080/images/logo.svg',
         },
         subject: `Chào mừng đến với lingo`,
         to: job.data.receiver,

@@ -163,4 +163,11 @@ export class UserController {
   logout(@UserCtx() user: JwtPayLoad) {
     return this.usersService.logout(user.userId);
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('test/get/image')
+  getImg() {
+    return {
+      image: `http://localhost:8080/public/logo.jpg`
+   }
+  }
 }

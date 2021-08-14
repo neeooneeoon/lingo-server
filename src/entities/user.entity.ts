@@ -99,4 +99,4 @@ UserSchema.virtual('followings', {
   foreignField: 'listFollowing',
   justOne: false,
 });
-UserSchema.index({ email: 1, facebookId: 1, appleId: 1 }, { unique: 1 });
+UserSchema.index({ email: 1, facebookId: 1, appleId: 1 }, { unique: true });
