@@ -32,9 +32,12 @@ export const MultipleChoiceCode: QuestionTypeCode[] = [
   QuestionTypeCode.W6,
   QuestionTypeCode.W2,
   QuestionTypeCode.W4,
+  QuestionTypeCode.W9,
   QuestionTypeCode.W13,
   QuestionTypeCode.S10,
   QuestionTypeCode.S7,
+  QuestionTypeCode.S12,
+  QuestionTypeCode.S17,
 ];
 export const booksName = [
   'Tiếng Anh 1 Macmillan',
