@@ -27,4 +27,11 @@ export class WordsController {
   searchWord(@Query('search') search: string) {
     return this.wordsService.searchExactWord(search);
   }
+
+  @CheckPolicies(new UserPermission(Action.Manage))
+  @Get('search')
+  @ApiQuery({ type: String, required: true, name: 'content' })
+  search(@Query('content') content: string) {
+    return this.wordsService.searchWordByContent(content);
+  }
 }

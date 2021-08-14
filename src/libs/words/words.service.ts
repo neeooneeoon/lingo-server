@@ -186,4 +186,14 @@ export class WordsService {
       }),
     );
   }
+  public async searchWordByContent(content: string) {
+    return this.wordModel
+      .find({
+        content: {
+          $regex: '.*' + content + '.*',
+        },
+      })
+      .select(['_id', 'content', 'imageRoot', 'meaning'])
+      .lean();
+  }
 }
