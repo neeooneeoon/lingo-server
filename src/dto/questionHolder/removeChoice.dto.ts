@@ -19,5 +19,11 @@ export class AddChoiceDto {
   code: QuestionTypeCode;
 
   @ApiProperty({ type: String, required: true })
-  content: string;
+  choiceId: string;
+
+  @ApiProperty({ type: String, required: false })
+  content?: string;
+
+  @ApiProperty({ type: String, required: false })
+  meaning?: string;
 }

@@ -111,39 +111,32 @@ export class QuestionsController {
     @Param('levelIndex') levelIndex: number,
     @Body() body: AddChoiceDto,
   ) {
-    return from(
-      this.wordsService.searchExactWord(body.content).pipe(
-        map((word) => word),
-        switchMap((word) => {
-          return forkJoin([
-            this.backupsService.restore({
-              bookId: bookId,
-              unitId: unitId,
-              levelIndex: levelIndex,
-              focusId: body.focusId,
-              choiceId: word._id,
-              content: word.content,
-              meaning: word.meaning,
-              code: body.code,
-              newInstance: false,
-              active: true,
-            }),
-            this.questionService.addChoice({
-              bookId: bookId,
-              unitId: unitId,
-              levelIndex: levelIndex,
-              questionId: body.questionId,
-              choiceId:
-                body.code !== QuestionTypeCode.S7 ? word._id : word.content,
-              word: word,
-            }),
-          ]);
-        }),
-        map(([backupResult, addChoiceResult]) => {
-          if (!backupResult) throw new BadRequestException('Backup failed.');
-          return addChoiceResult;
-        }),
-      ),
+    return forkJoin([
+      this.backupsService.restore({
+        bookId: bookId,
+        unitId: unitId,
+        levelIndex: levelIndex,
+        focusId: body.focusId,
+        choiceId: body.choiceId,
+        content: body.content,
+        meaning: body.meaning,
+        code: body.code,
+        newInstance: false,
+        active: true,
+      }),
+      this.questionService.addChoice({
+        bookId: bookId,
+        unitId: unitId,
+        levelIndex: levelIndex,
+        questionId: body.questionId,
+        choiceId:
+          body.code !== QuestionTypeCode.S7 ? body.choiceId : body.content,
+      }),
+    ]).pipe(
+      map(([backupResult, addChoiceResult]) => {
+        if (!backupResult) throw new BadRequestException('Backup failed.');
+        return addChoiceResult;
+      }),
     );
   }
 
