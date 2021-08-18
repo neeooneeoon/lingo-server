@@ -314,7 +314,14 @@ def main():
             "_id": story["bookId"]
         })
         if curr_book and curr_book["units"] and story["unitId"]:
-            unit_index = next((index for (index, d) in enumerate(curr_book["units"]) if d['_id'] == story["unitId"]))
+            # print(story)
+            # unit_index = next((index for (index, d) in enumerate(curr_book["units"]) if d['_id'] == story["unitId"]))
+            unit_index = -1
+            for i in range(len(curr_book["units"])):
+                if curr_book["units"][i]["_id"] == story["unitId"]:
+                    unit_index = i
+                    break
+            # print(unit_index)
             words_unit = database["words"].find({
                 "bookNId": curr_book["nId"],
                 "unitNId": curr_book["units"][unit_index]["nId"],
@@ -328,7 +335,7 @@ def main():
             if not words_content:
                 print(words_content)
                 # ..for last sentence
-            else:
+            elif unit_index != -1:
                 for s in sentences:
                     content_split = list(
                         map(lambda text: {"_id": str(uuid.uuid4()), "text": text}, s["content"].split(' ')))
@@ -382,16 +389,19 @@ def main():
                             "_id": words_content[item]["_id"],
                             "active": True
                         })
+                    sentences_len = len(sentences)
+                    last_sentence = sentences[sentences_len-1]
                     question_data = {
                         "code": QuestionTypeCode.W9.value,
                         "content": "",
                         "hiddenIndex": -1,
                         "focus": '',
-                        "choices": [],
+                        "choices": matching,
                         "contentSplit": [],
                         "story": story['_id'],
-                        "sentence": ''
+                        "sentence": last_sentence["_id"]
                     }
+                    questions.append(question_data)
                 if questions:
                     database["storyquestions"].insert_many(questions)
                 else:

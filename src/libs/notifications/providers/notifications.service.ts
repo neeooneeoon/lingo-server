@@ -34,16 +34,16 @@ export class NotificationsService {
     private friendsService: FriendsService,
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
   ) {
-    const adminConfig: ServiceAccount = {
-      projectId: this.configsService.get('FIREBASE_PROJECT_ID'),
-      privateKey: this.configsService
-        .get('FIREBASE_PRIVATE_KEY')
-        .replace(/\\n/g, '\n'),
-      clientEmail: this.configsService.get('FIREBASE_CLIENT_EMAIL'),
-    };
-    admin.initializeApp({
-      credential: admin.credential.cert(adminConfig),
-    });
+    // const adminConfig: ServiceAccount = {
+    //   projectId: this.configsService.get('FIREBASE_PROJECT_ID'),
+    //   privateKey: this.configsService
+    //     .get('FIREBASE_PRIVATE_KEY')
+    //     .replace(/\\n/g, '\n'),
+    //   clientEmail: this.configsService.get('FIREBASE_CLIENT_EMAIL'),
+    // };
+    // admin.initializeApp({
+    //   credential: admin.credential.cert(adminConfig),
+    // });
   }
 
   public async getListNotifications(): Promise<{

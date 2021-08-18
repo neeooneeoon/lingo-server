@@ -8,16 +8,30 @@ import * as compression from 'compression';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import { AppClusterService } from './app-cluster.service';
-import * as express from 'express';
-import { join } from 'path';
+import * as admin from 'firebase-admin';
+import { ServiceAccount } from 'firebase-admin';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configsService: ConfigsService = app.get(ConfigsService);
 
   const port = configsService.get('PORT');
+  /*Config firebase*/
+  console.log(configsService.get('FIREBASE_PROJECT_ID'));
+  const adminConfig: ServiceAccount = {
+    projectId: configsService.get('FIREBASE_PROJECT_ID'),
+    privateKey: configsService
+      .get('FIREBASE_PRIVATE_KEY')
+      .replace(/\\n/g, '\n'),
+    clientEmail: configsService.get('FIREBASE_CLIENT_EMAIL'),
+  };
 
+  admin.initializeApp({
+    credential: admin.credential.cert(adminConfig),
+    databaseURL: configsService.get('DATABASE_URL'),
+  });
+
+  /*Interceptors and extensions*/
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -29,7 +43,7 @@ async function bootstrap() {
   app.enableCors();
   app.use(helmet());
   app.use(compression());
-  // app.useGlobalInterceptors(new TimeoutInterceptor());
+  /*Config swagger module*/
   const openApiConfig = new DocumentBuilder()
     .addBearerAuth({
       type: 'http',

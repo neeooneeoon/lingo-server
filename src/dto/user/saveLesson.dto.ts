@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { QuestionTypeCode } from '@utils/enums';
 
 class ItemResult {
   @ApiProperty({ type: String })
@@ -6,6 +7,12 @@ class ItemResult {
 
   @ApiProperty({ type: String })
   answer: string;
+
+  @ApiProperty({ type: String, enum: QuestionTypeCode })
+  code: QuestionTypeCode;
+
+  @ApiProperty({ type: String })
+  focus: string;
 }
 
 export class SaveLessonDto {
@@ -37,6 +44,8 @@ export class SaveLessonDto {
       properties: {
         _id: { type: 'string' },
         answer: { type: 'string', default: 'string/array/boolean/object' },
+        code: { type: 'string', enum: Object.values(QuestionTypeCode) },
+        focus: { type: 'string' },
       },
     },
   })
