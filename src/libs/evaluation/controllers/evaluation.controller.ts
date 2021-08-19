@@ -2,9 +2,9 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { EvaluationService } from '@libs/evaluation/providers/evaluation.service';
-import { AddWordDto } from '@dto/evaluation';
 import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
+import { SaveLessonDto } from '@dto/user';
 
 @Controller('/api/evaluation')
 @ApiTags('Evaluation')
@@ -13,9 +13,9 @@ import { JwtPayLoad } from '@utils/types';
 export class EvaluationController {
   constructor(private readonly evaluationService: EvaluationService) {}
 
-  @Post('addWord')
-  @ApiBody({ type: AddWordDto, required: true })
-  addWord(@Body() body: AddWordDto, @UserCtx() user: JwtPayLoad) {
-    return this.evaluationService.addWord(user.userId, [body]);
+  @Post('addWords')
+  @ApiBody({ type: SaveLessonDto, required: true })
+  addWord(@Body() body: SaveLessonDto, @UserCtx() user: JwtPayLoad) {
+    return this.evaluationService.addWord(user.userId, body);
   }
 }

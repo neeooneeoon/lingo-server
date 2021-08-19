@@ -17,7 +17,6 @@ async function bootstrap() {
 
   const port = configsService.get('PORT');
   /*Config firebase*/
-  console.log(configsService.get('FIREBASE_PROJECT_ID'));
   const adminConfig: ServiceAccount = {
     projectId: configsService.get('FIREBASE_PROJECT_ID'),
     privateKey: configsService

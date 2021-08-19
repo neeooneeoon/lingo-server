@@ -15,7 +15,7 @@ import { grades } from '../constants';
 import { BooksService } from '../providers/books.service';
 import { ProgressBookMapping } from '@dto/progress';
 import { WordsService } from '@libs/words/words.service';
-import { WordInLesson } from '@dto/word/wordInLesson.dto';
+import { WordInLesson } from '@dto/word';
 
 @ApiTags('Books')
 @ApiBearerAuth()

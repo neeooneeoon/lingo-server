@@ -1,5 +1,5 @@
 import { SentenceInLesson } from '@dto/sentence';
-import { WordInLesson } from '@dto/word/wordInLesson.dto';
+import { WordInLesson } from '@dto/word';
 import { QuestionDocument } from '@entities/question.entity';
 import { UnitDocument } from '@entities/unit.entity';
 

@@ -1,5 +1,5 @@
 import { map } from 'rxjs/operators';
-import { WordInLesson } from '@dto/word/wordInLesson.dto';
+import { EvaluateWordDto, WordInLesson } from '@dto/word';
 import { Word, WordDocument } from '@entities/word.entity';
 import { WordsHelper } from '@helpers/words.helper';
 import {
@@ -14,6 +14,13 @@ import { Cache } from 'cache-manager';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { from, Observable } from 'rxjs';
+import { ItemResult, SaveLessonDto } from '@dto/user/saveLesson.dto';
+import {
+  ListWorQuestionCodes,
+  ListSentenceQuestionCodes,
+} from '@utils/constants';
+import { QuestionTypeCode } from '@utils/enums';
+import { AddWordDto } from "@dto/evaluation";
 
 @Injectable()
 export class WordsService {
@@ -195,5 +202,62 @@ export class WordsService {
       })
       .select(['_id', 'content', 'imageRoot', 'meaning'])
       .lean();
+  }
+
+  public async getWordsByUserResults(
+    input: SaveLessonDto,
+  ): Promise<AddWordDto[]> {
+    const wordIdMap = new Map<string, QuestionTypeCode[]>();
+    const results = input.results;
+
+    results.forEach((result) => {
+      if (result?.focus) {
+        if (ListWorQuestionCodes.includes(result.code)) {
+          const codes = wordIdMap.has(result.focus)
+            ? [...wordIdMap.get(result.focus), result.code]
+            : [result.code];
+          wordIdMap.set(result.focus, codes);
+        } else {
+          const end = result.focus.length - 2;
+          const baseId = result.focus.slice(0, end);
+          const codes = wordIdMap.has(baseId)
+            ? [...wordIdMap.get(result.focus), result.code]
+            : [result.code];
+          wordIdMap.set(result.focus, codes);
+        }
+      }
+    });
+    if (wordIdMap.size > 0) {
+      const selectFields = ['_id', 'meaning', 'content', 'imageRoot'];
+      const wordIds: Array<string> = Array.from(wordIdMap).map(
+        (item) => item[0],
+      );
+      const words = await this.wordModel
+        .find({
+          _id: { $in: wordIds },
+        })
+        .select(selectFields)
+        .lean();
+      const output: AddWordDto[] = [];
+      Array.from(wordIdMap).forEach((item) => {
+        const wordId = item[0];
+        const codes = item[1];
+        const existsWord = words.find((word) => word._id === wordId);
+        if (existsWord) {
+          const serializeInput: EvaluateWordDto = {
+            bookId: input.bookId,
+            codes: codes,
+            level: input.levelIndex,
+            unitId: input.bookId,
+            word: existsWord,
+          };
+          const serializedWord =
+            this.wordsHelper.serializeEvaluatedWord(serializeInput);
+          output.push(serializedWord);
+        }
+      });
+      return output;
+    }
+    return [];
   }
 }

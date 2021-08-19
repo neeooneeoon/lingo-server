@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { QuestionTypeCode } from '@utils/enums';
 
-class ItemResult {
+export class ItemResult {
   @ApiProperty({ type: String })
   _id: string;
 

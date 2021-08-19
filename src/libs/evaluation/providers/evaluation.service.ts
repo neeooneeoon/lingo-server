@@ -1,14 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { AddWordDto } from '@dto/evaluation';
 import { ConfigsService } from '@configs';
 import { WordInEvaluation } from '@utils/types';
+import { SaveLessonDto } from '@dto/user';
+import { WordsService } from '@libs/words/words.service';
 
 @Injectable()
 export class EvaluationService {
   private fireStore: FirebaseFirestore.Firestore;
 
-  constructor(private configService: ConfigsService) {
+  constructor(
+    private configService: ConfigsService,
+    private wordsService: WordsService,
+  ) {
     this.fireStore = new admin.firestore.Firestore({
       projectId: this.configService.get('FIREBASE_PROJECT_ID'),
       credentials: {
@@ -18,19 +22,11 @@ export class EvaluationService {
     });
   }
 
-  public async addWord(userId: string, inputs: AddWordDto[]) {
+  public async addWord(userId: string, lessonResults: SaveLessonDto) {
     try {
-      inputs.push({
-        id: 'string',
-        codes: ['string'],
-        content: 'string',
-        meaning: 'string',
-        imageRoot: '',
-        proficiency: 0,
-        bookId: 'string',
-        unitId: 'string',
-        level: 0,
-      });
+      const evaluateWords = await this.wordsService.getWordsByUserResults(
+        lessonResults,
+      );
       const batch = this.fireStore.batch();
       const wordRef = this.fireStore
         .collection('words')
@@ -38,20 +34,20 @@ export class EvaluationService {
         [key: string]: WordInEvaluation;
       }>;
       const fieldValue = admin.firestore.FieldValue;
-      inputs.forEach((body) => {
+      evaluateWords.forEach((item) => {
         batch.set(
           wordRef,
           {
-            [`${body.id}`]: {
-              content: body.content,
-              codes: fieldValue.arrayUnion(...body.codes),
-              meaning: body.meaning,
-              imageRoot: body.imageRoot,
-              proficiency: fieldValue.increment(body.codes.length),
-              bookId: body.bookId,
-              unitId: body.unitId,
-              level: body.level,
-              id: body.id,
+            [`${item._id}`]: {
+              id: item._id,
+              content: item.content,
+              meaning: item.meaning,
+              imageRoot: item.imageRoot,
+              codes: fieldValue.arrayUnion(...item.codes),
+              proficiency: fieldValue.increment(item.codes.length),
+              bookId: item.bookId,
+              unitId: item.unitId,
+              level: item.level,
             },
           },
           { merge: true },

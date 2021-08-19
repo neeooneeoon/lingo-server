@@ -2,10 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AddWordDto {
   @ApiProperty({ type: String, required: true })
-  id: string;
-
-  @ApiProperty({ type: [String], required: true })
-  codes: Array<string>;
+  _id: string;
 
   @ApiProperty({ type: String, required: true })
   content: string;
@@ -16,9 +13,6 @@ export class AddWordDto {
   @ApiProperty({ type: String, required: true, default: '' })
   imageRoot: string;
 
-  @ApiProperty({ type: Number, required: true })
-  proficiency: number;
-
   @ApiProperty({ type: String, required: true })
   bookId: string;
 
@@ -27,4 +21,7 @@ export class AddWordDto {
 
   @ApiProperty({ type: Number, required: true })
   level: number;
+
+  @ApiProperty({ type: [String], required: true })
+  codes: Array<string>;
 }

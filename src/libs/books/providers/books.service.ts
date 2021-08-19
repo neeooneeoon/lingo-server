@@ -32,7 +32,7 @@ import { Unit } from '@dto/unit/unit.dto';
 import { SentenceDocument } from '@entities/sentence.entity';
 import { WordsService } from '@libs/words/words.service';
 import { SentencesService } from '@libs/sentences/sentences.service';
-import { WordInLesson } from '@dto/word/wordInLesson.dto';
+import { WordInLesson } from '@dto/word';
 import { Cache } from 'cache-manager';
 import { QuestionDocument } from '@entities/question.entity';
 
