@@ -243,11 +243,9 @@ export class UsersService {
     schoolId?: number,
   ): Promise<UserRank[]> {
     if (displayFollowings) {
-      console.log(displayFollowings);
       const result = await this.followingsService.getAllTimeFollowingsXp(
         userId,
       );
-      console.log(result);
       return result;
     }
     let filter = {};
