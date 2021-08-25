@@ -7,6 +7,7 @@ import {
 } from '@entities/scoreStatistic.entity';
 import { ScoreStatisticsService } from './scoreStatistics.service';
 import { ScoreStatisticsHelper } from '@helpers/scoreStatistics.helper';
+import { FollowingsModule } from '@libs/followings';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ScoreStatisticsHelper } from '@helpers/scoreStatistics.helper';
       { name: ScoreStatistic.name, schema: ScoreStatisticSchema },
     ]),
     forwardRef(() => UsersModule),
+    FollowingsModule,
   ],
   providers: [ScoreStatisticsService, ScoreStatisticsHelper],
   exports: [ScoreStatisticsService],

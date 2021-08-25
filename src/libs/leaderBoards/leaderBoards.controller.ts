@@ -52,11 +52,18 @@ export class LeaderBoardsController {
       'Lấy danh sách xếp hạng theo thời gian tuần, tháng, tất cả thời gian và theo vị trí',
   })
   @ApiQuery({ type: String, name: 'time', enum: RankingByTime })
+  @ApiQuery({
+    type: Boolean,
+    name: 'displayFollowings',
+    required: true,
+    description: 'Lựa chọn có hiển thị danh sách theo dõi hay không',
+  })
   @ApiQuery({ type: String, name: 'location', enum: Location, required: false })
   @ApiQuery({ type: Number, name: 'locationId', required: false })
   @ApiQuery({ type: Number, name: 'schoolId', required: false })
   async getRanksByTime(
     @Query('time') timeSelect: string,
+    @Query('displayFollowings') displayFollowings: boolean,
     @Query('location') location: Location,
     @Query('locationId') locationId: number,
     @Query('schoolId') schoolId: number,
@@ -65,6 +72,7 @@ export class LeaderBoardsController {
     return this.scoreStatisticsService.getRankByTime(
       user.userId,
       timeSelect,
+      displayFollowings,
       location,
       locationId,
       schoolId,

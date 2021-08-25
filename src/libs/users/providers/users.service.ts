@@ -236,10 +236,20 @@ export class UsersService {
   }
 
   public async getAllTimeUserXpList(
+    displayFollowings: boolean,
+    userId: string,
     location: string,
     locationId?: number,
     schoolId?: number,
   ): Promise<UserRank[]> {
+    if (displayFollowings) {
+      console.log(displayFollowings);
+      const result = await this.followingsService.getAllTimeFollowingsXp(
+        userId,
+      );
+      console.log(result);
+      return result;
+    }
     let filter = {};
     switch (location) {
       case Location.Province:
@@ -266,7 +276,7 @@ export class UsersService {
     const userRankList = await this.userModel
       .find(filter)
       .sort({ xp: -1 })
-      .select({ xp: 1, displayName: 1, avatar: 1 });
+      .select({ xp: 1, displayName: 1, avatar: 1 })
     const xpArr: UserRank[] = [];
     if (!userRankList) {
       throw new BadRequestException('Can not find users');
