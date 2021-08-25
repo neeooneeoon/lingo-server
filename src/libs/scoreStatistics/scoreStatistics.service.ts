@@ -19,7 +19,7 @@ import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
 import { VIETNAM_TIME_ZONE } from '@utils/constants';
-import { Model, Types } from 'mongoose';
+import { LeanDocument, Model, Types } from 'mongoose';
 import { Location } from '@utils/enums';
 import { TOP_XP_LENGTH } from '@utils/constants';
 import { CreateRecordDto } from '@dto/leaderBoard/createRecord.dto';
@@ -213,15 +213,17 @@ export class ScoreStatisticsService {
     locationId?: number,
     location?: string,
     schoolId?: number,
-  ): Promise<ScoreStatisticDocument[]> {
-    let tempArr: ScoreStatisticDocument[];
+  ): Promise<LeanDocument<ScoreStatisticDocument>[]> {
+    let tempArr: LeanDocument<ScoreStatisticDocument>[];
     if (filter) {
       tempArr = await this.scoreStatisticModel
         .find(filter)
+        .lean()
         .populate('user', ['displayName', 'avatar', 'address']);
     } else {
       tempArr = await this.scoreStatisticModel
         .find({})
+        .lean()
         .populate('user', ['displayName', 'avatar', 'address']);
     }
 
@@ -255,7 +257,7 @@ export class ScoreStatisticsService {
   ): Promise<UserRank[]> {
     try {
       const xpArr: UserRank[] = [];
-      const tempArr: ScoreStatisticDocument[] =
+      const tempArr: LeanDocument<ScoreStatisticDocument>[] =
         await this.getXpStatisticByAddress(
           filter,
           locationId,
@@ -405,6 +407,11 @@ export class ScoreStatisticsService {
     });
   }
 
+  public async adminUpdate() {
+    const backups = await this.scoreStatisticModel.find();
+    await this.scoreStatisticModel.deleteMany({});
+    await this.scoreStatisticModel.insertMany(backups);
+  }
   // public async getTopByTime(
   //   timeSelect: string,
   //   location?: string,

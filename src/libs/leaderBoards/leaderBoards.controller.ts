@@ -92,4 +92,11 @@ export class LeaderBoardsController {
   createRecord(@Body() body: CreateRecordDto) {
     return this.scoreStatisticsService.createRecord(body);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @CheckPolicies(new UserPermission(Action.Manage))
+  @Post('/adminUpdate')
+  async adminUpdate() {
+    await this.scoreStatisticsService.adminUpdate();
+  }
 }

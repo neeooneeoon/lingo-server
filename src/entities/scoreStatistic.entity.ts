@@ -11,8 +11,12 @@ export class ScoreStatistic {
 
   @Prop({ type: Date })
   createdAt: Date;
+
+  @Prop({ type: Date })
+  updatedAt: Date;
 }
 
 export const ScoreStatisticSchema =
   SchemaFactory.createForClass(ScoreStatistic);
 export type ScoreStatisticDocument = Document & ScoreStatistic;
+ScoreStatisticSchema.index({ createdAt: 1 }, { unique: true });

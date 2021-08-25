@@ -1,9 +1,10 @@
 import { ScoreStatisticDocument } from '@entities/scoreStatistic.entity';
 import { UserDocument } from '@entities/user.entity';
+import { LeanDocument } from 'mongoose';
 
 export class ScoreStatisticsHelper {
   public getFirstUserNotNull(
-    xpStatistics: ScoreStatisticDocument[],
+    xpStatistics: LeanDocument<ScoreStatisticDocument>[],
   ): UserDocument {
     for (const item of xpStatistics) {
       const user = item.user as unknown as UserDocument;
