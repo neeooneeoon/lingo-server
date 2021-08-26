@@ -28,5 +28,7 @@ export class ProgressController {
   }
 
   @Put('rollbackBooks')
-  async rollBackBooks() {}
+  async rollBackBooks() {
+    return this.progressService.rollbackBooks();
+  }
 }
