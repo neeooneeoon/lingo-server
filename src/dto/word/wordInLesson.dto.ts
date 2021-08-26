@@ -15,4 +15,7 @@ export class WordInLesson {
 
   @ApiProperty({ type: String })
   imageRoot: string;
+
+  @ApiProperty({ type: [String], required: false })
+  pronunciations: string[];
 }

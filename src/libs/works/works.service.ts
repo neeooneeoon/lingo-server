@@ -225,4 +225,16 @@ export class WorksService {
       },
     });
   }
+
+  public async rollbackBooks() {
+    const bookIds = [
+      'tienganh12020globalsuccess',
+      'tienganh2ctgdpt2018globalsuccess',
+      'tienganh6tap12021globalsuccess',
+      'tienganh6tap22021globalsuccess',
+    ];
+    return this.workModel.deleteMany({
+      bookId: { $in: bookIds },
+    });
+  }
 }

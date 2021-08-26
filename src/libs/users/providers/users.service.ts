@@ -236,10 +236,18 @@ export class UsersService {
   }
 
   public async getAllTimeUserXpList(
+    displayFollowings: boolean,
+    userId: string,
     location: string,
     locationId?: number,
     schoolId?: number,
   ): Promise<UserRank[]> {
+    if (displayFollowings) {
+      const result = await this.followingsService.getAllTimeFollowingsXp(
+        userId,
+      );
+      return result;
+    }
     let filter = {};
     switch (location) {
       case Location.Province:
@@ -410,5 +418,10 @@ export class UsersService {
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
+  }
+  public async renewAllUsers() {
+    const backups = await this.userModel.find();
+    await this.userModel.deleteMany();
+    await this.userModel.insertMany(backups);
   }
 }

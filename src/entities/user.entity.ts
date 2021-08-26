@@ -100,3 +100,4 @@ UserSchema.virtual('followings', {
   justOne: false,
 });
 UserSchema.index({ email: 1, facebookId: 1, appleId: 1 }, { unique: true });
+UserSchema.index({ xp: 1 });

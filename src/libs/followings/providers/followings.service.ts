@@ -13,6 +13,8 @@ import { TagsService } from './tags.service';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { map, mergeMap, switchMap } from 'rxjs/operators';
 import { CheckFollowing } from '@dto/following';
+import { UserRank } from '@dto/leaderBoard/userRank.dto';
+import { UserDocument } from '@entities/user.entity';
 
 @Injectable()
 export class FollowingsService {
@@ -296,6 +298,30 @@ export class FollowingsService {
       };
     } catch (error) {
       throw new BadRequestException(error);
+    }
+  }
+  public async getAllTimeFollowingsXp(userId: string): Promise<UserRank[]> {
+    try {
+      const select = ['xp', '_id', 'avatar', 'displayName'];
+      const xpArr = await this.followingModel
+        .find({ user: new Types.ObjectId(userId) })
+        .populate('followUser', select);
+      return xpArr
+        .map((i) => {
+          const user = i.followUser as unknown as UserDocument;
+          const userRank: UserRank = {
+            orderNumber: 0,
+            isCurrentUser: false,
+            avatar: user.avatar,
+            displayName: user.displayName,
+            userId: user._id,
+            xp: user.xp,
+          };
+          return userRank;
+        })
+        .sort((a, b) => b.xp - a.xp);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
   }
 }

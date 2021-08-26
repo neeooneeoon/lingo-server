@@ -19,10 +19,11 @@ import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
 import { VIETNAM_TIME_ZONE } from '@utils/constants';
-import { Model, Types } from 'mongoose';
+import { LeanDocument, Model, Types } from 'mongoose';
 import { Location } from '@utils/enums';
 import { TOP_XP_LENGTH } from '@utils/constants';
 import { CreateRecordDto } from '@dto/leaderBoard/createRecord.dto';
+import { FollowingsService } from '@libs/followings/providers/followings.service';
 @Injectable()
 export class ScoreStatisticsService {
   constructor(
@@ -30,11 +31,13 @@ export class ScoreStatisticsService {
     private scoreStatisticModel: Model<ScoreStatisticDocument>,
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     private scoreStatisticsHelper: ScoreStatisticsHelper,
+    private followingsService: FollowingsService,
   ) {}
 
   public async getRankByTime(
     userId: string,
     timeSelect: string,
+    displayFollowings: boolean,
     location?: string,
     locationId?: number,
     schoolId?: number,
@@ -56,6 +59,8 @@ export class ScoreStatisticsService {
         break;
       case 'all':
         xpArr = await this.usersService.getAllTimeUserXpList(
+          displayFollowings,
+          userId,
           location,
           locationId,
           schoolId,
@@ -72,7 +77,14 @@ export class ScoreStatisticsService {
           $lte: endTime,
         },
       };
-      xpArr = await this.getTotalXp(filter, locationId, location, schoolId);
+      xpArr = await this.getTotalXp(
+        displayFollowings,
+        filter,
+        locationId,
+        location,
+        schoolId,
+        userId,
+      );
     }
     if (
       !(await this.usersService.isUserInLocation(
@@ -80,7 +92,8 @@ export class ScoreStatisticsService {
         location,
         locationId,
         schoolId,
-      ))
+      )) ||
+      displayFollowings
     ) {
       return xpArr.slice(0, TOP_XP_LENGTH).map((element, index) => {
         element.orderNumber = index + 1;
@@ -139,10 +152,14 @@ export class ScoreStatisticsService {
         };
       }
 
-      xpArr = xpArr.slice(0, topLength - 1);
-      xpArr.push(lastUser);
+      if (topLength < TOP_XP_LENGTH) {
+        xpArr.push(lastUser);
+      } else {
+        xpArr = xpArr.slice(0, topLength - 1);
+        xpArr.push(lastUser);
+      }
     }
-    return xpArr.slice(0, topLength);
+    return xpArr.slice(0, TOP_XP_LENGTH);
   }
   public async getUserXpThisWeek(
     currentUserId: string,
@@ -173,7 +190,7 @@ export class ScoreStatisticsService {
     };
     const promises = await Promise.all([
       this.usersService.queryMe(followUserId),
-      this.getTotalXp(filter),
+      this.getTotalXp(false, filter),
       this.getXpStatistic(followUserId, startTime, endTime),
       this.getXpStatistic(currentUserId, startTime, endTime),
     ]);
@@ -213,15 +230,17 @@ export class ScoreStatisticsService {
     locationId?: number,
     location?: string,
     schoolId?: number,
-  ): Promise<ScoreStatisticDocument[]> {
-    let tempArr: ScoreStatisticDocument[];
+  ): Promise<LeanDocument<ScoreStatisticDocument>[]> {
+    let tempArr: LeanDocument<ScoreStatisticDocument>[];
     if (filter) {
       tempArr = await this.scoreStatisticModel
         .find(filter)
+        .lean()
         .populate('user', ['displayName', 'avatar', 'address']);
     } else {
       tempArr = await this.scoreStatisticModel
         .find({})
+        .lean()
         .populate('user', ['displayName', 'avatar', 'address']);
     }
 
@@ -248,29 +267,41 @@ export class ScoreStatisticsService {
   }
 
   private async getTotalXp(
+    displayFollowings: boolean,
     filter?: any,
     locationId?: number,
     location?: string,
     schoolId?: number,
+    userId?: string,
   ): Promise<UserRank[]> {
     try {
       const xpArr: UserRank[] = [];
-      const tempArr: ScoreStatisticDocument[] =
-        await this.getXpStatisticByAddress(
+      let tempArr: LeanDocument<ScoreStatisticDocument>[] = [];
+      if (displayFollowings) {
+        tempArr = await this.getXpStatisticByAddress(filter);
+        const followingIds = await this.getFollowingIds(userId);
+        tempArr = tempArr.filter((i) => {
+          const user = i.user as unknown as UserDocument;
+          return followingIds.includes(user._id.toHexString());
+        });
+      } else {
+        tempArr = await this.getXpStatisticByAddress(
           filter,
           locationId,
           location,
           schoolId,
         );
+      }
       if (!tempArr || tempArr.length == 0) {
         return [];
       }
       tempArr.sort(function compareFn(firstEl, secondEl) {
-        if (firstEl.user < secondEl.user) return -1;
-        if (firstEl.user > secondEl.user) return 1;
+        const user1 = firstEl.user as unknown as UserDocument;
+        const user2 = secondEl.user as unknown as UserDocument;
+        if (user1._id < user2._id) return -1;
+        if (user1._id > user2._id) return 1;
         return 0;
       });
-
       let prevUser = this.scoreStatisticsHelper.getFirstUserNotNull(tempArr);
       let totalXp = 0;
       for (let i = 0; i < tempArr.length; i++) {
@@ -405,6 +436,16 @@ export class ScoreStatisticsService {
     });
   }
 
+  public async adminUpdate() {
+    const backups = await this.scoreStatisticModel.find();
+    await this.scoreStatisticModel.deleteMany({});
+    await this.scoreStatisticModel.insertMany(backups);
+  }
+
+  public async getFollowingIds(userId: string): Promise<string[]> {
+    const followings = await this.followingsService.followings(userId);
+    return followings.map((i) => i.followUser.toHexString());
+  }
   // public async getTopByTime(
   //   timeSelect: string,
   //   location?: string,
