@@ -1,4 +1,4 @@
-import { LeanDocument, Model, Types } from 'mongoose';
+import { LeanDocument, Model, Types, UpdateWriteOpResult } from 'mongoose';
 import { Progress, ProgressDocument } from '@entities/progress.entity';
 import {
   BadRequestException,
@@ -343,5 +343,26 @@ export class ProgressesService {
       });
       await Promise.all(promises);
     }
+  }
+
+  public async rollbackBooks(): Promise<UpdateWriteOpResult> {
+    const bookIds = [
+      'tienganh12020globalsuccess',
+      'tienganh2ctgdpt2018globalsuccess',
+      'tienganh6tap12021globalsuccess',
+      'tienganh6tap22021globalsuccess',
+    ];
+    return this.progressModel.updateMany(
+      {
+        'books.bookId': { $in: bookIds },
+      },
+      {
+        $pull: {
+          books: {
+            bookId: { $in: bookIds },
+          },
+        },
+      },
+    );
   }
 }

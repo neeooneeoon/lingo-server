@@ -305,7 +305,7 @@ export class FollowingsService {
       const select = ['xp', '_id', 'avatar', 'displayName'];
       const xpArr = await this.followingModel
         .find({ user: new Types.ObjectId(userId) })
-        .populate('followUser', select)
+        .populate('followUser', select);
       return xpArr
         .map((i) => {
           const user = i.followUser as unknown as UserDocument;

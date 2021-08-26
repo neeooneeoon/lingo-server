@@ -95,7 +95,6 @@ export class ScoreStatisticsService {
       )) ||
       displayFollowings
     ) {
-      
       return xpArr.slice(0, TOP_XP_LENGTH).map((element, index) => {
         element.orderNumber = index + 1;
         return element;
@@ -283,7 +282,7 @@ export class ScoreStatisticsService {
         const followingIds = await this.getFollowingIds(userId);
         tempArr = tempArr.filter((i) => {
           const user = i.user as unknown as UserDocument;
-          return followingIds.includes(user._id.toHexString())
+          return followingIds.includes(user._id.toHexString());
         });
       } else {
         tempArr = await this.getXpStatisticByAddress(

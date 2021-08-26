@@ -9,6 +9,10 @@ import { WordsController } from './controllers/words.controller';
 import { ProgressController } from './controllers/progress.controller';
 import { BackupsModule } from '@libs/backups';
 import { ProgressesModule } from '@libs/progresses';
+import { UsersModule } from '@libs/users';
+import { UserManagementController } from './controllers/users.controller';
+import { WorksModule } from '@libs/works';
+import { WorkManagementController } from './controllers/work.controller';
 
 @Module({
   imports: [
@@ -18,12 +22,16 @@ import { ProgressesModule } from '@libs/progresses';
     QuestionHoldersModule,
     BackupsModule,
     ProgressesModule,
+    UsersModule,
+    WorksModule,
   ],
   controllers: [
     QuestionsController,
     WordsController,
     SentencesController,
     ProgressController,
+    UserManagementController,
+    WorkManagementController,
   ],
   exports: [],
 })

@@ -57,9 +57,9 @@ export class BooksService {
     return from(this.bookModel.findById(book.bookId).select(unSelect)).pipe(
       map((result) => {
         return {
-          name: result.name,
-          grade: result.grade,
-          cover: result.cover,
+          name: result?.name,
+          grade: result?.grade,
+          cover: result?.cover,
           bookId: book.bookId,
           doneLessons: book.doneLessons,
           totalLessons: book.totalLessons,

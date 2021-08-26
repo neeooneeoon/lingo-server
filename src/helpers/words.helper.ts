@@ -9,6 +9,7 @@ export class WordsHelper {
       types: word.types,
       meaning: word.meaning,
       imageRoot: word.imageRoot,
+      pronunciations: word.pronunciations,
     };
   }
 }

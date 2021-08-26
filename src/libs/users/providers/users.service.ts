@@ -274,7 +274,7 @@ export class UsersService {
     const userRankList = await this.userModel
       .find(filter)
       .sort({ xp: -1 })
-      .select({ xp: 1, displayName: 1, avatar: 1 })
+      .select({ xp: 1, displayName: 1, avatar: 1 });
     const xpArr: UserRank[] = [];
     if (!userRankList) {
       throw new BadRequestException('Can not find users');
@@ -418,5 +418,10 @@ export class UsersService {
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
+  }
+  public async renewAllUsers() {
+    const backups = await this.userModel.find();
+    await this.userModel.deleteMany();
+    await this.userModel.insertMany(backups);
   }
 }

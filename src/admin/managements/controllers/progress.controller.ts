@@ -26,4 +26,7 @@ export class ProgressController {
       this.worksService.backup(),
     ]);
   }
+
+  @Put('rollbackBooks')
+  async rollBackBooks() {}
 }
