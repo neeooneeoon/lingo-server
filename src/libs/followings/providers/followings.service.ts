@@ -1,29 +1,48 @@
-import { Model, Types } from 'mongoose';
+import { LeanDocument, Model, Types } from 'mongoose';
 import { Following, FollowingDocument } from '@entities/following.entity';
 import {
   BadRequestException,
+  CACHE_MANAGER,
   forwardRef,
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UsersService } from '@libs/users/providers/users.service';
 import { TagsService } from './tags.service';
 import { forkJoin, from, Observable, of } from 'rxjs';
-import { map, mergeMap, switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { CheckFollowing } from '@dto/following';
 import { UserRank } from '@dto/leaderBoard/userRank.dto';
 import { UserDocument } from '@entities/user.entity';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class FollowingsService {
+  private readonly logger = new Logger();
   constructor(
     @InjectModel(Following.name)
     private followingModel: Model<FollowingDocument>,
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     private readonly tagsService: TagsService,
+    @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
+
+  public async countFollowings(currentUser: string) {
+    const cachedCounter = await this.cache.get<number>(
+      `followings/${currentUser}`,
+    );
+    if (cachedCounter) return cachedCounter;
+    const counterFromDb = await this.followingModel.countDocuments({
+      user: Types.ObjectId(currentUser),
+    });
+    await this.cache.set<number>(`followings/${currentUser}`, counterFromDb, {
+      ttl: 10800,
+    });
+    return counterFromDb;
+  }
 
   public getMyFollowings(
     currentUser: string,
@@ -35,9 +54,7 @@ export class FollowingsService {
     const followUserRef = ['displayName', 'avatar', 'xp'];
     const tagRef = ['color', 'name'];
     const unSelect = ['-__v'];
-    const total$ = from(
-      this.followingModel.countDocuments({ user: Types.ObjectId(currentUser) }),
-    );
+    const total$ = from(this.countFollowings(currentUser));
 
     if (!tagIds || tagIds?.includes('all')) {
       const followings$ = from(
@@ -105,6 +122,43 @@ export class FollowingsService {
     }
   }
 
+  public updateFollowingInCache(currentUser: string, value: number) {
+    const path = `followings/${currentUser}`;
+    return from(this.cache.get<number>(path)).pipe(
+      switchMap((currentValue) => {
+        if (currentValue) {
+          this.cache
+            .set<number>(path, currentValue + value, { ttl: 10800 })
+            .then((r) => {
+              this.logger.log({
+                status: r,
+                time: this.logger.getTimestamp(),
+              });
+            });
+          return of(currentValue + value);
+        } else {
+          return from(
+            this.followingModel.countDocuments({
+              user: Types.ObjectId(currentUser),
+            }),
+          ).pipe(
+            switchMap((totalFollowings) => {
+              this.cache
+                .set<number>(path, totalFollowings, { ttl: 10800 })
+                .then((r) => {
+                  this.logger.log({
+                    status: r,
+                    time: this.logger.getTimestamp(),
+                  });
+                });
+              return of(totalFollowings);
+            }),
+          );
+        }
+      }),
+    );
+  }
+
   public startFollow(
     currentUser: string,
     followUser: string,
@@ -113,56 +167,61 @@ export class FollowingsService {
     if (currentUser === followUser) {
       throw new BadRequestException('You can not follow yourself');
     }
-    return forkJoin([
-      this.allFollowings(currentUser),
-      this.usersService.findUser(followUser),
-    ]).pipe(
-      map(([followings, user]) => {
-        let followingIds: string[] = [];
-        if (followings && followings.length > 0) {
-          followingIds = followings.map((item) => String(item._id));
-        }
-        if (followingIds.includes(followUser)) {
-          throw new BadRequestException('Already follow this user');
-        }
-        return {
-          followingIds: followingIds,
-          followUser: user,
-        };
-      }),
-      mergeMap(({ followUser }) => {
-        if (tagId) {
-          return this.tagsService.findTag(currentUser, tagId).pipe(
-            map((tag) => {
-              return {
-                followUserId: followUser.userId,
-                tagId: String(tag._id),
-              };
-            }),
-          );
-        } else {
-          return of({
-            followUserId: followUser.userId,
-            tagId: undefined,
-          });
-        }
-      }),
-      switchMap(({ followUserId, tagId }) => {
-        return from(
-          this.followingModel.create({
-            user: Types.ObjectId(currentUser),
-            followUser: Types.ObjectId(followUserId),
-            tags: tagId ? [tagId] : [],
-          }),
-        );
-      }),
-      map((newFollowing) => {
-        if (!newFollowing) {
-          throw new BadRequestException(`Can't follow this user`);
-        }
-        return newFollowing;
-      }),
-    );
+    const trimmedTagId = tagId?.trim();
+    if (trimmedTagId) {
+      return forkJoin([
+        this.usersService.findUser(followUser),
+        this.tagsService.findTag(currentUser, tagId),
+      ]).pipe(
+        switchMap(([user, tag]) => {
+          if (user && tag) {
+            return from(
+              this.followingModel.create({
+                user: Types.ObjectId(currentUser),
+                followUser: Types.ObjectId(followUser),
+                tags: [trimmedTagId],
+              }),
+            ).pipe(
+              switchMap((following) => {
+                if (following) {
+                  this.updateFollowingInCache(currentUser, 1)
+                    .pipe(map((r) => r))
+                    .subscribe(console.log);
+                  return of(following);
+                } else throw new BadRequestException();
+              }),
+            );
+          } else {
+            throw new BadRequestException();
+          }
+        }),
+      );
+    } else {
+      return from(this.usersService.findUser(followUser)).pipe(
+        switchMap((user) => {
+          if (user) {
+            return from(
+              this.followingModel.create({
+                user: Types.ObjectId(currentUser),
+                followUser: Types.ObjectId(followUser),
+                tags: [],
+              }),
+            ).pipe(
+              switchMap((following) => {
+                if (following) {
+                  this.updateFollowingInCache(currentUser, 1)
+                    .pipe(map((r) => r))
+                    .subscribe(console.log);
+                  return of(following);
+                }
+              }),
+            );
+          } else {
+            throw new BadRequestException();
+          }
+        }),
+      );
+    }
   }
 
   public unFollow(
@@ -175,9 +234,12 @@ export class FollowingsService {
         followUser: Types.ObjectId(followedUser),
       }),
     ).pipe(
-      map((deleteResult) => {
+      switchMap((deleteResult) => {
         if (deleteResult.deletedCount === 1) {
-          return 'Un-follow success';
+          this.updateFollowingInCache(currentUser, -1)
+            .pipe(map((r) => r))
+            .subscribe();
+          return of('Un-follow success');
         } else {
           throw new InternalServerErrorException();
         }
@@ -190,115 +252,109 @@ export class FollowingsService {
     followId: string,
     tagId: string,
   ): Promise<string> {
-    try {
-      const formattedTagId = tagId.trim();
-      if (formattedTagId) {
-        const allTagPromise = this.tagsService.viewTags(currentUser);
-        const followingPromise = this.followingModel.findOne({
+    const formattedTagId = tagId.trim();
+    if (formattedTagId) {
+      const [listUserTags, following] = await Promise.all([
+        this.tagsService.getUserTags(currentUser).toPromise(),
+        this.followingModel.findOne({
           user: Types.ObjectId(currentUser),
           _id: Types.ObjectId(followId),
-        });
-
-        const [listUserTags, following] = await Promise.all([
-          allTagPromise,
-          followingPromise,
-        ]);
-        if (!following || !listUserTags || listUserTags.length === 0) {
-          throw new BadRequestException(
-            'No user tag, not found user following',
-          );
-        }
-        const userTagIds = listUserTags.map((item) => String(item._id));
-        let assignedTags = following.tags;
-        const deleteTags = assignedTags.filter(
-          (item) => !userTagIds.includes(item),
+        }),
+      ]);
+      if (!following || !listUserTags || listUserTags.length === 0) {
+        throw new BadRequestException('No user tag, not found user following');
+      }
+      const userTagIds = listUserTags.map((item) => String(item._id));
+      if (!userTagIds.includes(tagId)) {
+        throw new BadRequestException(`Can't find tag`);
+      }
+      let assignedTags = following.tags;
+      const deleteTags = assignedTags.filter(
+        (item) => !userTagIds.includes(item),
+      );
+      if (!following) {
+        throw new BadRequestException(`Can't find following`);
+      }
+      if (deleteTags.length > 0) {
+        const updated = await this.followingModel.findOneAndUpdate(
+          {
+            _id: Types.ObjectId(followId),
+          },
+          {
+            $pullAll: {
+              tags: deleteTags,
+            },
+          },
+          { new: true },
         );
-
-        if (!userTagIds.includes(tagId)) {
-          throw new BadRequestException(`Can't find tag`);
+        assignedTags = updated.tags;
+      }
+      if (assignedTags.includes(tagId)) {
+        const updateResult = await this.followingModel.updateOne(
+          {
+            _id: Types.ObjectId(followId),
+          },
+          {
+            $pullAll: {
+              tags: [tagId],
+            },
+          },
+        );
+        if (updateResult.nModified === 1) {
+          return 'Un-assign tag success';
         }
-
-        if (!following) {
-          throw new BadRequestException(`Can't find following`);
+      } else {
+        if (assignedTags.length >= 3) {
+          throw new BadRequestException(
+            'Chỉ được gán tối đa 3 thẻ cho một người dùng',
+          );
         }
-        if (deleteTags.length > 0) {
-          const updated = await this.followingModel.findOneAndUpdate(
-            {
-              _id: Types.ObjectId(followId),
+        const updateResult = await this.followingModel.updateOne(
+          {
+            _id: Types.ObjectId(followId),
+          },
+          {
+            $push: {
+              tags: tagId,
             },
-            {
-              $pullAll: {
-                tags: deleteTags,
-              },
-            },
-            { new: true },
-          );
-          assignedTags = updated.tags;
-        }
-        if (assignedTags.includes(tagId)) {
-          const updateResult = await this.followingModel.updateOne(
-            {
-              _id: Types.ObjectId(followId),
-            },
-            {
-              $pullAll: {
-                tags: [tagId],
-              },
-            },
-          );
-          if (updateResult.nModified === 1) {
-            return 'Un-assign tag success';
-          }
-        } else {
-          if (assignedTags.length >= 3) {
-            throw new BadRequestException(
-              'Chỉ được gán tối đa 3 thẻ cho một người dùng',
-            );
-          }
-          const updateResult = await this.followingModel.updateOne(
-            {
-              _id: Types.ObjectId(followId),
-            },
-            {
-              $push: {
-                tags: tagId,
-              },
-            },
-          );
-          if (updateResult.nModified === 1) {
-            return 'Assign tag success';
-          }
+          },
+        );
+        if (updateResult.nModified === 1) {
+          return 'Assign tag success';
         }
       }
-      throw new BadRequestException('Assign tag failed');
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException(error);
     }
+    throw new BadRequestException('Assign tag failed');
+  }
+
+  public async findFollowing(
+    currentUser: string,
+    followUser: string,
+  ): Promise<LeanDocument<FollowingDocument>> {
+    return this.followingModel
+      .findOne({
+        user: Types.ObjectId(currentUser),
+        followUser: Types.ObjectId(followUser),
+      })
+      .select(['_id'])
+      .lean();
   }
 
   public async checkIsFollowing(
     currentUserId: string,
     userId: string,
   ): Promise<CheckFollowing> {
-    try {
-      const [listFollowings, otherUserProfile] = await Promise.all([
-        this.followings(currentUserId),
-        this.usersService.queryMe(userId),
-      ]);
-      if (!otherUserProfile) {
-        throw new BadRequestException('Can`t find user');
-      }
-      const followUserIds = listFollowings.map((item) =>
-        String(item.followUser),
-      );
-      return {
-        ...otherUserProfile,
-        followed: followUserIds.includes(userId),
-      };
-    } catch (error) {
-      throw new BadRequestException(error);
+    const [following, otherUserProfile] = await Promise.all([
+      this.findFollowing(currentUserId, userId),
+      this.usersService.queryMe(userId),
+    ]);
+    if (!otherUserProfile) {
+      throw new BadRequestException('Can`t find user');
     }
+    return {
+      ...otherUserProfile,
+      followed: !!following,
+    };
   }
   public async getAllTimeFollowingsXp(userId: string): Promise<UserRank[]> {
     try {
@@ -323,5 +379,44 @@ export class FollowingsService {
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
+  }
+
+  public async renewAllFollowings() {
+    try {
+      const backups = await this.followingModel.find({});
+      await this.followingModel.deleteMany();
+      const items = await this.followingModel.insertMany(backups);
+      return {
+        success: true,
+        n: items.length,
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+  public getFollowingsOtherUser(userId: string, currentPage: number) {
+    const nPerPage = 15;
+    const nSkip = currentPage <= 0 ? 0 : (currentPage - 1) * nPerPage;
+    const followUserRef = ['displayName', 'avatar', 'xp'];
+    const unSelect = ['-__v', '-tags', '-user'];
+    const total$ = from(this.countFollowings(userId));
+    return forkJoin([
+      total$,
+      this.followingModel
+        .find({
+          user: Types.ObjectId(userId),
+        })
+        .skip(nSkip)
+        .limit(nPerPage)
+        .populate('followUser', followUserRef)
+        .select(unSelect),
+    ]).pipe(
+      map(([total, followings]) => {
+        return {
+          total: total,
+          items: followings,
+        };
+      }),
+    );
   }
 }

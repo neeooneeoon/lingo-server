@@ -13,6 +13,7 @@ import { UsersModule } from '@libs/users';
 import { UserManagementController } from './controllers/users.controller';
 import { WorksModule } from '@libs/works';
 import { WorkManagementController } from './controllers/work.controller';
+import { FollowingsModule } from '@libs/followings';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { WorkManagementController } from './controllers/work.controller';
     ProgressesModule,
     UsersModule,
     WorksModule,
+    FollowingsModule,
   ],
   controllers: [
     QuestionsController,
