@@ -19,8 +19,8 @@ import {
 import { CreateNotificationTemplateDto } from '@dto/notification/createNotificationTemplate.dto';
 import { messaging } from 'firebase-admin/lib/messaging';
 import { UsersService } from '@libs/users/providers/users.service';
-import { FriendsService } from '@libs/followings/providers/friends.service';
 import { UserDocument } from '@entities/user.entity';
+import { FollowingsService } from '@libs/followings/providers/followings.service';
 
 @Injectable()
 export class NotificationsService {
@@ -30,7 +30,7 @@ export class NotificationsService {
     private deviceTokenModel: Model<DeviceTokenDocument>,
     @InjectModel(Notification.name)
     private notificationModel: Model<NotificationDocument>,
-    private friendsService: FriendsService,
+    private followingsService: FollowingsService,
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
   ) {}
 
@@ -200,7 +200,7 @@ export class NotificationsService {
     const users = await this.usersService.findAll();
     const followingResults = await Promise.all(
       users.map((user) =>
-        this.friendsService.getAllFollowings(String(user._id)),
+        this.followingsService.getAllFollowings(String(user._id)),
       ),
     );
     const messageObject: Array<{ currentUser: string; message: string }> = [];
