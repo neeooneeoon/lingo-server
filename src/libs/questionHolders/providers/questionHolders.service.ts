@@ -17,7 +17,7 @@ import {
 } from '@dto/questionHolder';
 import { WordsService } from '@libs/words/words.service';
 import { SentencesService } from '@libs/sentences/sentences.service';
-import { WordInLesson } from '@dto/word/wordInLesson.dto';
+import { WordInLesson } from '@dto/word';
 import { SentenceInLesson } from '@dto/sentence';
 import {
   ListSentenceQuestionCodes,

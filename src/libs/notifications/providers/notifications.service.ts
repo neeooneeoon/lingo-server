@@ -5,7 +5,6 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { ServiceAccount } from 'firebase-admin';
 import { ConfigsService } from '@configs';
 import { PushNotificationDto } from '@dto/notification';
 import { InjectModel } from '@nestjs/mongoose';
@@ -33,18 +32,7 @@ export class NotificationsService {
     private notificationModel: Model<NotificationDocument>,
     private friendsService: FriendsService,
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
-  ) {
-    const adminConfig: ServiceAccount = {
-      projectId: this.configsService.get('FIREBASE_PROJECT_ID'),
-      privateKey: this.configsService
-        .get('FIREBASE_PRIVATE_KEY')
-        .replace(/\\n/g, '\n'),
-      clientEmail: this.configsService.get('FIREBASE_CLIENT_EMAIL'),
-    };
-    admin.initializeApp({
-      credential: admin.credential.cert(adminConfig),
-    });
-  }
+  ) {}
 
   public async getListNotifications(): Promise<{
     notifications: LeanDocument<NotificationDocument>[];

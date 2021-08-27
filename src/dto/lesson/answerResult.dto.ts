@@ -1,3 +1,5 @@
+import { QuestionTypeCode } from '@utils/enums';
+
 export class AnswerResult {
   _id: string;
   answer:
@@ -7,4 +9,6 @@ export class AnswerResult {
     | string[]
     | number;
   status: boolean;
+  code: QuestionTypeCode;
+  focus: string;
 }

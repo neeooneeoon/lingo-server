@@ -15,6 +15,7 @@ import { TasksSModule } from '@libs/tasks/tasks.module';
 import { NotificationsModule } from '@libs/notifications';
 import { StoriesModule } from '@libs/stories';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { EvaluationModule } from '@libs/evaluation';
 import { join } from 'path';
 
 @Module({
@@ -40,6 +41,7 @@ import { join } from 'path';
     AdminModules,
     NotificationsModule,
     StoriesModule,
+    EvaluationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
