@@ -8,7 +8,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { LeanDocument, Model, Types } from 'mongoose';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { Cache } from 'cache-manager';
@@ -20,12 +20,18 @@ export class TagsService {
     @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
-  public findTag(currentUser: string, tagId: string): Observable<TagDocument> {
+  public findTag(
+    currentUser: string,
+    tagId: string,
+  ): Observable<LeanDocument<TagDocument>> {
     return from(
-      this.tagModel.findOne({
-        _id: tagId,
-        user: Types.ObjectId(currentUser),
-      }),
+      this.tagModel
+        .findOne({
+          _id: tagId,
+          user: Types.ObjectId(currentUser),
+        })
+        .select(['_id'])
+        .lean(),
     ).pipe(
       map((tag) => {
         if (!tag) {
@@ -47,12 +53,12 @@ export class TagsService {
   }
 
   public getUserTags(currentUser: string): Observable<Partial<TagDocument>[]> {
-    const unSelect = ['-__v', '-createdAt', '-updatedAt'];
     return from(
       this.cache.get<Partial<TagDocument>[]>(`tags/${currentUser}`),
     ).pipe(
       switchMap((tags) => {
         if (!tags) {
+          const unSelect = ['-__v', '-createdAt', '-updatedAt'];
           return from(
             this.tagModel
               .find({
@@ -63,7 +69,7 @@ export class TagsService {
             switchMap((userTags) => {
               this.cache
                 .set<Partial<TagDocument>[]>(`tags/${currentUser}`, userTags, {
-                  ttl: 3600,
+                  ttl: 7200,
                 })
                 .then((r) => {
                   console.log(r);
@@ -116,7 +122,7 @@ export class TagsService {
               .set<Partial<TagDocument>[]>(
                 `tags/${currentUser}`,
                 [...tags, leanTag],
-                { ttl: 3600 },
+                { ttl: 7200 },
               )
               .then((r) => console.log(r));
             return of(leanTag);
@@ -141,7 +147,7 @@ export class TagsService {
               tags.splice(index, 1);
               this.cache
                 .set<Partial<TagDocument>[]>(`tags/${currentUser}`, tags, {
-                  ttl: 3600,
+                  ttl: 7200,
                 })
                 .then((r) => console.log(r));
             }
@@ -181,7 +187,7 @@ export class TagsService {
               tags[index] = updatedTag;
               this.cache
                 .set<Partial<TagDocument>[]>(`tags/${currentUser}`, tags, {
-                  ttl: 3600,
+                  ttl: 7200,
                 })
                 .then((r) => console.log(r));
             }

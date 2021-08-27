@@ -1,4 +1,5 @@
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
+import { FollowingsService } from '@libs/followings/providers/followings.service';
 import { UsersService } from '@libs/users/providers/users.service';
 import { UserPermission } from '@middlewares/policy/permissions/user.permission';
 import { CheckPolicies } from '@middlewares/policy/policy.decorator';
@@ -12,10 +13,20 @@ import { Action } from '@utils/enums';
 @ApiTags('Admin')
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 export class UserManagementController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private followingsService: FollowingsService,
+  ) {}
+
   @CheckPolicies(new UserPermission(Action.Manage))
   @Post('renew')
   renewAllUsers() {
     return this.usersService.renewAllUsers();
+  }
+
+  @CheckPolicies(new UserPermission(Action.Manage))
+  @Post('/followings/renew')
+  renewAllFollowings() {
+    return this.followingsService.renewAllFollowings();
   }
 }

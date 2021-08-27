@@ -29,6 +29,7 @@ import {
 } from '@nestjs/swagger';
 import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
+import { FollowersService } from '../providers/followers.service';
 import { FollowingsService } from '../providers/followings.service';
 import { FriendsService } from '../providers/friends.service';
 
@@ -40,6 +41,7 @@ export class FollowingsController {
   constructor(
     private followingsService: FollowingsService,
     private friendService: FriendsService,
+    private followersService: FollowersService,
   ) {}
 
   @Post('add')
@@ -101,7 +103,7 @@ export class FollowingsController {
   @ApiQuery({ type: Number, required: true, name: 'page' })
   @ApiResponse({ type: FriendsDto })
   getFollowers(@Param('userId') userId: string, @Query('page') page: number) {
-    return this.friendService.getFollowers(userId, page);
+    return this.followersService.getFollowers(userId, page);
   }
 
   @Get('/:userId/followings')
@@ -115,7 +117,7 @@ export class FollowingsController {
   @ApiQuery({ type: Number, required: true, name: 'page' })
   @ApiResponse({ type: FriendsDto })
   getFollowings(@Param('userId') userId: string, @Query('page') page: number) {
-    return this.friendService.getFollowingsOtherUser(userId, page);
+    return this.followingsService.getFollowingsOtherUser(userId, page);
   }
 
   @Get('/checkIsFollowing/:userId')
