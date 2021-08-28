@@ -31,7 +31,6 @@ import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
 import { FollowersService } from '../providers/followers.service';
 import { FollowingsService } from '../providers/followings.service';
-import { FriendsService } from '../providers/friends.service';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -40,7 +39,6 @@ import { FriendsService } from '../providers/friends.service';
 export class FollowingsController {
   constructor(
     private followingsService: FollowingsService,
-    private friendService: FriendsService,
     private followersService: FollowersService,
   ) {}
 

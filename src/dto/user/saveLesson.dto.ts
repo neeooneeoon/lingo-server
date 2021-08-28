@@ -8,11 +8,11 @@ export class ItemResult {
   @ApiProperty({ type: String })
   answer: string;
 
-  @ApiProperty({ type: String, enum: QuestionTypeCode })
-  code: QuestionTypeCode;
+  @ApiProperty({ type: String, enum: QuestionTypeCode, required: false })
+  code?: QuestionTypeCode;
 
-  @ApiProperty({ type: String })
-  focus: string;
+  @ApiProperty({ type: String, required: false })
+  focus?: string;
 }
 
 export class SaveLessonDto {

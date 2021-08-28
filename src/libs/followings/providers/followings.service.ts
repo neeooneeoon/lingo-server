@@ -419,4 +419,29 @@ export class FollowingsService {
       }),
     );
   }
+  public async getAllFollowings(userId: string) {
+    const user = await this.usersService.findById(userId);
+    if (user && user.xp > 0) {
+      const followUserRef = ['displayName', 'avatar', 'xp'];
+      const unSelect = ['-__v', '-tags', '-user'];
+      const followings = await this.followingModel
+        .find({
+          user: Types.ObjectId(userId),
+        })
+        .populate('followUser', followUserRef)
+        .select(unSelect);
+      if (followings?.length > 0) {
+        const higherScoreUsers = followings.filter((item) => {
+          const followUser = item.followUser as unknown as UserDocument;
+          return followUser?.xp > user.xp;
+        });
+        if (higherScoreUsers?.length > 0) {
+          return {
+            currentUser: userId,
+            followings: higherScoreUsers,
+          };
+        }
+      }
+    }
+  }
 }

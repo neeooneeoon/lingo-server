@@ -20,7 +20,7 @@ import {
   ListSentenceQuestionCodes,
 } from '@utils/constants';
 import { QuestionTypeCode } from '@utils/enums';
-import { AddWordDto } from "@dto/evaluation";
+import { AddWordDto } from '@dto/evaluation';
 
 @Injectable()
 export class WordsService {

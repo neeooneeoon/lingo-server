@@ -9,6 +9,6 @@ export class AnswerResult {
     | string[]
     | number;
   status: boolean;
-  code: QuestionTypeCode;
-  focus: string;
+  code?: QuestionTypeCode;
+  focus?: string;
 }
