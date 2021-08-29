@@ -17,7 +17,9 @@ export class EvaluationService {
       projectId: this.configService.get('FIREBASE_PROJECT_ID'),
       credentials: {
         client_email: this.configService.get('FIREBASE_CLIENT_EMAIL'),
-        private_key: this.configService.get('FIREBASE_PRIVATE_KEY'),
+        private_key: this.configService
+          .get('FIREBASE_PRIVATE_KEY')
+          .replace(/\\n/g, '\n'),
       },
     });
   }
