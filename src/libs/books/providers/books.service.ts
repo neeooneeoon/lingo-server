@@ -402,4 +402,24 @@ export class BooksService {
     }
     return listUnits;
   }
+
+  public async getLevelsInUnit(bookId: string, unitId: string) {
+    const book = await this.bookModel.findById(bookId);
+    const units = book?.units;
+    if (units?.length > 0) {
+      const currentUnit = units.find((element) => element._id === unitId);
+      if (currentUnit) {
+        return currentUnit.levels.map((element) => {
+          return {
+            levelIndex: element.levelIndex,
+            totalLessons: element.totalLessons,
+          };
+        });
+      } else {
+        throw new BadRequestException('Unit not found');
+      }
+    } else {
+      throw new BadRequestException('No unit in book');
+    }
+  }
 }

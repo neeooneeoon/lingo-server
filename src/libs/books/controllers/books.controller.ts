@@ -117,4 +117,15 @@ export class BooksController {
   ) {
     return this.wordsService.getWordsInUnit(bookNId, unitNId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('levels')
+  @ApiQuery({ name: 'bookId', required: true, type: String })
+  @ApiQuery({ name: 'unitId', required: true, type: String })
+  getMetaLevels(
+    @Query('bookId') bookId: string,
+    @Query('unitId') unitId: string,
+  ) {
+    return this.booksService.getLevelsInUnit(bookId, unitId);
+  }
 }
