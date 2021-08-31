@@ -1,6 +1,6 @@
-import { QuestionInfo } from 'tools/generated/types';
-import { QUESTION_ENUM } from 'tools/generated/enums';
-import { GenerationConstants as GC } from 'tools/generated/constants';
+import { QuestionInfo } from 'tools/src/generated/types';
+import { QUESTION_ENUM } from 'tools/src/generated/enums';
+import { GenerationConstants as GC } from 'tools/src/generated/constants';
 
 export class PatternReader {
   private pattern: string;

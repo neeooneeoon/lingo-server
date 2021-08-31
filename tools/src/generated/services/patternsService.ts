@@ -1,6 +1,6 @@
-import { QuestionInfo } from 'tools/generated/types';
-import { GenerationConstants as GC } from 'tools/generated/constants';
-import { PATTERN_KEYS_ENUM, QUESTION_ENUM } from 'tools/generated/enums';
+import { QuestionInfo } from 'tools/src/generated/types';
+import { GenerationConstants as GC } from 'tools/src/generated/constants';
+import { PATTERN_KEYS_ENUM, QUESTION_ENUM } from 'tools/src/generated/enums';
 
 export class PatternsService {
   private readonly grade: number;

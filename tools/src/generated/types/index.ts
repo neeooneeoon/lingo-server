@@ -1,4 +1,4 @@
-import { QUESTION_ENUM } from 'tools/generated/enums';
+import { QUESTION_ENUM } from 'tools/src/generated/enums';
 
 export type QuestionInfo = {
   type: number;
