@@ -1,10 +1,12 @@
 {
     "name": "tools",
     "dependencies": {
-        "md5": "2.3.0"
+        "md5": "2.3.0",
+        "string-similarity": "^4.0.4"
     },
     "devDependencies": {
-        "@types/md5": "^2.3.1"
+        "@types/md5": "^2.3.1",
+        "@types/string-similarity": "^4.0.0"
     },
     "version": "0.0.1"
 }
