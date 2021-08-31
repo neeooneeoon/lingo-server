@@ -268,7 +268,7 @@ export class ProgressesService {
             if (bookOne.lastDid > bookTwo.lastDid) return -1;
             return 0;
           });
-          if (lastActiveBooks?.length >= 5)
+          if (lastActiveBooks?.length > 0)
             return forkJoin(
               lastActiveBooks
                 .slice(0, 5)

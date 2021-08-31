@@ -8,3 +8,8 @@ export enum QUESTION_ENUM {
   WORD = 'Word',
   SENTENCE = 'Sentence',
 }
+
+export enum QUESTION_RANK_ENUM {
+  WORD = 'Word',
+  SENTENCE = 'Sentence',
+}
