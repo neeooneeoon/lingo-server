@@ -79,7 +79,7 @@ export class PatternsService {
     }
   }
 
-  public isInLabels(
+  public static isInLabels(
     questionInfo: QuestionInfo,
     listLabels: Array<string>,
   ): boolean {

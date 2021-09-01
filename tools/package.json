@@ -1,8 +1,9 @@
 {
-    "name": "tools",
+    "name": "@lingo/tools",
     "dependencies": {
         "md5": "2.3.0",
-        "string-similarity": "^4.0.4"
+        "string-similarity": "^4.0.4",
+        "@lingo/core": "2.2.0"
     },
     "devDependencies": {
         "@types/md5": "^2.3.1",

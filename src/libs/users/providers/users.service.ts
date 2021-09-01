@@ -31,7 +31,6 @@ import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.se
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { ScoreOverviewDto } from '@dto/progress';
-import { FollowingDocument } from '@entities/following.entity';
 import { NotificationsService } from '@libs/notifications/providers/notifications.service';
 import { Province } from '@entities/province.entity';
 import { District } from '@entities/district.entity';
@@ -39,6 +38,7 @@ import { Cache } from 'cache-manager';
 import { TransactionService } from '@connect';
 import { UserScoresService } from '@libs/users/providers/userScores.service';
 import { School } from '@entities/school.entity';
+import emojiRegex from 'emoji-regex';
 
 @Injectable()
 export class UsersService {
@@ -108,7 +108,13 @@ export class UsersService {
     data: UpdateUserDto,
   ): Promise<UserProfile> {
     try {
-      if (data.grade <= 0 || data.grade > 12)
+      const regex = emojiRegex();
+      if (regex.exec(data.displayName)) {
+        throw new BadRequestException(
+          'Names are not allowed to contain emojis',
+        );
+      }
+      if (!Number.isInteger(data.grade) && (data.grade <= 0 || data.grade > 12))
         throw new BadRequestException('Grade invalid');
       const address = {
         address: {
@@ -204,6 +210,7 @@ export class UsersService {
   ): Observable<SearchUser[]> {
     search = search.trim();
     const limit = 15;
+    const selectFields = ['_id', 'email', 'avatar', 'displayName'];
     const skip = pageNumber < 0 ? 0 : limit * pageNumber;
     if (!search) {
       throw new BadRequestException('Name or email can not be blank');
@@ -223,10 +230,12 @@ export class UsersService {
             $ne: Role.Admin,
           },
         })
+        .select(selectFields)
+        .lean()
         .skip(skip)
         .limit(limit),
     ]).pipe(
-      map(([allFollowings, users]: [FollowingDocument[], UserDocument[]]) => {
+      map(([allFollowings, users]) => {
         const followUsers = allFollowings.map((item) =>
           String(item.followUser),
         );

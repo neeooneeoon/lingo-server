@@ -12,6 +12,9 @@
     "baseUrl": "./",
     "incremental": true,
     "resolveJsonModule": true,
+    "rootDirs": [
+      "./", "./src"
+    ],
     "paths": {
       "@authentication/*": [
         "src/authentication/*"
@@ -79,6 +82,12 @@
       "@connect": [
         "src/connect"
       ],
+      "@lingo/core": [
+        "src/"
+      ],
+      "@lingo/core/*": [
+        "src/*"
+      ]
     }
   }
 }

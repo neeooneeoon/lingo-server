@@ -4,6 +4,7 @@ import { SearchUser } from '@dto/user';
 import { ProvinceDocument } from '@entities/province.entity';
 import { DistrictDocument } from '@entities/district.entity';
 import { SchoolDocument } from '@entities/school.entity';
+import { LeanDocument } from 'mongoose';
 
 export class UsersHelper {
   public mapToUserProfile(user: UserDocument): UserProfile {
@@ -37,7 +38,7 @@ export class UsersHelper {
 
   public mapToFollowingResult(
     listFollowings: string[],
-    searchUserResult: UserDocument[],
+    searchUserResult: LeanDocument<UserDocument>[],
   ): SearchUser[] {
     return searchUserResult.map((user): SearchUser => {
       const userId = String(user._id);

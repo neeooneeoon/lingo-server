@@ -288,9 +288,11 @@ export class ProgressesService {
     userId: string,
   ): Observable<Pick<ScoreOverviewDto, 'correctQuestions' | 'doneLessons'>> {
     return from(
-      this.progressModel.findOne({
-        userId: Types.ObjectId(userId),
-      }),
+      this.progressModel
+        .findOne({
+          userId: Types.ObjectId(userId),
+        })
+        .lean(),
     ).pipe(
       map((progress) => {
         let doneLessons = 0;

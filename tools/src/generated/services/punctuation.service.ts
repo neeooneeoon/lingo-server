@@ -12,10 +12,16 @@ import { Collection } from 'mongodb';
 export class PunctuationService {
   private readonly punctuationSet: Set<string>;
   private readonly focusSentence: Sentence;
+  private readonly sentencesCollection: Collection<Sentence>;
 
-  constructor(__punctuations: Array<string>, _focusSentence: Sentence) {
+  constructor(
+    __punctuations: Array<string>,
+    _focusSentence: Sentence,
+    _sentencesCollection: Collection<Sentence>,
+  ) {
     this.punctuationSet = new Set(__punctuations);
     this.focusSentence = _focusSentence;
+    this.sentencesCollection = _sentencesCollection;
   }
 
   private containPunctuations(otherContent: string): boolean {
@@ -104,7 +110,6 @@ export class PunctuationService {
     content: string,
     listContents: Array<string>,
     listStories: SimpleStory[],
-    sentences: Collection<Sentence>,
   ) {
     const choices: Array<string> = [];
     const { ratings } = stringSimilarity.findBestMatch(content, listContents);
@@ -122,7 +127,7 @@ export class PunctuationService {
         .slice(0, 5);
       // console.log(storySimilarity);
       const storedSentences = (
-        await sentences
+        await this.sentencesCollection
           .find({
             bookNId: -2,
             unitNId: -2,
@@ -133,8 +138,8 @@ export class PunctuationService {
 
       const rawDocs: any[] = [];
       storySimilarity.forEach((el) => {
+        choices.push(el._id);
         if (!storedSentences.includes(el._id)) {
-          choices.push(el._id);
           rawDocs.push({
             isConversation: false,
             _id: el._id,
@@ -157,7 +162,7 @@ export class PunctuationService {
         }
       });
       if (rawDocs.length > 0) {
-        sentences.insertMany(rawDocs, (err, res) => {
+        this.sentencesCollection.insertMany(rawDocs, (err, res) => {
           if (err) {
             console.log(err.message);
             throw err;
@@ -165,6 +170,7 @@ export class PunctuationService {
         });
       }
     }
+    return choices;
   }
 
   public similaritySentences(listSentences: Sentence[]) {
@@ -195,7 +201,7 @@ export class PunctuationService {
     return choices;
   }
 
-  public async similarityStories(sentences: Collection<Sentence>) {
+  public async similarityStories() {
     const content = this.focusSentence.content.trim();
     const listContents: Array<string> = [];
     const listStories: Array<SimpleStory> = [];
@@ -219,7 +225,6 @@ export class PunctuationService {
         content,
         listContents,
         listStories,
-        sentences,
       );
     }
     return [];

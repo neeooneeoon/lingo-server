@@ -1,12 +1,12 @@
 {
-  "name": "lingo-server",
+  "name": "@lingo/core",
   "version": "2.2.0",
   "description": "Provide API",
   "author": "",
   "private": true,
   "license": "MIT",
   "workspaces": [
-    "lingo-server", "tools"
+    "@lingo/core", "tools"
   ],
   "scripts": {
     "prebuild": "rimraf dist",
@@ -52,6 +52,7 @@
     "cross-env": "^7.0.3",
     "dayjs": "^1.10.6",
     "dotenv": "^10.0.0",
+    "emoji-regex": "^9.2.2",
     "firebase-admin": "^9.10.0",
     "googleapis": "^76.0.0",
     "handlebars": "^4.7.7",

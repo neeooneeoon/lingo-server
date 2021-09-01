@@ -21,6 +21,9 @@ export class Sentence {
   @Prop({ type: String, required: true, default: '' })
   content: string;
 
+  @Prop({ type: String, required: false, default: '' })
+  phrase?: string;
+
   @Prop({ type: String, required: true, default: '' })
   translate: string;
 

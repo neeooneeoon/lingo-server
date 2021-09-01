@@ -35,7 +35,6 @@ import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
 import { ScoreOverviewDto } from '@dto/progress';
 import { UserAddressService } from '@libs/users/providers/userAddress.service';
-import { MailService } from 'src/mail/mail.service';
 import { InvitationService } from '../providers/invitation.service';
 import { MailInputDto } from '@dto/mail/mailInput.dto';
 
