@@ -1,0 +1,20 @@
+{
+    "name": "@lingo/tools",
+    "license": "MIT",
+    "version": "0.0.1",
+    "dependencies": {
+        "md5": "2.3.0",
+        "string-similarity": "^4.0.4",
+        "@lingo/core": "2.2.0"
+    },
+    "devDependencies": {
+        "@types/md5": "^2.3.1",
+        "@types/string-similarity": "^4.0.0"
+    },
+    "scripts": {
+        "build": "rimraf dist && tsc",
+        "format": "prettier --write \"src/**/*.ts\" ",
+        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
+    }
+
+}
