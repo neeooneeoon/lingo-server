@@ -1,93 +1,19 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2017",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "resolveJsonModule": true,
-    "rootDirs": [
-      "./", "./src"
-    ],
-    "paths": {
-      "@authentication/*": [
-        "src/authentication/*"
-      ],
-      "@authentication": [
-        "src/authentication"
-      ],
-      "@configs/*": [
-        "src/configs/*"
-      ],
-      "@configs": [
-        "src/configs"
-      ],
-      "@entities/*": [
-        "src/entities/*"
-      ],
-      "@entities": [
-        "src/entities"
-      ],
-      "@libs/*": [
-        "src/libs/*"
-      ],
-      "@libs": [
-        "src/libs"
-      ],
-      "@utils/*": [
-        "src/utils/*"
-      ],
-      "@utils": [
-        "src/utils"
-      ],
-      "@helpers/*": [
-        "src/helpers/*"
-      ],
-      "@helpers": [
-        "src/helpers"
-      ],
-      "@dto/*": [
-        "src/dto/*"
-      ],
-      "@dto": [
-        "src/dto"
-      ],
-      "@middlewares/*": [
-        "src/middlewares/*"
-      ],
-      "@middlewares": [
-        "src/middlewares"
-      ],
-      "@admin/*": [
-        "src/admin/*"
-      ],
-      "@admin": [
-        "src/admin"
-      ],
-      "@cache/*": [
-        "src/cache/*"
-      ],
-      "@cache": [
-        "src/cache"
-      ],
-      "@connect/*": [
-        "src/connect/*"
-      ],
-      "@connect": [
-        "src/connect"
-      ],
-      "@lingo/core": [
-        "src/"
-      ],
-      "@lingo/core/*": [
-        "src/*"
-      ]
+    "compilerOptions": {
+      "sourceMap": true,
+      "removeComments": true,
+  
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      "noImplicitThis": true,
+      "alwaysStrict": true,
+  
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true
     }
   }
-}
+  
