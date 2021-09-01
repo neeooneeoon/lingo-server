@@ -12,7 +12,9 @@
         "@types/string-similarity": "^4.0.0"
     },
     "scripts": {
-        "build": "rm -rf dist && tsc"
+        "build": "rimraf dist && tsc",
+        "format": "prettier --write \"src/**/*.ts\" ",
+        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
     }
 
 }

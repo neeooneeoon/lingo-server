@@ -2,14 +2,14 @@ import {
   PATTERN_KEYS_ENUM,
   QUESTION_ENUM,
   QUESTION_RANK_ENUM,
-} from "@lingo/tools/src/generated/enums";
-import { GenerationConstants as GC } from "@lingo/tools/src/generated/constants";
+} from '@lingo/tools/src/generated/enums';
+import { GenerationConstants as GC } from '@lingo/tools/src/generated/constants';
 
 export class RankingService {
   public static generate(
     patternKey: PATTERN_KEYS_ENUM,
     questionType: number,
-    group: QUESTION_ENUM
+    group: QUESTION_ENUM,
   ): number {
     const MAX_RANKING = 4;
     const keyType = String(questionType);

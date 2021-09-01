@@ -1,13 +1,13 @@
-import { Collection } from "mongodb";
-import { Word } from "@lingo/core/src/entities/word.entity";
-import { Question } from "@lingo/core/src/entities/question.entity";
-import { QUESTION_ENUM } from "@lingo/tools/src/generated/enums";
-import { getQuestionTypeCode } from "@lingo/tools/src/generated/helper";
+import { Collection } from 'mongodb';
+import { Word } from '@lingo/core/src/entities/word.entity';
+import { Question } from '@lingo/core/src/entities/question.entity';
+import { QUESTION_ENUM } from '@lingo/tools/src/generated/enums';
+import { getQuestionTypeCode } from '@lingo/tools/src/generated/helper';
 import {
   WordQuestionParam,
   GenParamsInput,
-} from "@lingo/tools/src/generated/types";
-import { QuestionTypeCode } from "@lingo/core/src/utils/enums";
+} from '@lingo/tools/src/generated/types';
+import { QuestionTypeCode } from '@lingo/core/src/utils/enums';
 
 export class WordsService {
   private readonly wordsCollection: Collection<Word>;
@@ -26,7 +26,7 @@ export class WordsService {
   }
 
   public static getParamsFromPattern(
-    input: GenParamsInput
+    input: GenParamsInput,
   ): Array<WordQuestionParam> {
     if (input.pattern.type !== 9) {
       const result: Array<WordQuestionParam> = [];
@@ -51,7 +51,7 @@ export class WordsService {
           const labelIndex = labelsCloned.indexOf(label);
           if (labelIndex !== -1) {
             matchingLabels.push(labelIndex);
-            labelsCloned[labelIndex] = "";
+            labelsCloned[labelIndex] = '';
           }
         }
         if (matchingLabels.length > 0) {
@@ -72,11 +72,11 @@ export class WordsService {
                 const matchingContent = matchingWord.content
                   .trim()
                   .toLowerCase()
-                  .normalize("NFKD");
+                  .normalize('NFKD');
                 const matchingMeaning = matchingWord.meaning
                   .trim()
                   .toLowerCase()
-                  .normalize("NFKD");
+                  .normalize('NFKD');
                 if (
                   !contentSet.has(matchingContent) &&
                   !meaningSet.has(matchingMeaning) &&
@@ -107,7 +107,7 @@ export class WordsService {
   }
 
   public static generateQuestion(
-    param: WordQuestionParam & { questionId: string }
+    param: WordQuestionParam & { questionId: string },
   ): Question | undefined {
     function getChoices(hasImageWords: Array<Word>, focusId: string) {
       return hasImageWords
@@ -121,7 +121,7 @@ export class WordsService {
         }));
     }
     const hasImageWords = param.wordsIUnit.filter(
-      (element) => element.imageRoot
+      (element) => element.imageRoot,
     );
 
     const questionCode = getQuestionTypeCode(QUESTION_ENUM.WORD, param.type);
@@ -131,7 +131,7 @@ export class WordsService {
       case 4:
         if (
           hasImageWords.findIndex(
-            (element) => element._id === param.focusId
+            (element) => element._id === param.focusId,
           ) !== -1 &&
           hasImageWords.length >= 2
         ) {
@@ -187,7 +187,7 @@ export class WordsService {
         };
       case 7:
         const focusWord = param.wordsIUnit.find(
-          (element) => element._id === param.focusId
+          (element) => element._id === param.focusId,
         );
         if (focusWord) {
           if (focusWord?.imageRoot) {

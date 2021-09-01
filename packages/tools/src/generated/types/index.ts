@@ -1,11 +1,11 @@
-import { Rating } from "string-similarity";
+import { Rating } from 'string-similarity';
 import {
   QUESTION_ENUM,
   PATTERN_KEYS_ENUM,
   QUESTION_RANK_ENUM,
-} from "@lingo/tools/src/generated/enums";
-import { Word } from "@lingo/core/src/entities/word.entity";
-import { Sentence } from "@lingo/core/src/entities/sentence.entity";
+} from '@lingo/tools/src/generated/enums';
+import { Word } from '@lingo/core/src/entities/word.entity';
+import { Sentence } from '@lingo/core/src/entities/sentence.entity';
 
 export type QuestionInfo = {
   type: number;

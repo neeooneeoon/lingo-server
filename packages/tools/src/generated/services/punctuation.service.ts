@@ -1,13 +1,13 @@
-import { Sentence } from "@lingo/core/src/entities/sentence.entity";
-import * as stringSimilarity from "string-similarity";
-import { Rating } from "string-similarity";
+import { Sentence } from '@lingo/core/src/entities/sentence.entity';
+import * as stringSimilarity from 'string-similarity';
+import { Rating } from 'string-similarity';
 import {
   SentenceSimilarity,
   SimpleStory,
   StorySimilarity,
-} from "@lingo/tools/src/generated/types";
-import * as stories from "@lingo/tools/src/generated/data/sentencesFromStories.json";
-import { Collection } from "mongodb";
+} from '@lingo/tools/src/generated/types';
+import * as stories from '@lingo/tools/src/generated/data/sentencesFromStories.json';
+import { Collection } from 'mongodb';
 
 export class PunctuationService {
   private readonly punctuationSet: Set<string>;
@@ -17,7 +17,7 @@ export class PunctuationService {
   constructor(
     __punctuations: Array<string>,
     _focusSentence: Sentence,
-    _sentencesCollection: Collection<Sentence>
+    _sentencesCollection: Collection<Sentence>,
   ) {
     this.punctuationSet = new Set(__punctuations);
     this.focusSentence = _focusSentence;
@@ -25,7 +25,7 @@ export class PunctuationService {
   }
 
   private containPunctuations(otherContent: string): boolean {
-    const allPunctuations = ["“", "”", '"', "’", "'", "!", ",", "?", "."];
+    const allPunctuations = ['“', '”', '"', '’', "'", '!', ',', '?', '.'];
     let matchAll = true;
     for (const p of allPunctuations) {
       const punctuationIndex = otherContent.indexOf(p);
@@ -57,7 +57,7 @@ export class PunctuationService {
   private findBestMatchSentences(
     content: string,
     listContents: Array<string>,
-    matchedSentences: Sentence[]
+    matchedSentences: Sentence[],
   ): Array<string> {
     const choices: Array<string> = [];
     const { ratings } = stringSimilarity.findBestMatch(content, listContents);
@@ -76,7 +76,7 @@ export class PunctuationService {
       (item) =>
         (item.bookNId == this.focusSentence.bookNId &&
           item.unitNId <= this.focusSentence.unitNId) ||
-        item.bookNId < this.focusSentence.bookNId
+        item.bookNId < this.focusSentence.bookNId,
     );
     if (similaritySentencesPrev.length > 0) {
       similaritySentencesPrev
@@ -93,7 +93,7 @@ export class PunctuationService {
         (item) =>
           (item.bookNId == this.focusSentence.bookNId &&
             item.unitNId > this.focusSentence.unitNId) ||
-          item.bookNId > this.focusSentence.bookNId
+          item.bookNId > this.focusSentence.bookNId,
       );
       if (similaritySentencesPost.length > 0) {
         similaritySentencesPost.slice(0, 5).map((item) => {
@@ -109,7 +109,7 @@ export class PunctuationService {
   private async findBestMatchStories(
     content: string,
     listContents: Array<string>,
-    listStories: SimpleStory[]
+    listStories: SimpleStory[],
   ) {
     const choices: Array<string> = [];
     const { ratings } = stringSimilarity.findBestMatch(content, listContents);
@@ -150,8 +150,8 @@ export class PunctuationService {
             content: el.content,
             tempTranslates: [],
             wordBaseIndex: -1,
-            translate: "",
-            audio: "",
+            translate: '',
+            audio: '',
             contentSplit: [],
             translateSplit: [],
             translates: [],
@@ -195,7 +195,7 @@ export class PunctuationService {
       choices = this.findBestMatchSentences(
         content,
         matchedPunctuationContents,
-        matchedPunctuations
+        matchedPunctuations,
       );
     }
     return choices;
@@ -224,7 +224,7 @@ export class PunctuationService {
       return await this.findBestMatchStories(
         content,
         listContents,
-        listStories
+        listStories,
       );
     }
     return [];

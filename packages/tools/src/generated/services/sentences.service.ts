@@ -1,13 +1,13 @@
-import { Collection } from "mongodb";
-import { Sentence } from "@lingo/core/src/entities/sentence.entity";
+import { Collection } from 'mongodb';
+import { Sentence } from '@lingo/core/src/entities/sentence.entity';
 import {
   GenParamsInput,
   SentenceQuestionParam,
-} from "@lingo/tools/src/generated/types";
-import { getQuestionTypeCode } from "@lingo/tools/src/generated/helper";
-import { QUESTION_ENUM } from "@lingo/tools/src/generated/enums";
-import { Question } from "@lingo/core/src/entities/question.entity";
-import { PunctuationService } from "./punctuation.service";
+} from '@lingo/tools/src/generated/types';
+import { getQuestionTypeCode } from '@lingo/tools/src/generated/helper';
+import { QUESTION_ENUM } from '@lingo/tools/src/generated/enums';
+import { Question } from '@lingo/core/src/entities/question.entity';
+import { PunctuationService } from './punctuation.service';
 
 export class SentencesService {
   private readonly sentencesCollection: Collection<Sentence>;
@@ -57,7 +57,7 @@ export class SentencesService {
         case 12:
         case 17:
           if (type === 1 && !focusSentence.audio) {
-            console.log("No audio");
+            console.log('No audio');
             return null;
           } else if (type === 12 && focusSentence.translateSplit.length <= 10) {
             question = {
@@ -105,7 +105,7 @@ export class SentencesService {
               const punctuationService = new PunctuationService(
                 punctuations,
                 focusSentence,
-                sentencesCollection
+                sentencesCollection,
               );
               const distractedSentences =
                 punctuationService.similaritySentences(allSentences);
@@ -213,9 +213,9 @@ export class SentencesService {
         type: input.pattern.type,
         wordId: input.wordsIUnit[el]?._id,
         sentenceId:
-          input.pattern.sentenceLabel[1] === "0"
-            ? input.wordsIUnit[el]?._id.concat("S0")
-            : input.wordsIUnit[el]?._id.concat("S") +
+          input.pattern.sentenceLabel[1] === '0'
+            ? input.wordsIUnit[el]?._id.concat('S0')
+            : input.wordsIUnit[el]?._id.concat('S') +
               (parseInt(input.pattern.sentenceLabel[1]) - 1),
       };
     });

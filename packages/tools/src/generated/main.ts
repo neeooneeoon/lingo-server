@@ -1,15 +1,15 @@
-import { Collection, MongoClient } from "mongodb";
-import * as dotenv from "dotenv";
-import { Sentence } from "@lingo/core/src/entities/sentence.entity";
-import { GenerateQuestionInput } from "@lingo/tools/src/generated/types";
-import { Question } from "@lingo/core/src/entities/question.entity";
-import { PatternReader } from "./services/patternReader";
-import { PatternsService } from "./services/patterns.service";
-import { QUESTION_ENUM } from "./enums";
-import { WordsService } from "./services/words.service";
-import { SentencesService } from "./services/sentences.service";
-import { getQuestionTypeCode } from "./helper";
-import { Word } from "@lingo/core/src/entities/word.entity";
+import { Collection, MongoClient } from 'mongodb';
+import * as dotenv from 'dotenv';
+import { Sentence } from '@lingo/core/src/entities/sentence.entity';
+import { GenerateQuestionInput } from '@lingo/tools/src/generated/types';
+import { Question } from '@lingo/core/src/entities/question.entity';
+import { PatternReader } from './services/patternReader';
+import { PatternsService } from './services/patterns.service';
+import { QUESTION_ENUM } from './enums';
+import { WordsService } from './services/words.service';
+import { SentencesService } from './services/sentences.service';
+import { getQuestionTypeCode } from './helper';
+import { Word } from '@lingo/core/src/entities/word.entity';
 
 async function generateQuestions({
   words,
@@ -68,7 +68,7 @@ async function generateQuestions({
           break;
         case QUESTION_ENUM.SENTENCE:
           if (questionMetaInfo && questionMetaInfo.type !== 19) {
-            if (questionMetaInfo && questionMetaInfo.wordLabel !== "x") {
+            if (questionMetaInfo && questionMetaInfo.wordLabel !== 'x') {
               const sentenceQuestionParams =
                 SentencesService.getParamsFromPattern({
                   pattern: questionMetaInfo,
@@ -80,7 +80,7 @@ async function generateQuestions({
               if (sentenceQuestionParams?.length > 0) {
                 for (const param of sentenceQuestionParams) {
                   const focusSentence = sentences.find(
-                    (element) => element._id === param.sentenceId
+                    (element) => element._id === param.sentenceId,
                   );
                   if (focusSentence) {
                     const question = await SentencesService.generateQuestion({
@@ -111,7 +111,7 @@ async function generateQuestions({
             } else {
               const questionCode = getQuestionTypeCode(
                 QUESTION_ENUM.SENTENCE,
-                questionMetaInfo.type
+                questionMetaInfo.type,
               );
               const sortedSentences = Array.from(sentences).sort((s1, s2) => {
                 return s1.content.length <= s2.content.length ? -1 : 1;
@@ -119,14 +119,14 @@ async function generateQuestions({
               for (const sentence of sortedSentences) {
                 if (isUsedSentences.length >= 8) break;
                 const index = isUsedSentences.findIndex(
-                  (el) => el.baseId === sentence.baseId
+                  (el) => el.baseId === sentence.baseId,
                 );
                 if (index == -1) {
                   isUsedSentences.push(sentence);
                 }
               }
               let position =
-                questionMetaInfo.sentenceLabel[1] == "0"
+                questionMetaInfo.sentenceLabel[1] == '0'
                   ? 0
                   : parseInt(questionMetaInfo.sentenceLabel[1]) - 1;
               if (questionMetaInfo.type === 18) {
@@ -154,7 +154,7 @@ async function generateQuestions({
 async function run() {
   const result = dotenv.config();
   if (result.error) {
-    throw new Error("Environments variables is not config");
+    throw new Error('Environments variables is not config');
   } else {
     const envConfig = result.parsed;
     if (envConfig) {
@@ -163,8 +163,8 @@ async function run() {
       const client = new MongoClient(dbUrl, { useUnifiedTopology: true });
       await client.connect();
       const database = client.db(dbName);
-      const sentencesCollection = database.collection<Sentence>("sentences");
-      const wordsCollection = database.collection<Word>("words");
+      const sentencesCollection = database.collection<Sentence>('sentences');
+      const wordsCollection = database.collection<Word>('words');
       await client.close();
     }
   }
