@@ -107,39 +107,55 @@ export class UsersService {
     userId: Types.ObjectId | string,
     data: UpdateUserDto,
   ): Promise<UserProfile> {
-    try {
-      const regex = emojiRegex();
-      if (regex.exec(data.displayName)) {
-        throw new BadRequestException(
-          'Names are not allowed to contain emojis',
-        );
-      }
-      if (!Number.isInteger(data.grade) && (data.grade <= 0 || data.grade > 12))
-        throw new BadRequestException('Grade invalid');
-      const address = {
-        address: {
-          province: data.provinceId,
-          district: data.districtId,
-          school: data.schoolId,
-          grade: data.grade,
-        },
-      };
-      delete data.provinceId;
-      delete data.districtId;
-      delete data.schoolId;
-      delete data.grade;
-      const userData = { ...data, ...address };
-      const updatedUser = await this.userModel
-        .findByIdAndUpdate(userId, { ...userData }, { new: true })
-        .populate('address.province', ['name'], Province.name)
-        .populate('address.district', ['name'], District.name)
-        .populate('address.school', ['name'], School.name);
-      const profile = this.usersHelper.mapToUserProfile(updatedUser);
-      await this.cache.set<UserProfile>(`profile/${String(userId)}`, profile);
-      return profile;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
+    const regex = emojiRegex();
+    const nameRegex =
+      /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$/g;
+    if (
+      data.displayName.length > 25 ||
+      !regex.test(data.displayName) ||
+      !nameRegex.test(data.displayName)
+    ) {
+      throw new BadRequestException('displayName is invalid.');
     }
+    if (
+      data.familyName &&
+      (data.familyName.length > 25 ||
+        !regex.test(data.familyName) ||
+        !nameRegex.test(data.familyName))
+    ) {
+      throw new BadRequestException('familyName is invalid.');
+    }
+    if (
+      data.givenName &&
+      (data.givenName.length > 25 ||
+        !regex.test(data.givenName) ||
+        !nameRegex.test(data.givenName))
+    ) {
+      throw new BadRequestException('givenName is invalid.');
+    }
+    if (!Number.isInteger(data.grade) && (data.grade <= 0 || data.grade > 12))
+      throw new BadRequestException('Grade invalid');
+    const address = {
+      address: {
+        province: data.provinceId,
+        district: data.districtId,
+        school: data.schoolId,
+        grade: data.grade,
+      },
+    };
+    delete data.provinceId;
+    delete data.districtId;
+    delete data.schoolId;
+    delete data.grade;
+    const userData = { ...data, ...address };
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(userId, { ...userData }, { new: true })
+      .populate('address.province', ['name'], Province.name)
+      .populate('address.district', ['name'], District.name)
+      .populate('address.school', ['name'], School.name);
+    const profile = this.usersHelper.mapToUserProfile(updatedUser);
+    await this.cache.set<UserProfile>(`profile/${String(userId)}`, profile);
+    return profile;
   }
 
   public async saveUserLesson(
@@ -432,5 +448,54 @@ export class UsersService {
     const backups = await this.userModel.find();
     await this.userModel.deleteMany();
     await this.userModel.insertMany(backups);
+  }
+
+  public async resetUsername() {
+    const users = await this.userModel.find().lean();
+    const regex = emojiRegex();
+    const DEFAULT_USERNAME = 'username';
+
+    for (const user of users) {
+      const { displayName, givenName, familyName, email } = user;
+      if (regex.test(displayName)) {
+        let replaceName = DEFAULT_USERNAME;
+        if (familyName || givenName) {
+          replaceName = `${givenName} ${familyName}`.trim();
+        } else if (email) {
+          const index = email.indexOf('@');
+          if (index !== -1) {
+            replaceName = email.slice(0, index).slice(0, 25);
+          }
+        }
+        await this.userModel.updateOne(
+          {
+            _id: Types.ObjectId(user._id),
+          },
+          {
+            displayName: replaceName,
+          },
+        );
+      } else if (user.displayName.length > 25) {
+        let replaceName = DEFAULT_USERNAME;
+        if (familyName || givenName) {
+          replaceName = `${givenName} ${familyName}`.trim();
+        } else if (email) {
+          const index = email.indexOf('@');
+          if (index !== -1) {
+            replaceName = email.slice(0, index).slice(0, 25);
+          }
+        } else {
+          replaceName = displayName.slice(0, 25);
+        }
+        await this.userModel.updateOne(
+          {
+            _id: Types.ObjectId(user._id),
+          },
+          {
+            displayName: replaceName,
+          },
+        );
+      }
+    }
   }
 }

@@ -29,4 +29,10 @@ export class UserManagementController {
   renewAllFollowings() {
     return this.followingsService.renewAllFollowings();
   }
+
+  @CheckPolicies(new UserPermission(Action.Manage))
+  @Post('resetUsername')
+  resetUsername() {
+    return this.usersService.resetUsername();
+  }
 }

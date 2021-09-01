@@ -13,6 +13,12 @@
     "incremental": true,
     "resolveJsonModule": true,
     "paths": {
+      "@lingo/core/*": [
+        "./*"
+      ],
+      "@lingo/core": [
+        "/"
+      ],
       "@authentication/*": [
         "src/authentication/*"
       ],
@@ -78,12 +84,6 @@
       ],
       "@connect": [
         "src/connect"
-      ],
-      "@lingo/core/*": [
-        "src/*"
-      ],
-      "@lingo/core": [
-        "src"
       ]
     }
   }
