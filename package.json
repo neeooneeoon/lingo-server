@@ -4,7 +4,10 @@
         "packages/*"
     ],
     "scripts": {
-        "build": "lerna run build"
+        "build": "lerna run build",
+        "core:dev": "yarn workspace @lingo/core run start:dev",
+        "core:debug": "yarn workspace @lingo/core run start:debug",
+        "core:prod": "yarn workspace @lingo/core run start:prod"
     },
     "devDependencies": {
         "lerna": "^4.0.0"

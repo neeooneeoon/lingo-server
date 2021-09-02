@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigsService } from '@configs';
-import * as cookieParser from 'cookie-parser';
-import * as bodyParser from 'body-parser';
-import * as helmet from 'helmet';
-import * as compression from 'compression';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import helmet from 'helmet';
+import compression from 'compression';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 import { ServiceAccount } from 'firebase-admin';
 
 async function bootstrap() {
