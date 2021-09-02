@@ -38,7 +38,7 @@ import { Cache } from 'cache-manager';
 import { TransactionService } from '@connect';
 import { UserScoresService } from '@libs/users/providers/userScores.service';
 import { School } from '@entities/school.entity';
-import emojiRegex from 'emoji-regex';
+import emojiRegex from 'emoji-regex/RGI_Emoji';
 
 @Injectable()
 export class UsersService {
@@ -107,29 +107,20 @@ export class UsersService {
     userId: Types.ObjectId | string,
     data: UpdateUserDto,
   ): Promise<UserProfile> {
-    const regex = emojiRegex();
     const nameRegex =
       /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$/g;
-    if (
-      data.displayName.length > 25 ||
-      !regex.test(data.displayName) ||
-      !nameRegex.test(data.displayName)
-    ) {
+    if (data.displayName.length > 25 || !nameRegex.test(data.displayName)) {
       throw new BadRequestException('displayName is invalid.');
     }
     if (
       data.familyName &&
-      (data.familyName.length > 25 ||
-        !regex.test(data.familyName) ||
-        !nameRegex.test(data.familyName))
+      (data.familyName.length > 25 || !nameRegex.test(data.familyName))
     ) {
       throw new BadRequestException('familyName is invalid.');
     }
     if (
       data.givenName &&
-      (data.givenName.length > 25 ||
-        !regex.test(data.givenName) ||
-        !nameRegex.test(data.givenName))
+      (data.givenName.length > 25 || !nameRegex.test(data.givenName))
     ) {
       throw new BadRequestException('givenName is invalid.');
     }
