@@ -15,15 +15,20 @@ import { District } from '@entities/district.entity';
 import { School } from '@entities/school.entity';
 import { Cache } from 'cache-manager';
 import { AddressService } from '@libs/address/address.service';
+import { ConfigsService } from '@configs';
 
 @Injectable()
 export class UserAddressService {
+  private prefixKey: string;
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly userHelper: UsersHelper,
     private readonly addressService: AddressService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-  ) {}
+    private readonly configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   public async changeUserAddress(
     input: UpdateUserAddressInput,
@@ -58,7 +63,7 @@ export class UserAddressService {
       .populate('address.school', ['-__v'], School.name);
     const userProfile = this.userHelper.mapToUserProfile(user);
     await this.cacheManager.set<UserProfile>(
-      `profile/${currentUser}`,
+      `${this.prefixKey}/profile/${currentUser}`,
       userProfile,
       {
         ttl: 7200,

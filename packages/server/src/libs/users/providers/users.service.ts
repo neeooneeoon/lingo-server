@@ -39,9 +39,11 @@ import { TransactionService } from '@connect';
 import { UserScoresService } from '@libs/users/providers/userScores.service';
 import { School } from '@entities/school.entity';
 import emojiRegex from 'emoji-regex/RGI_Emoji';
+import { ConfigsService } from '@configs';
 
 @Injectable()
 export class UsersService {
+  private prefixKey: string;
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly usersHelper: UsersHelper,
@@ -57,7 +59,10 @@ export class UsersService {
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
     private transactionService: TransactionService,
     private usersScoreService: UserScoresService,
-  ) {}
+    private readonly configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   public async findByIds(
     ids: Types.ObjectId[] | string[],
@@ -145,7 +150,10 @@ export class UsersService {
       .populate('address.district', ['name'], District.name)
       .populate('address.school', ['name'], School.name);
     const profile = this.usersHelper.mapToUserProfile(updatedUser);
-    await this.cache.set<UserProfile>(`profile/${String(userId)}`, profile);
+    await this.cache.set<UserProfile>(
+      `${this.prefixKey}/profile/${String(userId)}`,
+      profile,
+    );
     return profile;
   }
 
@@ -155,7 +163,9 @@ export class UsersService {
   ): Promise<string> {
     // eslint-disable-next-line prefer-const
     let [userProfile, lessonTree] = await Promise.all([
-      this.cache.get<UserProfile | null>(`profile/${String(userCtx.userId)}`),
+      this.cache.get<UserProfile | null>(
+        `${this.prefixKey}/profile/${String(userCtx.userId)}`,
+      ),
       this.booksService.getLessonTree({
         bookId: input.bookId,
         unitId: input.unitId,
@@ -315,7 +325,9 @@ export class UsersService {
   }
 
   public findUser(userId: string) {
-    return from(this.cache.get<UserProfile>(`profile/${userId}`)).pipe(
+    return from(
+      this.cache.get<UserProfile>(`${this.prefixKey}/profile/${userId}`),
+    ).pipe(
       switchMap((r) => {
         const cachedUser = r;
         if (cachedUser !== null) return of(cachedUser);
@@ -331,9 +343,13 @@ export class UsersService {
               throw new BadRequestException(`Can't find user ${userId}`);
             const userProfile = this.usersHelper.mapToUserProfile(user);
             this.cache
-              .set<UserProfile>(`profile/${userId}`, userProfile, {
-                ttl: 7200,
-              })
+              .set<UserProfile>(
+                `${this.prefixKey}/profile/${userId}`,
+                userProfile,
+                {
+                  ttl: 7200,
+                },
+              )
               .then((r) => r)
               .catch((e) => {
                 throw e;

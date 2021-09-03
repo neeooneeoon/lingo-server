@@ -11,14 +11,19 @@ import { Model, Types } from 'mongoose';
 import { UpdateUserStatusDto, UserProfile } from '@dto/user';
 import { UsersHelper } from '@helpers/users.helper';
 import { Cache } from 'cache-manager';
+import { ConfigsService } from '@configs';
 
 @Injectable()
 export class UserScoresService {
+  private prefixKey: string;
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private usersHelper: UsersHelper,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
-  ) {}
+    private configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   public async updateUserStatus(input: UpdateUserStatusDto): Promise<void> {
     try {
@@ -40,7 +45,7 @@ export class UserScoresService {
       );
       const profile = this.usersHelper.mapToUserProfile(userDidUpdated);
       await this.cache.set<UserProfile>(
-        `profile/${String(userDidUpdated._id)}`,
+        `${this.prefixKey}/profile/${String(userDidUpdated._id)}`,
         profile,
         { ttl: 7200 },
       );
@@ -63,7 +68,10 @@ export class UserScoresService {
         throw new BadRequestException('Not found user');
       }
       const profile = this.usersHelper.mapToUserProfile(updatedUser);
-      await this.cache.set<UserProfile>(`profile/${userId}`, profile);
+      await this.cache.set<UserProfile>(
+        `${this.prefixKey}/profile/${userId}`,
+        profile,
+      );
       return;
     }
   }

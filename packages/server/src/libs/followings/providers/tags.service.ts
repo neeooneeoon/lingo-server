@@ -12,13 +12,18 @@ import { LeanDocument, Model, Types } from 'mongoose';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { Cache } from 'cache-manager';
+import { ConfigsService } from '@configs';
 
 @Injectable()
 export class TagsService {
+  private prefixKey: string;
   constructor(
     @InjectModel(Tag.name) private tagModel: Model<TagDocument>,
     @Inject(CACHE_MANAGER) private cache: Cache,
-  ) {}
+    private readonly configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   public findTag(
     currentUser: string,
@@ -54,7 +59,9 @@ export class TagsService {
 
   public getUserTags(currentUser: string): Observable<Partial<TagDocument>[]> {
     return from(
-      this.cache.get<Partial<TagDocument>[]>(`tags/${currentUser}`),
+      this.cache.get<Partial<TagDocument>[]>(
+        `${this.prefixKey}/tags/${currentUser}`,
+      ),
     ).pipe(
       switchMap((tags) => {
         if (!tags) {
@@ -68,9 +75,13 @@ export class TagsService {
           ).pipe(
             switchMap((userTags) => {
               this.cache
-                .set<Partial<TagDocument>[]>(`tags/${currentUser}`, userTags, {
-                  ttl: 7200,
-                })
+                .set<Partial<TagDocument>[]>(
+                  `${this.prefixKey}/tags/${currentUser}`,
+                  userTags,
+                  {
+                    ttl: 7200,
+                  },
+                )
                 .then((r) => {
                   console.log(r);
                 });
@@ -120,7 +131,7 @@ export class TagsService {
             };
             this.cache
               .set<Partial<TagDocument>[]>(
-                `tags/${currentUser}`,
+                `${this.prefixKey}/tags/${currentUser}`,
                 [...tags, leanTag],
                 { ttl: 7200 },
               )
@@ -137,7 +148,9 @@ export class TagsService {
       this.tagModel.deleteOne({
         _id: id,
       }),
-      this.cache.get<Partial<TagDocument>[]>(`tags/${currentUser}`),
+      this.cache.get<Partial<TagDocument>[]>(
+        `${this.prefixKey}/tags/${currentUser}`,
+      ),
     ]).pipe(
       switchMap(([deleteResult, tags]) => {
         if (deleteResult?.deletedCount === 1) {
@@ -146,9 +159,13 @@ export class TagsService {
             if (index !== -1) {
               tags.splice(index, 1);
               this.cache
-                .set<Partial<TagDocument>[]>(`tags/${currentUser}`, tags, {
-                  ttl: 7200,
-                })
+                .set<Partial<TagDocument>[]>(
+                  `${this.prefixKey}/tags/${currentUser}`,
+                  tags,
+                  {
+                    ttl: 7200,
+                  },
+                )
                 .then((r) => console.log(r));
             }
           }
@@ -177,7 +194,9 @@ export class TagsService {
           },
         )
         .select(['-__v', '-createdAt', '-updatedAt']),
-      this.cache.get<Partial<TagDocument>[]>(`tags/${currentUser}`),
+      this.cache.get<Partial<TagDocument>[]>(
+        `${this.prefixKey}/tags/${currentUser}`,
+      ),
     ]).pipe(
       switchMap(([updatedTag, tags]) => {
         if (updatedTag) {
@@ -186,9 +205,13 @@ export class TagsService {
             if (index !== -1) {
               tags[index] = updatedTag;
               this.cache
-                .set<Partial<TagDocument>[]>(`tags/${currentUser}`, tags, {
-                  ttl: 7200,
-                })
+                .set<Partial<TagDocument>[]>(
+                  `${this.prefixKey}/tags/${currentUser}`,
+                  tags,
+                  {
+                    ttl: 7200,
+                  },
+                )
                 .then((r) => console.log(r));
             }
             return of(updatedTag);

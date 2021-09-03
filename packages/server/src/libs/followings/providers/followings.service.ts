@@ -18,29 +18,38 @@ import { CheckFollowing } from '@dto/following';
 import { UserRank } from '@dto/leaderBoard/userRank.dto';
 import { UserDocument } from '@entities/user.entity';
 import { Cache } from 'cache-manager';
+import { ConfigsService } from '@configs';
 
 @Injectable()
 export class FollowingsService {
   private readonly logger = new Logger();
+  private prefixKey: string;
   constructor(
     @InjectModel(Following.name)
     private followingModel: Model<FollowingDocument>,
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     private readonly tagsService: TagsService,
     @Inject(CACHE_MANAGER) private cache: Cache,
-  ) {}
+    private readonly configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   public async countFollowings(currentUser: string) {
     const cachedCounter = await this.cache.get<number>(
-      `followings/${currentUser}`,
+      `${this.prefixKey}/followings/${currentUser}`,
     );
     if (cachedCounter) return cachedCounter;
     const counterFromDb = await this.followingModel.countDocuments({
       user: Types.ObjectId(currentUser),
     });
-    await this.cache.set<number>(`followings/${currentUser}`, counterFromDb, {
-      ttl: 10800,
-    });
+    await this.cache.set<number>(
+      `${this.prefixKey}/followings/${currentUser}`,
+      counterFromDb,
+      {
+        ttl: 10800,
+      },
+    );
     return counterFromDb;
   }
 
@@ -123,7 +132,7 @@ export class FollowingsService {
   }
 
   public updateFollowingInCache(currentUser: string, value: number) {
-    const path = `followings/${currentUser}`;
+    const path = `${this.prefixKey}/followings/${currentUser}`;
     return from(this.cache.get<number>(path)).pipe(
       switchMap((currentValue) => {
         if (currentValue) {

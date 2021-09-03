@@ -20,9 +20,11 @@ import { Cache } from 'cache-manager';
 import { Province } from '@entities/province.entity';
 import { District } from '@entities/district.entity';
 import { School } from '@entities/school.entity';
+import { ConfigsService } from '@configs';
 
 @Injectable()
 export class LoginService {
+  private prefixKey: string;
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private notificationsService: NotificationsService,
@@ -32,7 +34,10 @@ export class LoginService {
     private usersHelper: UsersHelper,
     private progressesService: ProgressesService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
-  ) {}
+    private readonly configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   public async getUserByIdentifier(
     identifier: string,
@@ -101,7 +106,11 @@ export class LoginService {
           String(user._id),
           info.deviceToken,
         ),
-        this.cache.set(`profile/${String(user._id)}`, profile, { ttl: 7200 }),
+        this.cache.set(
+          `${this.prefixKey}/profile/${String(user._id)}`,
+          profile,
+          { ttl: 7200 },
+        ),
       ]);
       return {
         user: profile,
@@ -124,9 +133,13 @@ export class LoginService {
           String(newUser._id),
           info.deviceToken,
         ),
-        this.cache.set(`profile/${String(newUser._id)}`, profile, {
-          ttl: 7200,
-        }),
+        this.cache.set(
+          `${this.prefixKey}/profile/${String(newUser._id)}`,
+          profile,
+          {
+            ttl: 7200,
+          },
+        ),
       ]);
       return {
         user: profile,

@@ -35,9 +35,11 @@ import { SentencesService } from '@libs/sentences/sentences.service';
 import { WordInLesson } from '@dto/word';
 import { Cache } from 'cache-manager';
 import { QuestionDocument } from '@entities/question.entity';
+import { ConfigsService } from '@configs';
 
 @Injectable()
 export class BooksService {
+  private prefixKey: string;
   constructor(
     @InjectModel(Book.name) private bookModel: Model<BookDocument>,
     @Inject(forwardRef(() => ProgressesService))
@@ -48,7 +50,10 @@ export class BooksService {
     private booksHelper: BooksHelper,
     private questionHoldersService: QuestionHoldersService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+    private readonly configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   public findBookWithProgressBook(
     book: Partial<ProgressBook>,
@@ -170,7 +175,7 @@ export class BooksService {
       throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
     }
     let questions = await this.cacheManager.get<QuestionDocument[] | null>(
-      `questionHolder/${bookId}/${unitId}/${levelIndex}`,
+      `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
     );
     if (!questions || questions?.length === 0) {
       const questionHolder =
@@ -182,7 +187,7 @@ export class BooksService {
       questions = questionHolder?.questions;
       if (questions?.length > 0) {
         await this.cacheManager.set<QuestionDocument[]>(
-          `questionHolder/${bookId}/${unitId}/${levelIndex}`,
+          `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
           questions,
           { ttl: 7200 },
         );
