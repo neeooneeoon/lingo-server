@@ -205,6 +205,7 @@ export class UsersService {
         point,
       ),
     ]).catch((error) => {
+      console.log(error);
       throw new InternalServerErrorException(error);
     });
     return 'save user work';

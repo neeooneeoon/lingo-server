@@ -25,6 +25,7 @@ export class SentencesHelper {
       questionSection: sentence.questionSection,
       contextSection: sentence.contextSection,
       isConversation: sentence.isConversation,
+      phrase: sentence?.phrase ? sentence.phrase : '',
     };
   }
 }
