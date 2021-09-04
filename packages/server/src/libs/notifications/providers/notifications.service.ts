@@ -91,6 +91,19 @@ export class NotificationsService {
       throw new InternalServerErrorException(e);
     }
   }
+  public async sendMulticast(
+    tokens: string[],
+    notification: Omit<PushNotificationDto, 'token'>,
+  ): Promise<void> {
+    const { title, body } = notification;
+    const payload = {
+      notification: {
+        title,
+        body,
+      },
+    };
+    await admin.messaging().sendToDevice(tokens, payload);
+  }
 
   public async storeDeviceToken(
     userId: string,
@@ -109,7 +122,38 @@ export class NotificationsService {
   }
 
   public async scheduleNotifications() {
-    const devices = await this.deviceTokenModel.find({}).populate('user');
+    const MAX_DEVICE_MULTICAST = 1000;
+    const devices = await this.deviceTokenModel.find({});
+    const enableDevices = devices.map((device) => device.token);
+    const payload = {
+      title: '⏰ Nhắc nhở hằng ngày.',
+      body: 'Bạn chỉ cần dành ra 10 phút mỗi ngày để nâng cao kỹ năng Tiếng Anh. Bắt đầu thôi!',
+    };
+    if (enableDevices.length <= MAX_DEVICE_MULTICAST) {
+      await this.sendMulticast(enableDevices, payload);
+    } else {
+      const remainder =
+        Math.floor(enableDevices.length / MAX_DEVICE_MULTICAST) + 1;
+      const listGroupDevices: Array<Array<string>> = [];
+      for (let i = 0; i < remainder; i++) {
+        const multicastDevices = enableDevices.slice(
+          i * MAX_DEVICE_MULTICAST,
+          (i + 1) * MAX_DEVICE_MULTICAST,
+        );
+        if (multicastDevices?.length > 0) {
+          listGroupDevices.push(multicastDevices);
+        }
+      }
+
+      await Promise.all(
+        listGroupDevices.map((element) => this.sendMulticast(element, payload)),
+      );
+    }
+  }
+  public async sendNotificationTest() {
+    const devices = await this.deviceTokenModel.find({
+      user: Types.ObjectId('60e3cc151f2d656c247426ce'),
+    });
     const enableDevices = devices.map((device) => device.token);
     await Promise.all(
       enableDevices.map((token) =>
@@ -204,49 +248,103 @@ export class NotificationsService {
       ),
     );
     const messageObject: Array<{ currentUser: string; message: string }> = [];
-    followingResults.map((item) => {
-      if (item) {
-        const followings = item?.followings;
-        const firstUser = followings[0].followUser as unknown as UserDocument;
-        const total = followings?.length;
-        let message: string;
-        if (total == 1) {
-          message = `${firstUser.displayName} đã vượt qua số điểm của bạn. Hãy bắt đầu thi đua ngay.`;
-          messageObject.push({
-            currentUser: item.currentUser,
-            message: message,
-          });
-        } else if (total > 1) {
-          message = `${firstUser.displayName} và ${
-            total - 1
-          } người dùng khác đã vượt qua số điểm của bạn. Hãy bắt đầu thi đua ngay.`;
-          messageObject.push({
-            currentUser: item.currentUser,
-            message: message,
-          });
+    if (followingResults?.length > 0) {
+      followingResults.map((item) => {
+        if (item) {
+          const followings = item?.followings;
+          const firstUser = followings[0].followUser as unknown as UserDocument;
+          const total = followings?.length;
+          let message: string;
+          if (total == 1) {
+            message = `${firstUser.displayName} đã vượt qua số điểm của bạn. Hãy bắt đầu thi đua ngay.`;
+            messageObject.push({
+              currentUser: item.currentUser,
+              message: message,
+            });
+          } else if (total > 1) {
+            message = `${firstUser.displayName} và ${
+              total - 1
+            } người dùng khác đã vượt qua số điểm của bạn. Hãy bắt đầu thi đua ngay.`;
+            messageObject.push({
+              currentUser: item.currentUser,
+              message: message,
+            });
+          } else {
+            message = 'Cải thiện điểm số của mình ngay nào.';
+            messageObject.push({
+              currentUser: item.currentUser,
+              message,
+            });
+          }
+        }
+      });
+    }
+    if (messageObject.length > 0) {
+      const MAX_MESSAGES = 500;
+      const list = (
+        await Promise.all(
+          messageObject.map(async (element) => {
+            const devices = await this.deviceTokenModel.find({
+              user: Types.ObjectId(element.currentUser),
+            });
+            if (devices.length > 0) {
+              return devices.map((device) => {
+                return {
+                  token: device.token,
+                  notification: {
+                    title: '🔥🔥🔥 THI ĐUA NGAY',
+                    body: element.message,
+                  },
+                };
+              });
+            }
+          }),
+        )
+      )
+        .flat()
+        .filter((element) => element);
+      if (list.length > 0) {
+        const remainder = Math.floor(list.length / MAX_MESSAGES) + 1;
+        const groupMessages: Array<Array<messaging.Message>> = [];
+        for (let i = 0; i < remainder; i++) {
+          groupMessages.push(
+            list.slice(i * MAX_MESSAGES, (i + 1) * MAX_MESSAGES),
+          );
+        }
+        await Promise.all(
+          groupMessages.map((group) => {
+            return admin.messaging().sendAll(group);
+          }),
+        );
+      }
+    }
+  }
+  public async remindLearnVocabulary() {
+    const MAX_DEVICE_MULTICAST = 1000;
+    const devices = await this.deviceTokenModel.find({});
+    const enableDevices = devices.map((device) => device.token);
+    const payload = {
+      title: '💡 LINGO MÁCH BẠN',
+      body: 'Có thể bạn chưa biết, buổi sáng là thời điểm tốt nhất để ghi nhớ từ vựng. Học ngay thôi!',
+    };
+    if (enableDevices.length <= MAX_DEVICE_MULTICAST) {
+      await this.sendMulticast(enableDevices, payload);
+    } else {
+      const remainder =
+        Math.floor(enableDevices.length / MAX_DEVICE_MULTICAST) + 1;
+      const listGroupDevices: Array<Array<string>> = [];
+      for (let i = 0; i < remainder; i++) {
+        const multicastDevices = enableDevices.slice(
+          i * MAX_DEVICE_MULTICAST,
+          (i + 1) * MAX_DEVICE_MULTICAST,
+        );
+        if (multicastDevices?.length > 0) {
+          listGroupDevices.push(multicastDevices);
         }
       }
-    });
-    if (messageObject.length > 0) {
+
       await Promise.all(
-        messageObject.map(async (object) => {
-          const devices = await this.deviceTokenModel.find({
-            user: Types.ObjectId(object.currentUser),
-          });
-          if (devices.length > 0) {
-            const tokens = devices.map((device) => device.token);
-            return await Promise.all(
-              tokens.map((token) => {
-                return admin.messaging().sendToDevice(token, {
-                  notification: {
-                    title: 'Lingo xin chào.',
-                    body: object.message,
-                  },
-                });
-              }),
-            );
-          }
-        }),
+        listGroupDevices.map((element) => this.sendMulticast(element, payload)),
       );
     }
   }

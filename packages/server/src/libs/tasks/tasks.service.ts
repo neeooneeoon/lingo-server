@@ -25,13 +25,18 @@ export class TasksService {
     return this.notificationsService.scheduleNotifications();
   }
 
-  @Cron('0 15 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  @Cron('30 6 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async remindLearnVocabulary() {
+    return this.notificationsService.remindLearnVocabulary();
+  }
+
+  @Cron('30 15 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
   async scoreReminderAfternoon() {
     this.logger.log('Score reminder');
     return this.notificationsService.scoreReminderNotification();
   }
 
-  @Cron('0 9 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  @Cron('45 8 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
   async scoreReminderMorning() {
     this.logger.log('Score reminder');
     return this.notificationsService.scoreReminderNotification();
