@@ -119,6 +119,16 @@ export class BooksController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('book/:bookId/:unitId/overlevel')
+  @ApiParam({ type: String, name: 'bookId', required: true })
+  @ApiParam({ type: String, name: 'unitId', required: true })
+  @ApiOperation({ summary: 'Học vượt level' })
+  async overLevel(
+    @Param('bookId') bookId: string,
+    @Param('unitId') unitId: string,
+    @UserCtx() user: JwtPayLoad,
+  ) {}
+  @UseGuards(JwtAuthGuard)
   @Get('levels')
   @ApiQuery({ name: 'bookId', required: true, type: String })
   @ApiQuery({ name: 'unitId', required: true, type: String })

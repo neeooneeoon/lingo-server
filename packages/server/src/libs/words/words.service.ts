@@ -14,21 +14,23 @@ import { Cache } from 'cache-manager';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { from, Observable } from 'rxjs';
-import { ItemResult, SaveLessonDto } from '@dto/user/saveLesson.dto';
-import {
-  ListWorQuestionCodes,
-  ListSentenceQuestionCodes,
-} from '@utils/constants';
+import { SaveLessonDto } from '@dto/user/saveLesson.dto';
+import { ListWorQuestionCodes } from '@utils/constants';
 import { QuestionTypeCode } from '@utils/enums';
 import { AddWordDto } from '@dto/evaluation';
+import { ConfigsService } from '@configs';
 
 @Injectable()
 export class WordsService {
+  private prefixKey: string;
   constructor(
     @InjectModel(Word.name) private wordModel: Model<WordDocument>,
     private wordsHelper: WordsHelper,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
-  ) {}
+    private readonly configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   async findByIds(ids: string[]): Promise<WordInLesson[]> {
     try {
@@ -62,7 +64,7 @@ export class WordsService {
   ): Promise<WordInLesson[]> {
     try {
       const cacheWords = await this.cache.get<WordInLesson[]>(
-        `words/in-unit/${bookNId}/${unitNId}`,
+        `${this.prefixKey}/words/in-unit/${bookNId}/${unitNId}`,
       );
       if (cacheWords) {
         return cacheWords;
@@ -75,7 +77,7 @@ export class WordsService {
           this.wordsHelper.mapWordToWordInLesson(word),
         );
         await this.cache.set<WordInLesson[]>(
-          `words/in-unit/${bookNId}/${unitNId}`,
+          `${this.prefixKey}/words/in-unit/${bookNId}/${unitNId}`,
           result,
           { ttl: 7200 },
         );

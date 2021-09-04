@@ -18,4 +18,5 @@ export class SentenceInLesson {
   isConversation: boolean;
   questionSection: string;
   contextSection: string;
+  phrase?: string;
 }

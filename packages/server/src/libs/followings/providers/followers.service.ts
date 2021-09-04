@@ -1,5 +1,6 @@
 import { Following, FollowingDocument } from '@entities/following.entity';
 import { UserDocument } from '@entities/user.entity';
+import { ConfigsService } from '@configs';
 import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cache } from 'cache-manager';
@@ -10,14 +11,20 @@ import { switchMap, map } from 'rxjs/operators';
 @Injectable()
 export class FollowersService {
   private logger = new Logger();
+  private prefixKey: string;
   constructor(
     @InjectModel(Following.name)
     private followingModel: Model<FollowingDocument>,
     @Inject(CACHE_MANAGER) private cache: Cache,
-  ) {}
+    private readonly configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   public countFollowers(userId: string) {
-    return from(this.cache.get<number>(`followers/${userId}`)).pipe(
+    return from(
+      this.cache.get<number>(`${this.prefixKey}/followers/${userId}`),
+    ).pipe(
       switchMap((total) => {
         if (total) {
           return of(total);
@@ -29,7 +36,9 @@ export class FollowersService {
           ).pipe(
             switchMap((value) => {
               this.cache
-                .set<number>(`followers/${userId}`, value, { ttl: 10800 })
+                .set<number>(`${this.prefixKey}/followers/${userId}`, value, {
+                  ttl: 10800,
+                })
                 .then((r) => {
                   this.logger.log({
                     status: r,

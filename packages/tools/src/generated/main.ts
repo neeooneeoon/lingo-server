@@ -10,6 +10,7 @@ import { WordsService } from './services/words.service';
 import { SentencesService } from './services/sentences.service';
 import { getQuestionTypeCode } from './helper';
 import { Word } from '@lingo/core/src/entities/word.entity';
+import { QuestionTypeCode } from '@lingo/core/src/utils/enums';
 
 async function generateQuestions({
   words,
@@ -67,16 +68,15 @@ async function generateQuestions({
           }
           break;
         case QUESTION_ENUM.SENTENCE:
+          const sentenceQuestionParams = SentencesService.getParamsFromPattern({
+            pattern: questionMetaInfo,
+            wordsIUnit: words,
+            labels: labels,
+            level: level,
+            matchingCounter: matchingCounter,
+          });
           if (questionMetaInfo && questionMetaInfo.type !== 19) {
             if (questionMetaInfo && questionMetaInfo.wordLabel !== 'x') {
-              const sentenceQuestionParams =
-                SentencesService.getParamsFromPattern({
-                  pattern: questionMetaInfo,
-                  wordsIUnit: words,
-                  labels: labels,
-                  level: level,
-                  matchingCounter: matchingCounter,
-                });
               if (sentenceQuestionParams?.length > 0) {
                 for (const param of sentenceQuestionParams) {
                   const focusSentence = sentences.find(
@@ -141,6 +141,28 @@ async function generateQuestions({
                   hiddenIndex: isUsedSentences[position].wordBaseIndex,
                 });
                 size++;
+              }
+            }
+          } else if (questionMetaInfo && questionMetaInfo.type === 19) {
+            if (sentenceQuestionParams?.length > 0) {
+              for (const param of sentenceQuestionParams) {
+                const length = param.sentenceId.length;
+                const baseId = param.sentenceId.slice(0, length - 2);
+                const hasPhrase = sentences.filter(
+                  (item) => item.baseId == baseId && item.phrase,
+                );
+                if (hasPhrase?.length > 0) {
+                  const firstlySentence = hasPhrase[0];
+                  listQuestions.push({
+                    _id: `question${size}`,
+                    choices: [],
+                    code: QuestionTypeCode.S19,
+                    focus: firstlySentence._id,
+                    hiddenIndex: -1,
+                    rank: 3,
+                  });
+                  size++;
+                }
               }
             }
           }
