@@ -1,4 +1,4 @@
-import { QuestionTypeCode } from '@utils/enums';
+import { QuestionTypeCode } from '../enums';
 
 export const ListWorQuestionCodes: QuestionTypeCode[] = [
   QuestionTypeCode.W3,
@@ -37,7 +37,6 @@ export const MultipleChoiceCode: QuestionTypeCode[] = [
   QuestionTypeCode.S10,
   QuestionTypeCode.S7,
   QuestionTypeCode.S12,
-  QuestionTypeCode.S17,
 ];
 export const booksName = [
   'Tiếng Anh 1 Macmillan',
