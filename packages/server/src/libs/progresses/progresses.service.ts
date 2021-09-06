@@ -105,127 +105,123 @@ export class ProgressesService {
     lessonTree: LessonTree,
     workInfo: WorkInfo,
   ): Promise<boolean> {
-    try {
-      let hasLesson = false;
-      let result = false;
-      const {
-        bookId,
-        book,
-        unitId,
-        unitTotalLevels,
-        lessonTotalQuestions,
-        levelIndex,
-        levelTotalLessons,
-        lessonIndex,
-        isLastLesson,
-      } = lessonTree;
+    let hasLesson = false;
+    let result = false;
+    const {
+      bookId,
+      book,
+      unitId,
+      unitTotalLevels,
+      lessonTotalQuestions,
+      levelIndex,
+      levelTotalLessons,
+      lessonIndex,
+      isLastLesson,
+    } = lessonTree;
 
-      const userProgress = await this.getUserProgress(userId);
-      if (!userProgress) {
-        throw new BadRequestException(`Can't find progress user ${userId}`);
-      }
-      let progressBook = userProgress.books.find(
-        (item) => item.bookId === bookId,
-      );
-      if (!progressBook) {
-        const newProgressBook: ProgressBook = {
-          bookId: bookId,
-          name: book.name,
-          grade: book.grade,
-          totalUnits: book.units.length,
-          score: 0,
-          level: 0,
-          doneQuestions: 0,
-          correctQuestions: 0,
-          totalLessons: book.totalLessons,
-          doneLessons: 0,
-          lastDid: new Date(),
-          units: [],
-        };
-        userProgress.books.push(progressBook);
-        progressBook = newProgressBook;
-      }
-      const unitInBook = book.units.find((unit) => unit._id === unitId);
-      const progressUnit = progressBook.units.find(
-        (item) => item.unitId === unitId,
-      );
-      if (!progressUnit) {
-        const newProgressUnit: ProgressUnit = {
-          unitId: unitId,
-          totalLevels: unitTotalLevels,
-          passedLevels: 0,
-          doneLessons: 1,
-          doneQuestions: workInfo.doneQuestions,
-          correctQuestions: lessonTotalQuestions,
-          lastDid: workInfo.timeEnd,
-          normalImage: unitInBook?.normalImage,
-          blueImage: unitInBook?.blueImage,
-          levels: [
-            {
-              levelIndex: levelIndex,
-              totalLessons: levelTotalLessons,
-              passed: levelTotalLessons === 1,
-              doneLessons: 1,
-              lessons: [lessonIndex],
-            },
-          ],
-          unitName: unitInBook.name,
-          totalLessons: unitInBook.totalLessons,
-        };
-        progressBook.units.push(newProgressUnit);
-      } else {
-        const progressLevel = progressUnit.levels.find(
-          (item) => item.levelIndex === levelIndex,
-        );
-        if (!progressLevel) {
-          const newProgressLevel: ProgressLevel = {
+    const userProgress = await this.getUserProgress(userId);
+    if (!userProgress) {
+      throw new BadRequestException(`Can't find progress user ${userId}`);
+    }
+    let progressBook = userProgress.books.find(
+      (item) => item.bookId === bookId,
+    );
+    if (!progressBook) {
+      const newProgressBook: ProgressBook = {
+        bookId: bookId,
+        name: book.name,
+        grade: book.grade,
+        totalUnits: book.units.length,
+        score: 0,
+        level: 0,
+        doneQuestions: 0,
+        correctQuestions: 0,
+        totalLessons: book.totalLessons,
+        doneLessons: 0,
+        lastDid: new Date(),
+        units: [],
+      };
+      userProgress.books.push(progressBook);
+      progressBook = newProgressBook;
+    }
+    const unitInBook = book.units.find((unit) => unit._id === unitId);
+    const progressUnit = progressBook.units.find(
+      (item) => item.unitId === unitId,
+    );
+    if (!progressUnit) {
+      const newProgressUnit: ProgressUnit = {
+        unitId: unitId,
+        totalLevels: unitTotalLevels,
+        passedLevels: 0,
+        doneLessons: 1,
+        doneQuestions: workInfo.doneQuestions,
+        correctQuestions: lessonTotalQuestions,
+        lastDid: workInfo.timeEnd,
+        normalImage: unitInBook?.normalImage,
+        blueImage: unitInBook?.blueImage,
+        levels: [
+          {
             levelIndex: levelIndex,
             totalLessons: levelTotalLessons,
-            doneLessons: 1,
             passed: levelTotalLessons === 1,
+            doneLessons: 1,
             lessons: [lessonIndex],
-          };
-          progressUnit.levels.push(newProgressLevel);
-        } else {
-          const userLesson = progressLevel.lessons.find(
-            (item) => Number(item) === Number(lessonIndex),
-          );
-          if (!userLesson) {
-            progressLevel.lessons.push(lessonIndex);
-            progressLevel.passed =
-              progressLevel.lessons.length == progressLevel.totalLessons;
-            if (progressLevel.passed === true) {
-              progressUnit.passedLevels++;
-              progressBook.level++;
-              result = true;
-            }
-            progressLevel.doneLessons++;
+          },
+        ],
+        unitName: unitInBook.name,
+        totalLessons: unitInBook.totalLessons,
+      };
+      progressBook.units.push(newProgressUnit);
+    } else {
+      const progressLevel = progressUnit.levels.find(
+        (item) => item.levelIndex === levelIndex,
+      );
+      if (!progressLevel) {
+        const newProgressLevel: ProgressLevel = {
+          levelIndex: levelIndex,
+          totalLessons: levelTotalLessons,
+          doneLessons: 1,
+          passed: levelTotalLessons === 1,
+          lessons: [lessonIndex],
+        };
+        progressUnit.levels.push(newProgressLevel);
+      } else {
+        const userLesson = progressLevel.lessons.find(
+          (item) => Number(item) === Number(lessonIndex),
+        );
+        if (!userLesson) {
+          progressLevel.lessons.push(lessonIndex);
+          progressLevel.passed =
+            progressLevel.lessons.length == progressLevel.totalLessons;
+          if (progressLevel.passed === true) {
+            progressUnit.passedLevels++;
+            progressBook.level++;
+            result = true;
           }
-          if (userLesson) {
-            hasLesson = true;
-          }
+          progressLevel.doneLessons++;
         }
-        progressUnit.correctQuestions += lessonTotalQuestions;
-        progressUnit.lastDid = workInfo.timeEnd;
-
-        if (!isLastLesson && !hasLesson) {
-          progressUnit.doneLessons++;
-          progressUnit.doneQuestions += workInfo.doneQuestions;
+        if (userLesson) {
+          hasLesson = true;
         }
       }
-      progressBook.correctQuestions = +lessonTotalQuestions;
-      progressBook.lastDid = workInfo.timeEnd;
-      progressBook.score++;
+      progressUnit.correctQuestions += lessonTotalQuestions;
+      progressUnit.lastDid = workInfo.timeEnd;
 
       if (!isLastLesson && !hasLesson) {
-        progressBook.doneLessons++;
-        progressBook.doneQuestions += workInfo.doneQuestions;
+        progressUnit.doneLessons++;
+        progressUnit.doneQuestions += workInfo.doneQuestions;
       }
-      await userProgress.save();
-      return result;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
     }
+    progressBook.correctQuestions = +lessonTotalQuestions;
+    progressBook.lastDid = workInfo.timeEnd;
+    progressBook.score++;
+
+    if (!isLastLesson && !hasLesson) {
+      progressBook.doneLessons++;
+      progressBook.doneQuestions += workInfo.doneQuestions;
+    }
+    await userProgress.save();
+    return result;
   }
 
   public latestActiveBookProgress(

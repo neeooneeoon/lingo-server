@@ -36,6 +36,7 @@ import { WordInLesson } from '@dto/word';
 import { Cache } from 'cache-manager';
 import { QuestionDocument } from '@entities/question.entity';
 import { ConfigsService } from '@configs';
+import { OverLevelDto } from '@dto/book';
 
 @Injectable()
 export class BooksService {
@@ -237,6 +238,7 @@ export class BooksService {
         currentUnit: unit,
         questions: questions,
         listAskingQuestionIds: lesson.questionIds,
+        grade: book.grade,
       });
 
     return {
@@ -244,6 +246,75 @@ export class BooksService {
       words: reducingOutput.wordsInLesson,
       sentences: reducingOutput.sentencesInLesson,
     };
+  }
+
+  public async getQuestionsOverLevel(input: OverLevelDto) {
+    const { bookId, unitId, levelIndex } = input;
+    let questions = await this.cacheManager.get<QuestionDocument[] | null>(
+      `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
+    );
+    if (!questions || questions?.length === 0) {
+      const questionHolder =
+        await this.questionHoldersService.getQuestionHolder({
+          bookId: bookId,
+          unitId: unitId,
+          level: levelIndex,
+        });
+      questions = questionHolder?.questions;
+      if (questions?.length > 0) {
+        await this.cacheManager.set<QuestionDocument[]>(
+          `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
+          questions,
+          { ttl: 7200 },
+        );
+      }
+    }
+    if (questions?.length > 0) {
+      const group = (function groupQuestions() {
+        const MINIMUM = 0.8;
+        const levelOneQuestions: Array<QuestionDocument> = [];
+        const levelTwoQuestions: Array<QuestionDocument> = [];
+        const levelThreeQuestions: Array<QuestionDocument> = [];
+        const levelFourQuestions: Array<QuestionDocument> = [];
+        questions.forEach((element) => {
+          switch (element.rank) {
+            case 1:
+              levelOneQuestions.push(element);
+              break;
+            case 2:
+              levelTwoQuestions.push(element);
+              break;
+            case 3:
+              levelThreeQuestions.push(element);
+              break;
+            case 4:
+              levelFourQuestions.push(element);
+              break;
+            default:
+              break;
+          }
+        });
+        function shuffle(array: Array<QuestionDocument[]>) {}
+        return {
+          levelOneQuestions: levelOneQuestions.slice(
+            0,
+            Math.round(MINIMUM * levelFourQuestions.length),
+          ),
+          levelTwoQuestions: levelTwoQuestions.slice(
+            0,
+            Math.round(MINIMUM * levelTwoQuestions.length),
+          ),
+          levelThreeQuestions: levelThreeQuestions.slice(
+            0,
+            Math.round(MINIMUM * levelThreeQuestions.length),
+          ),
+          levelFourQuestions: levelFourQuestions.slice(
+            0,
+            Math.round(MINIMUM * levelFourQuestions.length),
+          ),
+        };
+      })();
+    }
   }
 
   public async getLessonTree(input: GetLessonInput): Promise<LessonTree> {
@@ -294,6 +365,15 @@ export class BooksService {
       book: book,
     };
   }
+
+  public async finByIds(ids: Array<string>) {
+    return this.bookModel
+      .find({
+        _id: { $in: ids },
+      })
+      .lean();
+  }
+
   public async importBook(rows: string[][]): Promise<void> {
     for (let i = 1; i < rows.length; i++) {
       if (!booksName.includes(rows[i][5])) continue;

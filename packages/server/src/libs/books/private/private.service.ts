@@ -57,6 +57,7 @@ export class BookPrivateService {
       questions: multipleChoiceQuestions,
       listAskingQuestionIds: listAskingQuestionIds,
       currentUnit: currentUnit,
+      grade: book.grade,
     });
   }
 }

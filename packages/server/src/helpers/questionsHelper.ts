@@ -4,10 +4,12 @@ import { ListWorQuestionCodes } from '@utils/constants';
 import { DistractedChoice } from '@utils/types';
 
 export class QuestionsHelper {
-  public getContent(code: QuestionTypeCode): string {
+  public getContent(code: QuestionTypeCode, grade: number): string {
     switch (code) {
       case QuestionTypeCode.W3:
-        return 'Chọn hình ảnh và nghĩa tương ứng';
+        return grade == 1
+          ? 'Chọn hình ảnh tương ứng'
+          : 'Chọn hình ảnh và nghĩa tương ứng';
       case QuestionTypeCode.W6:
         return 'Chọn từ phù hợp với âm thanh';
       case QuestionTypeCode.W11:
@@ -92,7 +94,7 @@ export class QuestionsHelper {
     }
   }
 
-  public getDetailQuestionOutput(question: QuestionDocument) {
+  public getDetailQuestionOutput(question: QuestionDocument, grade: number) {
     if (ListWorQuestionCodes.includes(question.code)) {
       return {
         _id: question._id,
@@ -104,7 +106,7 @@ export class QuestionsHelper {
         words: question.choices,
         unitId: '',
         bookId: '',
-        content: this.getContent(question.code),
+        content: this.getContent(question.code, grade),
       };
     } else {
       return {
@@ -121,7 +123,7 @@ export class QuestionsHelper {
         checkSentence: question.focus,
         unitId: '',
         bookId: '',
-        content: this.getContent(question.code),
+        content: this.getContent(question.code, grade),
         code: question.code,
       };
     }
@@ -130,6 +132,7 @@ export class QuestionsHelper {
   public getQuestionOutPut(
     question: QuestionDocument,
     activeDistracted: DistractedChoice[],
+    grade: number,
   ) {
     const serialization = activeDistracted.map((item) => item._id);
     if (ListWorQuestionCodes.includes(question.code)) {
@@ -143,7 +146,7 @@ export class QuestionsHelper {
         words: serialization,
         unitId: '',
         bookId: '',
-        content: this.getContent(question.code),
+        content: this.getContent(question.code, grade),
       };
     } else {
       return {
@@ -158,7 +161,7 @@ export class QuestionsHelper {
         checkSentence: question.focus,
         unitId: '',
         bookId: '',
-        content: this.getContent(question.code),
+        content: this.getContent(question.code, grade),
         code: question.code,
       };
     }

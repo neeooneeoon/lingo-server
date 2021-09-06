@@ -69,7 +69,7 @@ export class QuestionHoldersService {
     input: QuestionReducingInput,
   ): Promise<QuestionReducingOutput> {
     try {
-      const { questions, listAskingQuestionIds, currentUnit } = input;
+      const { questions, listAskingQuestionIds, currentUnit, grade } = input;
 
       const setWordIds: Set<string> = new Set<string>(currentUnit.wordIds);
       const setSentenceIds: Set<string> = new Set<string>(
@@ -101,8 +101,10 @@ export class QuestionHoldersService {
               setSentenceIds.add(choice._id);
             }
           }
-          const questionOutput =
-            this.questionsHelper.getDetailQuestionOutput(inspectedQuestion);
+          const questionOutput = this.questionsHelper.getDetailQuestionOutput(
+            inspectedQuestion,
+            grade,
+          );
           listQuestions.push(questionOutput);
         }
       }
@@ -137,7 +139,7 @@ export class QuestionHoldersService {
     input: QuestionReducingInput,
   ): Promise<QuestionReducingOutput> {
     try {
-      const { questions, listAskingQuestionIds, currentUnit } = input;
+      const { questions, listAskingQuestionIds, currentUnit, grade } = input;
 
       const setWordIds: Set<string> = new Set<string>(currentUnit.wordIds);
       const setSentenceIds: Set<string> = new Set<string>(
@@ -175,6 +177,7 @@ export class QuestionHoldersService {
           const questionOutput = this.questionsHelper.getQuestionOutPut(
             inspectedQuestion,
             activeDistracted,
+            grade,
           );
           listQuestions.push(questionOutput);
         }
