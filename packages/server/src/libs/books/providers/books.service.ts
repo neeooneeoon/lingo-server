@@ -294,9 +294,7 @@ export class BooksService {
               break;
           }
         });
-        function shuffle(array: Array<QuestionDocument[]>) {
-          
-        }
+        function shuffle(array: Array<QuestionDocument[]>) {}
         return {
           levelOneQuestions: levelOneQuestions.slice(
             0,
@@ -367,6 +365,15 @@ export class BooksService {
       book: book,
     };
   }
+
+  public async finByIds(ids: Array<string>) {
+    return this.bookModel
+      .find({
+        _id: { $in: ids },
+      })
+      .lean();
+  }
+
   public async importBook(rows: string[][]): Promise<void> {
     for (let i = 1; i < rows.length; i++) {
       if (!booksName.includes(rows[i][5])) continue;

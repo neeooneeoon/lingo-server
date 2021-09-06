@@ -11,10 +11,21 @@ export class ProgressesHelper {
     if (unit && unit.levels && unit.levels.length > 0) {
       if (unitProgress) {
         let currentLesson = 0;
-        const currentLevel = unitProgress.passedLevels;
+        let currentLevel = unitProgress.passedLevels;
         const userLevel = unitProgress.levels[currentLevel];
         if (userLevel) {
           currentLesson = userLevel.lessons.length;
+          if (currentLesson > unit.levels[currentLevel].totalLessons) {
+            currentLesson = unit.levels[currentLevel].totalLessons;
+            currentLevel++;
+          }
+        }
+        let doneLessons = unitProgress?.doneLessons;
+        if (doneLessons > unit.totalLessons) {
+          doneLessons = unit.totalLessons;
+        }
+        if (currentLevel === 5 && doneLessons != unit.totalLessons) {
+          doneLessons = unit.totalLessons;
         }
         const totalLessons = unit.levels[currentLevel]?.lessons?.length;
         return {
@@ -24,7 +35,7 @@ export class ProgressesHelper {
           description: unit.description,
           totalLevels: unit.levels.length,
           totalLessons: unit.totalLessons,
-          doneLessons: unitProgress ? unitProgress.doneLessons : 0,
+          doneLessons: doneLessons ? doneLessons : 0,
           totalLessonsOfLevel: totalLessons ? totalLessons : 0,
           userLevel: currentLevel,
           userLesson: currentLesson,
