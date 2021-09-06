@@ -18,7 +18,7 @@ export class GoogleSpreadsheetService {
   public async getSheet(sheetName: string): Promise<Array<Array<string>>> {
     const res = await this.sheetsV4.spreadsheets.values.get({
       spreadsheetId: this.spreadsheetId,
-      range: sheetName,
+      range: `${sheetName}`,
     });
     return res.data.values;
   }

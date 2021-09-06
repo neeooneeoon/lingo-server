@@ -7,7 +7,10 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class StoryHelper {
   constructor(private quetionsHelper: QuestionsHelper) {}
-  public mapToWordQuestion(storyQuestion: StoryQuestionDocument) {
+  public mapToWordQuestion(
+    storyQuestion: StoryQuestionDocument,
+    grade: number,
+  ) {
     const serialization: Array<string> = [];
     if (storyQuestion.choices.length > 0) {
       storyQuestion.choices.map((choice) => {
@@ -25,7 +28,7 @@ export class StoryHelper {
         words: serialization,
         unitId: '',
         bookId: '',
-        content: this.quetionsHelper.getContent(storyQuestion.code),
+        content: this.quetionsHelper.getContent(storyQuestion.code, grade),
       };
     } else {
       return {
@@ -42,7 +45,7 @@ export class StoryHelper {
         checkSentence: storyQuestion.focus,
         unitId: '',
         bookId: '',
-        content: this.quetionsHelper.getContent(storyQuestion.code),
+        content: this.quetionsHelper.getContent(storyQuestion.code, grade),
         code: storyQuestion.code,
       };
     }

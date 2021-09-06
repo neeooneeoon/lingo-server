@@ -7,6 +7,7 @@ export class QuestionReducingInput {
   questions: QuestionDocument[];
   listAskingQuestionIds: string[];
   currentUnit: UnitDocument;
+  grade: number;
 }
 
 export class QuestionReducingOutput {
