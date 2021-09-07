@@ -133,13 +133,13 @@ export class QuestionService {
               .map((item) => item.content)
               .filter((element) => element);
           } else if (element1.item.code === QuestionTypeCode.S7) {
-            const words = await this.wordsCollection
-              .find({
-                _id: { $in: activeChoiceIds },
-              })
-              .toArray();
-            choices = words
-              .map((item) => item.content)
+            // const words = await this.wordsCollection
+            //   .find({
+            //     _id: { $in: activeChoiceIds },
+            //   })
+            //   .toArray();
+            choices = activeChoices
+              .map((item) => item._id)
               .filter((element) => element);
           }
           const baseWord = sentence?.contentSplit[sentence.wordBaseIndex]?.text;

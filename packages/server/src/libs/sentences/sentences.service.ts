@@ -35,6 +35,10 @@ export class SentencesService {
     }
   }
 
+  public async findById(id: string) {
+    return this.sentenceModel.findById(id);
+  }
+
   public async getSentence(id: string): Promise<SentenceDocument> {
     try {
       const sentence = await this.sentenceModel.findById(id);

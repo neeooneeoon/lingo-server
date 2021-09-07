@@ -26,6 +26,7 @@ export const ListSentenceQuestionCodes: QuestionTypeCode[] = [
   QuestionTypeCode.S16,
   QuestionTypeCode.S4,
   QuestionTypeCode.S18,
+  QuestionTypeCode.S19,
 ];
 export const MultipleChoiceCode: QuestionTypeCode[] = [
   QuestionTypeCode.W3,

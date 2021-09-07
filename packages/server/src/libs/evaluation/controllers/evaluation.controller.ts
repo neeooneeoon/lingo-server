@@ -16,6 +16,7 @@ export class EvaluationController {
   @Post('addWords')
   @ApiBody({ type: SaveLessonDto, required: true })
   addWord(@Body() body: SaveLessonDto, @UserCtx() user: JwtPayLoad) {
-    return this.evaluationService.addWord(user.userId, body);
+    // return this.evaluationService.addWord(user.userId, body);
+    return;
   }
 }

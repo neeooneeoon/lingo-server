@@ -30,7 +30,10 @@ async function run() {
       const wordsCollection = database.collection<Word>('words');
       const booksCollection = database.collection<Book>('books');
       const books = await booksCollection
-        .find({}, { projection: { _id: 1, name: 1 } })
+        .find(
+          { _id: 'tienganh2ctgdpt2018' },
+          { projection: { _id: 1, name: 1 } },
+        )
         .sort({ nId: 1 })
         .toArray();
       const questionsService = new QuestionService(

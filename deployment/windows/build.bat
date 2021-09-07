@@ -1,3 +1,4 @@
-#!/bin/bash#
 
-yarn build
+
+cd packages/server
+npm run build
