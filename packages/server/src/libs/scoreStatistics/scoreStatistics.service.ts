@@ -236,49 +236,54 @@ export class ScoreStatisticsService {
     schoolId?: number,
     role?: Role,
   ): Promise<LeanDocument<ScoreStatisticDocument>[]> {
-    let tempArr: LeanDocument<ScoreStatisticDocument>[];
-    if (filter) {
-      tempArr = await this.scoreStatisticModel
-        .find(filter)
-        .lean()
-        .populate('user', ['displayName', 'avatar', 'address', 'role']);
-    } else {
-      tempArr = await this.scoreStatisticModel
-        .find({})
-        .lean()
-        .populate('user', ['displayName', 'avatar', 'address', 'role']);
-    }
+    try {
+      let tempArr: LeanDocument<ScoreStatisticDocument>[];
+      if (filter) {
+        tempArr = await this.scoreStatisticModel
+          .find(filter)
+          .lean()
+          .populate('user', ['displayName', 'avatar', 'address', 'role']);
+      } else {
+        tempArr = await this.scoreStatisticModel
+          .find({})
+          .lean()
+          .populate('user', ['displayName', 'avatar', 'address', 'role']);
+      }
 
-    return tempArr.filter((i) => {
-      const user = i.user as unknown as UserDocument;
-      if (!user) return false;
-      let flag = false;
-      if (role && role !== Role.Admin) {
-        if (user.role == role) flag = true;
-        else flag = false;
-      } else if (!role) {
-        flag = true;
-      }
-      if (flag === true) {
-        switch (location) {
-          case Location.Province:
-            return locationId === user.address.province;
-          case Location.District:
-            return locationId === user.address.district;
-          case Location.School:
-            return locationId === user.address.school;
-          case Location.Grade:
-            return (
-              locationId === user.address.grade &&
-              schoolId === user.address.school
-            );
-          case Location.All:
-          default:
-            return true;
+      return tempArr.filter((i) => {
+        const user = i.user as unknown as UserDocument;
+        if (!user || !user?.address) return false;
+        let flag = false;
+        if (role && role !== Role.Admin) {
+          if (user.role == role) flag = true;
+          else flag = false;
+        } else if (!role) {
+          flag = true;
         }
-      }
-      return false;
-    });
+        if (flag === true) {
+          switch (location) {
+            case Location.Province:
+              return locationId === user.address?.province;
+            case Location.District:
+              return locationId === user.address?.district;
+            case Location.School:
+              return locationId === user.address?.school;
+            case Location.Grade:
+              return (
+                locationId === user.address?.grade &&
+                schoolId === user.address?.school
+              );
+            case Location.All:
+            default:
+              return true;
+          }
+        }
+        return false;
+      });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
   private async getTotalXp(

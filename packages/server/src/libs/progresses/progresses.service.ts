@@ -295,9 +295,11 @@ export class ProgressesService {
         let correctQuestions = 0;
         if (progress && progress.books && progress.books.length > 0) {
           const books = progress.books;
-          books.map((book) => {
-            doneLessons = doneLessons + book.doneLessons;
-            correctQuestions = correctQuestions + book.correctQuestions;
+          books.forEach((book) => {
+            if (book) {
+              doneLessons = doneLessons + book.doneLessons;
+              correctQuestions = correctQuestions + book.correctQuestions;
+            }
           });
           return {
             doneLessons: doneLessons,

@@ -78,18 +78,23 @@ export class LeaderBoardsController {
     @Query('role') role: Role,
     @UserCtx() user: JwtPayLoad,
   ) {
-    if (role == Role.Admin) {
-      throw new ForbiddenException();
+    try {
+      if (role == Role.Admin) {
+        throw new ForbiddenException();
+      }
+      const result = await this.scoreStatisticsService.getRankByTime(
+        user.userId,
+        timeSelect,
+        displayFollowings,
+        location,
+        locationId,
+        schoolId,
+        role,
+      );
+      return result;
+    } catch (error) {
+      console.log(error);
     }
-    return this.scoreStatisticsService.getRankByTime(
-      user.userId,
-      timeSelect,
-      displayFollowings,
-      location,
-      locationId,
-      schoolId,
-      role,
-    );
   }
 
   @UseGuards(JwtAuthGuard)

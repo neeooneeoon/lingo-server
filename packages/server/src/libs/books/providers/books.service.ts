@@ -131,6 +131,9 @@ export class BooksService {
         this.getBook(bookId),
         this.worksService.getUserWork(userId, bookId),
       ]);
+      if (!book) {
+        throw new BadRequestException('Book not found');
+      }
       if (!instanceUserWork) {
         await this.worksService.createUserWork(userId, bookId);
       }
