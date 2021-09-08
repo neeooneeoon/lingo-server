@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { StoriesController } from './controllers/stories.controller';
+import { StoryReportsController } from './controllers/storyReports.controller';
 import { StoriesService } from './providers/stories.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Story, StorySchema } from '@entities/story.entity';
@@ -21,7 +22,7 @@ import { UsersModule } from '@libs/users';
     ScoreStatisticsModule,
     UsersModule,
   ],
-  controllers: [StoriesController],
+  controllers: [StoriesController, StoryReportsController],
   providers: [StoriesService],
 })
 export class StoriesModule {}
