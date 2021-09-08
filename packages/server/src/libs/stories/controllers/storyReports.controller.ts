@@ -1,4 +1,5 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { JwtPayLoad } from '@utils/types';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiOperation,
@@ -10,6 +11,7 @@ import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { StoryReportsService } from '../providers/storyReports.service';
 import { CreateStoryReportDto } from '@dto/stories';
 import { StoryReport } from '@entities/storyReport.entity';
+import { UserCtx } from '@utils/decorators/custom.decorator';
 
 @Controller('api/story')
 @ApiTags('Stories')
@@ -22,5 +24,10 @@ export class StoryReportsController {
   @ApiBody({ type: CreateStoryReportDto, required: true })
   @ApiBearerAuth()
   @ApiResponse({ type: StoryReport, status: 201 })
-  async createStoryReport() {}
+  async createStoryReport(
+    @UserCtx() user: JwtPayLoad,
+    @Body() body: CreateStoryReportDto,
+  ) {
+    return this.storyReportsService.create(user.userId, body);
+  }
 }

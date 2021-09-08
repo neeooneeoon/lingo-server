@@ -8,6 +8,10 @@ export class StoryReport {
   @Prop({ type: Types.ObjectId, ref: 'StoryQuestion', required: true })
   storyQuestion: Types.ObjectId;
 
+  @ApiProperty({ type: String })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user: Types.ObjectId;
+
   @ApiProperty({ type: [String] })
   @Prop({ type: [String], required: false, default: [] })
   contents?: Array<string>;

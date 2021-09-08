@@ -448,6 +448,7 @@ export class QuestionHoldersService {
       QuestionTypeCode.W13,
       QuestionTypeCode.W9,
       QuestionTypeCode.S10,
+      QuestionTypeCode.S7,
     ];
     for (const questionHolder of questionHolders) {
       const questions = questionHolder.questions;
@@ -477,11 +478,17 @@ export class QuestionHoldersService {
                   realAnswers.push(choice);
                 }
               } else {
-                const realSentence = await this.sentencesService.findById(
-                  choice._id,
-                );
-                if (realSentence) {
-                  realAnswers.push(choice);
+                if (questions[i].code !== QuestionTypeCode.S7) {
+                  const realSentence = await this.sentencesService.findById(
+                    choice._id,
+                  );
+                  if (realSentence) {
+                    realAnswers.push(choice);
+                  }
+                } else {
+                  if (choice._id.trim()) {
+                    realAnswers.push(choice);
+                  }
                 }
               }
             }
