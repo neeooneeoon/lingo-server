@@ -272,10 +272,12 @@ export class UsersService {
     location: string,
     locationId?: number,
     schoolId?: number,
+    role?: Role,
   ): Promise<UserRank[]> {
     if (displayFollowings) {
       const result = await this.followingsService.getAllTimeFollowingsXp(
         userId,
+        role,
       );
       return result;
     }

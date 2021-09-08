@@ -66,6 +66,7 @@ export class ScoreStatisticsService {
           location,
           locationId,
           schoolId,
+          role,
         );
         break;
       default:
@@ -311,6 +312,7 @@ export class ScoreStatisticsService {
           locationId,
           location,
           schoolId,
+          role,
         );
       }
       if (!tempArr || tempArr.length == 0) {
@@ -338,6 +340,7 @@ export class ScoreStatisticsService {
             userId: prevUser._id,
             xp: totalXp,
             isCurrentUser: false,
+            role: prevUser.role,
           };
 
           xpArr.push(userRank);
@@ -354,6 +357,7 @@ export class ScoreStatisticsService {
             userId: prevUser._id,
             xp: totalXp,
             isCurrentUser: false,
+            role: prevUser.role,
           };
 
           xpArr.push(userRank);
