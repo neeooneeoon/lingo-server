@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@utils/enums';
 
 export class UpdateUserDto {
   @ApiProperty({ type: String, required: false })
@@ -24,4 +25,7 @@ export class UpdateUserDto {
 
   @ApiProperty({ type: Number, required: true })
   schoolId: number;
+
+  @ApiProperty({ type: String, enum: Role, required: true })
+  role: Role;
 }

@@ -20,7 +20,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { VIETNAM_TIME_ZONE } from '@utils/constants';
 import { LeanDocument, Model, Types } from 'mongoose';
-import { Location } from '@utils/enums';
+import { Location, Role } from '@utils/enums';
 import { TOP_XP_LENGTH } from '@utils/constants';
 import { CreateRecordDto } from '@dto/leaderBoard/createRecord.dto';
 import { FollowingsService } from '@libs/followings/providers/followings.service';
@@ -42,6 +42,7 @@ export class ScoreStatisticsService {
     location?: string,
     locationId?: number,
     schoolId?: number,
+    role?: Role,
   ): Promise<UserRank[]> {
     timeSelect = timeSelect.trim();
     dayjs.extend(utc);
@@ -85,6 +86,7 @@ export class ScoreStatisticsService {
         location,
         schoolId,
         userId,
+        role,
       );
     }
     if (
@@ -231,39 +233,50 @@ export class ScoreStatisticsService {
     locationId?: number,
     location?: string,
     schoolId?: number,
+    role?: Role,
   ): Promise<LeanDocument<ScoreStatisticDocument>[]> {
     let tempArr: LeanDocument<ScoreStatisticDocument>[];
     if (filter) {
       tempArr = await this.scoreStatisticModel
         .find(filter)
         .lean()
-        .populate('user', ['displayName', 'avatar', 'address']);
+        .populate('user', ['displayName', 'avatar', 'address', 'role']);
     } else {
       tempArr = await this.scoreStatisticModel
         .find({})
         .lean()
-        .populate('user', ['displayName', 'avatar', 'address']);
+        .populate('user', ['displayName', 'avatar', 'address', 'role']);
     }
 
     return tempArr.filter((i) => {
       const user = i.user as unknown as UserDocument;
       if (!user) return false;
-      switch (location) {
-        case Location.Province:
-          return locationId === user.address.province;
-        case Location.District:
-          return locationId === user.address.district;
-        case Location.School:
-          return locationId === user.address.school;
-        case Location.Grade:
-          return (
-            locationId === user.address.grade &&
-            schoolId === user.address.school
-          );
-        case Location.All:
-        default:
-          return true;
+      let flag = false;
+      if (role && role !== Role.Admin) {
+        if (user.role == role) flag = true;
+        else flag = false;
+      } else if (!role) {
+        flag = true;
       }
+      if (flag === true) {
+        switch (location) {
+          case Location.Province:
+            return locationId === user.address.province;
+          case Location.District:
+            return locationId === user.address.district;
+          case Location.School:
+            return locationId === user.address.school;
+          case Location.Grade:
+            return (
+              locationId === user.address.grade &&
+              schoolId === user.address.school
+            );
+          case Location.All:
+          default:
+            return true;
+        }
+      }
+      return false;
     });
   }
 
@@ -274,12 +287,19 @@ export class ScoreStatisticsService {
     location?: string,
     schoolId?: number,
     userId?: string,
+    role?: Role,
   ): Promise<UserRank[]> {
     try {
       const xpArr: UserRank[] = [];
       let tempArr: LeanDocument<ScoreStatisticDocument>[] = [];
       if (displayFollowings) {
-        tempArr = await this.getXpStatisticByAddress(filter);
+        tempArr = await this.getXpStatisticByAddress(
+          filter,
+          undefined,
+          undefined,
+          undefined,
+          role,
+        );
         const followingIds = await this.getFollowingIds(userId);
         tempArr = tempArr.filter((i) => {
           const user = i.user as unknown as UserDocument;

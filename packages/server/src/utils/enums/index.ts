@@ -10,6 +10,8 @@ export enum Rank {
 export enum Role {
   Member = 'Member',
   Admin = 'Admin',
+  Student = 'Student',
+  Teacher = 'Teacher',
 }
 
 export enum Account {
