@@ -1,3 +1,4 @@
+import { Role } from '@utils/enums';
 import { LeanDocument, Model, Types } from 'mongoose';
 import { Following, FollowingDocument } from '@entities/following.entity';
 import {
@@ -365,25 +366,44 @@ export class FollowingsService {
       followed: !!following,
     };
   }
-  public async getAllTimeFollowingsXp(userId: string): Promise<UserRank[]> {
+  public async getAllTimeFollowingsXp(
+    userId: string,
+    role?: Role,
+  ): Promise<UserRank[]> {
     try {
-      const select = ['xp', '_id', 'avatar', 'displayName'];
+      const select = ['xp', '_id', 'avatar', 'displayName', 'role'];
       const xpArr = await this.followingModel
         .find({ user: new Types.ObjectId(userId) })
         .populate('followUser', select);
       return xpArr
         .map((i) => {
           const user = i.followUser as unknown as UserDocument;
-          const userRank: UserRank = {
-            orderNumber: 0,
-            isCurrentUser: false,
-            avatar: user.avatar,
-            displayName: user.displayName,
-            userId: user._id,
-            xp: user.xp,
-          };
-          return userRank;
+          if (!role) {
+            const userRank: UserRank = {
+              orderNumber: 0,
+              isCurrentUser: false,
+              avatar: user.avatar,
+              displayName: user.displayName,
+              userId: user._id,
+              xp: user.xp,
+              role: user.role,
+            };
+            return userRank;
+          } else if (user.role === role) {
+            const userRank: UserRank = {
+              orderNumber: 0,
+              isCurrentUser: false,
+              avatar: user.avatar,
+              displayName: user.displayName,
+              userId: user._id,
+              xp: user.xp,
+              role: user.role,
+            };
+            return userRank;
+          }
+          return null;
         })
+        .filter((element) => element)
         .sort((a, b) => b.xp - a.xp);
     } catch (error) {
       throw new InternalServerErrorException(error);

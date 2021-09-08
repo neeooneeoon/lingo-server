@@ -29,7 +29,7 @@ import { Unit, UnitDocument } from '@entities/unit.entity';
 import { WordDocument } from '@entities/word.entity';
 import { SentenceDocument } from '@entities/sentence.entity';
 import { QuestionTypeCode } from '@utils/enums';
-import { forkJoin, from, Observable } from 'rxjs';
+import { forkJoin, from, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { BackupQuestionInputDto } from '@dto/backup';
 
@@ -362,70 +362,150 @@ export class QuestionHoldersService {
       }),
     );
   }
-  public restoreChoice(backupInput: BackupQuestionInputDto) {
-    const keys = Object.keys(backupInput);
+
+  public changeChoicesInQuestion(backupInput: BackupQuestionInputDto) {
+    const keyPaths = Object.keys(backupInput);
     return forkJoin(
-      keys.map((key) => {
-        const pathEls = key.split('/');
-        const bookId = pathEls[0];
-        const unitId = pathEls[1];
-        const levelIndex = Number(pathEls[2]);
+      keyPaths.map((path) => {
+        const [bookId, unitId] = path.split('/');
         return from(
-          this.questionHolderModel.findOne({
-            bookId: bookId,
-            unitId: unitId,
-            level: levelIndex,
-          }),
+          this.questionHolderModel
+            .find({
+              bookId,
+              unitId,
+            })
+            .lean(),
         ).pipe(
-          switchMap((questionHolder) => {
-            if (questionHolder) {
-              const questions = questionHolder.questions;
-              if (questions && questions.length > 0) {
-                backupInput[key].map((backupItem) => {
-                  const { focusId, choiceId, code, active } = backupItem;
-                  const index = questions.findIndex(
-                    (question) =>
-                      question.code === code && question.focus === focusId,
-                  );
-                  if (index !== -1) {
-                    const setChoices: Set<string> = new Set<string>(
-                      questions[index].choices.map((choice) => choice._id),
-                    );
-                    if (!setChoices.has(choiceId)) {
-                      setChoices.add(choiceId);
-                      questions[index].choices.push({
-                        _id: choiceId,
-                        active: active,
-                      });
-                    } else {
-                      const choiceIndex = questions[index].choices.findIndex(
-                        (item) => item._id === choiceId,
+          switchMap((questionHolders) => {
+            if (questionHolders?.length > 0) {
+              return forkJoin(
+                questionHolders.map((questionHolder) => {
+                  const questions = questionHolder.questions;
+                  if (questions?.length > 0) {
+                    backupInput[path].forEach((backupItem) => {
+                      const { focusId, choiceId, code, active } = backupItem;
+                      const questionIndex = questions.findIndex(
+                        (question) =>
+                          question.code == code && question.focus === focusId,
                       );
-                      if (choiceIndex !== -1) {
-                        questions[index].choices[choiceIndex].active = active;
+                      if (questionIndex !== -1) {
+                        const setChoiceIds = new Set<string>(
+                          questions[questionIndex].choices.map(
+                            (choice) => choice._id,
+                          ),
+                        );
+                        if (!setChoiceIds.has(choiceId)) {
+                          setChoiceIds.add(choiceId);
+                          questions[questionIndex].choices.push({
+                            _id: choiceId,
+                            active,
+                          });
+                        } else {
+                          const choiceIndex = questions[
+                            questionIndex
+                          ].choices.findIndex(
+                            (choice) => choice._id === choiceId,
+                          );
+                          if (choiceIndex !== -1) {
+                            questions[questionIndex].choices[
+                              choiceIndex
+                            ].active = active;
+                          }
+                        }
                       }
-                    }
+                    });
+                    return from(
+                      this.questionHolderModel.updateOne(
+                        {
+                          bookId: questionHolder.bookId,
+                          unitId: questionHolder.unitId,
+                          level: questionHolder.level,
+                        },
+                        {
+                          $set: {
+                            questions: questions,
+                          },
+                        },
+                      ),
+                    );
                   }
-                });
-                return from(
-                  this.questionHolderModel.updateOne(
-                    {
-                      bookId: bookId,
-                      unitId: unitId,
-                      level: levelIndex,
-                    },
-                    {
-                      $set: {
-                        questions: questions,
-                      },
-                    },
-                  ),
-                );
-              }
+                }),
+              );
             }
           }),
         );
       }),
     );
+  }
+
+  public async removeDuplicateChoices() {
+    const questionHolders = await this.questionHolderModel.find();
+    const codes = [
+      QuestionTypeCode.W3,
+      QuestionTypeCode.W6,
+      QuestionTypeCode.W2,
+      QuestionTypeCode.W4,
+      QuestionTypeCode.W13,
+      QuestionTypeCode.W9,
+      QuestionTypeCode.S10,
+      QuestionTypeCode.S7,
+    ];
+    for (const questionHolder of questionHolders) {
+      const questions = questionHolder.questions;
+      for (let i = 0; i < questions.length; i++) {
+        if (
+          questions[i].choices.length > 0 &&
+          codes.includes(questions[i].code)
+        ) {
+          const choices = questions[i].choices;
+          const realAnswers: { _id: string; active: boolean }[] = [];
+          const group = [
+            QuestionTypeCode.W3,
+            QuestionTypeCode.W6,
+            QuestionTypeCode.W2,
+            QuestionTypeCode.W4,
+            QuestionTypeCode.W13,
+            QuestionTypeCode.W9,
+          ].includes(questions[i].code)
+            ? 'WORD'
+            : 'SENTENCE';
+          for (const choice of choices) {
+            const index = realAnswers.findIndex((el) => el._id === choice._id);
+            if (index === -1) {
+              if (group === 'WORD') {
+                const realWord = await this.wordsService.findById(choice._id);
+                if (realWord) {
+                  realAnswers.push(choice);
+                }
+              } else {
+                if (questions[i].code !== QuestionTypeCode.S7) {
+                  const realSentence = await this.sentencesService.findById(
+                    choice._id,
+                  );
+                  if (realSentence) {
+                    realAnswers.push(choice);
+                  }
+                } else {
+                  if (choice._id.trim()) {
+                    realAnswers.push(choice);
+                  }
+                }
+              }
+            }
+          }
+          questions[i].choices = realAnswers;
+        }
+      }
+      await this.questionHolderModel.updateOne(
+        {
+          _id: questionHolder._id,
+        },
+        {
+          $set: {
+            questions: questions,
+          },
+        },
+      );
+    }
   }
 }

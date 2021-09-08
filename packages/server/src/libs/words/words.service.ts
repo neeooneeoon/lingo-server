@@ -47,6 +47,10 @@ export class WordsService {
     }
   }
 
+  public async findById(id: string) {
+    return this.wordModel.findById(id);
+  }
+
   public async getWord(id: string): Promise<WordDocument> {
     try {
       const word = await this.wordModel.findById(id);

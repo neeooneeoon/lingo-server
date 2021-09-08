@@ -15,8 +15,8 @@ export class ProgressesHelper {
         const userLevel = unitProgress.levels[currentLevel];
         if (userLevel) {
           currentLesson = userLevel.lessons.length;
-          if (currentLesson > unit.levels[currentLevel].totalLessons) {
-            currentLesson = unit.levels[currentLevel].totalLessons;
+          if (currentLesson >= unit.levels[currentLevel].totalLessons) {
+            currentLesson = 0;
             currentLevel++;
           }
         }

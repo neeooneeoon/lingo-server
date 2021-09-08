@@ -17,6 +17,6 @@ export class BackupsController {
 
   @Get('/')
   startBackup() {
-    return this.backupsService.restoreSentences();
+    return this.backupsService.restoreChoicesFromBackup();
   }
 }

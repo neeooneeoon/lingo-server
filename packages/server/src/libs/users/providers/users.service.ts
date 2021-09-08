@@ -6,6 +6,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
   CACHE_MANAGER,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { LeanDocument, Model, Types, UpdateWriteOpResult } from 'mongoose';
@@ -112,6 +113,9 @@ export class UsersService {
     userId: Types.ObjectId | string,
     data: UpdateUserDto,
   ): Promise<UserProfile> {
+    if (data.role === Role.Admin) {
+      throw new ForbiddenException();
+    }
     const nameRegex =
       /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$/g;
     if (data.displayName.length > 25 || !nameRegex.test(data.displayName)) {
@@ -268,10 +272,12 @@ export class UsersService {
     location: string,
     locationId?: number,
     schoolId?: number,
+    role?: Role,
   ): Promise<UserRank[]> {
     if (displayFollowings) {
       const result = await this.followingsService.getAllTimeFollowingsXp(
         userId,
+        role,
       );
       return result;
     }

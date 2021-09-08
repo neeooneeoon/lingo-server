@@ -128,8 +128,13 @@ export class BooksController {
     @Param('bookId') bookId: string,
     @Param('unitId') unitId: string,
     @Param('levelIndex') levelIndex: number,
-    @UserCtx() user: JwtPayLoad,
-  ) {}
+  ) {
+    return this.booksService.getQuestionsOverLevel({
+      bookId: bookId,
+      unitId: unitId,
+      levelIndex: levelIndex,
+    });
+  }
   @UseGuards(JwtAuthGuard)
   @Get('levels')
   @ApiQuery({ name: 'bookId', required: true, type: String })

@@ -1,3 +1,4 @@
+import { Role } from '@utils/enums';
 import { Types } from 'mongoose';
 
 export class UserRank {
@@ -7,4 +8,5 @@ export class UserRank {
   avatar: string;
   userId: Types.ObjectId;
   xp: number;
+  role?: Role;
 }

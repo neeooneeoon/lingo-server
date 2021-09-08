@@ -194,4 +194,10 @@ export class QuestionsController {
       }),
     );
   }
+
+  @CheckPolicies(new UserPermission(Action.Manage))
+  @Put('/removeDuplicateChoices')
+  public async removeDuplicateChoices() {
+    await this.questionService.removeDuplicateChoices();
+  }
 }

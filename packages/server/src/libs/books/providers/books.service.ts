@@ -253,6 +253,10 @@ export class BooksService {
     let questions = await this.cacheManager.get<QuestionDocument[] | null>(
       `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
     );
+    const book = await this.getBook(bookId);
+    if (!book) {
+      throw new BadRequestException('Book not found');
+    }
     if (!questions || questions?.length === 0) {
       const questionHolder =
         await this.questionHoldersService.getQuestionHolder({
@@ -269,8 +273,14 @@ export class BooksService {
         );
       }
     }
-    if (questions?.length > 0) {
-      const group = (function groupQuestions() {
+    if (questions?.length > 0 && book) {
+      const currentUnit = book?.units?.find(
+        (element) => element._id === unitId,
+      );
+      if (!currentUnit) {
+        throw new BadRequestException('Unit not found');
+      }
+      const group = (() => {
         const MINIMUM = 0.8;
         const levelOneQuestions: Array<QuestionDocument> = [];
         const levelTwoQuestions: Array<QuestionDocument> = [];
@@ -294,26 +304,66 @@ export class BooksService {
               break;
           }
         });
-        function shuffle(array: Array<QuestionDocument[]>) {}
+        function shuffle(array: Array<QuestionDocument>) {
+          if (array.length > 1) {
+            let currentIndex = array.length;
+            while (currentIndex != 0) {
+              const randomIndex = Math.floor(Math.random() * currentIndex);
+              currentIndex--;
+              [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex],
+                array[currentIndex],
+              ];
+            }
+          }
+          return array;
+        }
         return {
-          levelOneQuestions: levelOneQuestions.slice(
+          levelOneQuestions: shuffle(levelOneQuestions).slice(
             0,
-            Math.round(MINIMUM * levelFourQuestions.length),
+            Math.round(MINIMUM * levelOneQuestions.length),
           ),
-          levelTwoQuestions: levelTwoQuestions.slice(
+          levelTwoQuestions: shuffle(levelTwoQuestions).slice(
             0,
             Math.round(MINIMUM * levelTwoQuestions.length),
           ),
-          levelThreeQuestions: levelThreeQuestions.slice(
+          levelThreeQuestions: shuffle(levelThreeQuestions).slice(
             0,
             Math.round(MINIMUM * levelThreeQuestions.length),
           ),
-          levelFourQuestions: levelFourQuestions.slice(
+          levelFourQuestions: shuffle(levelFourQuestions).slice(
             0,
             Math.round(MINIMUM * levelFourQuestions.length),
           ),
         };
       })();
+      if (group) {
+        const questions: Array<QuestionDocument> = [];
+        for (const key in group) {
+          if (Object(group).hasOwnProperty(key)) {
+            questions.push(...group[key]);
+          }
+        }
+        const questionIds = questions.map((element) => element._id);
+        const reducingOutput =
+          await this.questionHoldersService.reduceByQuestionIds({
+            currentUnit: currentUnit,
+            questions: questions,
+            listAskingQuestionIds: questionIds,
+            grade: book.grade,
+          });
+        return {
+          lesson: {
+            _id: `overlevel-${book.id}-${currentUnit._id}-${levelIndex}`,
+            lessonIndex: -1,
+            totalQuestions: questionIds.length,
+            questionIds: questionIds,
+            questions: reducingOutput.listQuestions,
+          },
+          words: reducingOutput.wordsInLesson,
+          sentences: reducingOutput.sentencesInLesson,
+        };
+      }
     }
   }
 

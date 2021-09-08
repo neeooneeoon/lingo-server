@@ -3,6 +3,7 @@ import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.se
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -13,11 +14,12 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
+  ApiProperty,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { UserCtx } from '@utils/decorators/custom.decorator';
-import { Action, Location, Rank, RankingByTime } from '@utils/enums';
+import { Action, Location, Rank, RankingByTime, Role } from '@utils/enums';
 import { JwtPayLoad } from '@utils/types';
 import { LeaderBoardsService } from './leaderBoards.service';
 import { PoliciesGuard } from '@middlewares/policy/policy.guard';
@@ -58,6 +60,12 @@ export class LeaderBoardsController {
     required: true,
     description: 'Lựa chọn có hiển thị danh sách theo dõi hay không',
   })
+  @ApiQuery({
+    type: String,
+    name: 'role',
+    enum: Role,
+    required: true,
+  })
   @ApiQuery({ type: String, name: 'location', enum: Location, required: false })
   @ApiQuery({ type: Number, name: 'locationId', required: false })
   @ApiQuery({ type: Number, name: 'schoolId', required: false })
@@ -67,8 +75,12 @@ export class LeaderBoardsController {
     @Query('location') location: Location,
     @Query('locationId') locationId: number,
     @Query('schoolId') schoolId: number,
+    @Query('role') role: Role,
     @UserCtx() user: JwtPayLoad,
   ) {
+    if (role == Role.Admin) {
+      throw new ForbiddenException();
+    }
     return this.scoreStatisticsService.getRankByTime(
       user.userId,
       timeSelect,
@@ -76,6 +88,7 @@ export class LeaderBoardsController {
       location,
       locationId,
       schoolId,
+      role,
     );
   }
 
