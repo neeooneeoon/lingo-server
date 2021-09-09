@@ -8,7 +8,6 @@ import { Tag, TagSchema } from '@entities/tag.entity';
 import { TagsController } from './controllers/tags.controller';
 import { TagsService } from './providers/tags.service';
 import { FollowingsHelper } from '@helpers/followings.helper';
-import { FriendsService } from './providers/friends.service';
 import { CacheModule } from '@cache';
 import { FollowersService } from './providers/followers.service';
 
@@ -25,10 +24,9 @@ import { FollowersService } from './providers/followers.service';
     FollowingsService,
     TagsService,
     FollowingsHelper,
-    FriendsService,
     FollowersService,
   ],
   controllers: [FollowingsController, TagsController],
-  exports: [FollowingsService, TagsService, FriendsService],
+  exports: [FollowingsService, TagsService, FollowersService],
 })
 export class FollowingsModule {}

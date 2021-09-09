@@ -41,6 +41,7 @@ import { UserScoresService } from '@libs/users/providers/userScores.service';
 import { School } from '@entities/school.entity';
 import emojiRegex from 'emoji-regex/RGI_Emoji';
 import { ConfigsService } from '@configs';
+import { NAME_REGEX } from '@utils/constants';
 
 @Injectable()
 export class UsersService {
@@ -116,20 +117,18 @@ export class UsersService {
     if (data.role === Role.Admin) {
       throw new ForbiddenException();
     }
-    const nameRegex =
-      /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$/g;
-    if (data.displayName.length > 25 || !nameRegex.test(data.displayName)) {
+    if (data.displayName.length > 25 || !NAME_REGEX.test(data.displayName)) {
       throw new BadRequestException('displayName is invalid.');
     }
     if (
       data.familyName &&
-      (data.familyName.length > 25 || !nameRegex.test(data.familyName))
+      (data.familyName.length > 25 || !NAME_REGEX.test(data.familyName))
     ) {
       throw new BadRequestException('familyName is invalid.');
     }
     if (
       data.givenName &&
-      (data.givenName.length > 25 || !nameRegex.test(data.givenName))
+      (data.givenName.length > 25 || !NAME_REGEX.test(data.givenName))
     ) {
       throw new BadRequestException('givenName is invalid.');
     }
@@ -165,6 +164,8 @@ export class UsersService {
     userCtx: JwtPayLoad,
     input: SaveLessonDto,
   ): Promise<string> {
+    const session = await this.transactionService.createSession();
+    session.startTransaction();
     // eslint-disable-next-line prefer-const
     let [userProfile, lessonTree] = await Promise.all([
       this.cache.get<UserProfile | null>(
@@ -175,6 +176,7 @@ export class UsersService {
         unitId: input.unitId,
         levelIndex: input.levelIndex,
         lessonIndex: input.lessonIndex,
+        isOverLevel: false,
       }),
     ]);
     if (!lessonTree) {
@@ -222,6 +224,8 @@ export class UsersService {
       console.log(error);
       throw new InternalServerErrorException(error);
     });
+    await session.commitTransaction();
+    session.endSession();
     return 'save user work';
   }
 

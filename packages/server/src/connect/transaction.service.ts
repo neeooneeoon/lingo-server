@@ -1,13 +1,16 @@
+import { ConfigsService } from '@configs';
 import { Injectable } from '@nestjs/common';
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class TransactionService {
-  public async createTransaction(): Promise<mongoose.ClientSession> {
-    const db = await mongoose.createConnection(
-      'mongodb://localhost:27017/tuvungtest',
-      { useUnifiedTopology: true, useNewUrlParser: true },
-    );
+  constructor(private configsService: ConfigsService) {}
+  public async createSession(): Promise<mongoose.ClientSession> {
+    const uri = this.configsService.get('MONGODB_URI_LOCAL');
+    const db = await mongoose.createConnection(uri, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+    });
     return db.startSession();
   }
 }

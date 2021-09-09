@@ -6,7 +6,8 @@ export class GetLessonInput {
   bookId: string;
   unitId: string;
   levelIndex: number;
-  lessonIndex: number;
+  lessonIndex?: number;
+  isOverLevel: boolean;
 }
 
 export class GetLessonOutput {

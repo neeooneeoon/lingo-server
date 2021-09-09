@@ -23,6 +23,7 @@ export class ImportsService {
   ) {}
   public async importBooksData(): Promise<void> {
     const mongoConfig = this.configsService.getMongoConfig();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { uri, ...option } = mongoConfig;
     const mg = await mongoose.connect(mongoConfig.uri, option);
     const conn = mg.connection;
@@ -61,6 +62,7 @@ export class ImportsService {
   }
   public async importWordsData(): Promise<void> {
     const mongoConfig = this.configsService.getMongoConfig();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { uri, ...option } = mongoConfig;
     const mg = await mongoose.connect(mongoConfig.uri, option);
     const conn = mg.connection;

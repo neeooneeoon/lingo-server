@@ -5,6 +5,7 @@ import { ProgressesService } from './progresses.service';
 import { ProgressesHelper } from '@helpers/progresses.helper';
 import { ProgressesController } from './progresses.controller';
 import { BooksModule } from '@libs/books';
+import { ConnectModule } from '@connect';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { BooksModule } from '@libs/books';
       },
     ]),
     forwardRef(() => BooksModule),
+    ConnectModule,
   ],
   controllers: [ProgressesController],
   providers: [ProgressesService, ProgressesHelper],

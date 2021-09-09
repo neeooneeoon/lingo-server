@@ -29,6 +29,7 @@ import { ConnectModule } from '@connect';
 import { MailModule } from 'src/mail/mail.module';
 import { InvitationService } from './providers/invitation.service';
 import { MailHelper } from '@helpers/mail.helper';
+import { UserLessonService } from './providers/userLesson.service';
 
 @Module({
   imports: [
@@ -70,7 +71,8 @@ import { MailHelper } from '@helpers/mail.helper';
     AppleService,
     LoginService,
     UserScoresService,
+    UserLessonService,
   ],
-  exports: [UsersService, UserScoresService],
+  exports: [UsersService, UserScoresService, UserLessonService],
 })
 export class UsersModule {}

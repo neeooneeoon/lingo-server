@@ -5,7 +5,6 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserProgressDto } from '@dto/progress/createProgress.dto';
@@ -25,6 +24,7 @@ import { WorkInfo } from '@dto/works';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { BooksService } from '@libs/books/providers/books.service';
+import { TransactionService } from '@connect';
 
 @Injectable()
 export class ProgressesService {
@@ -32,6 +32,7 @@ export class ProgressesService {
     @InjectModel(Progress.name) private progressModel: Model<ProgressDocument>,
     private progressesHelper: ProgressesHelper,
     @Inject(forwardRef(() => BooksService)) private booksService: BooksService,
+    private transactionService: TransactionService,
   ) {}
 
   async createUserProgress(
@@ -222,6 +223,104 @@ export class ProgressesService {
     }
     await userProgress.save();
     return result;
+  }
+
+  public async overLevelSaveProgress(
+    userId: string,
+    lessonTree: Omit<LessonTree, 'lessonIndex'>,
+    workInfo: WorkInfo,
+  ) {
+    const {
+      bookId,
+      book,
+      unitId,
+      unitTotalLevels,
+      lessonTotalQuestions,
+      levelIndex,
+      levelTotalLessons,
+    } = lessonTree;
+    const userProgress = await this.getUserProgress(userId);
+    if (!userProgress) {
+      throw new BadRequestException('Can not find progress');
+    }
+    let progressBook = userProgress?.books?.find(
+      (element) => element?.bookId === bookId,
+    );
+    if (!progressBook) {
+      progressBook = {
+        bookId: book._id,
+        name: book.name,
+        grade: book.grade,
+        totalUnits: book.units.length,
+        score: 0,
+        level: 0,
+        doneQuestions: 0,
+        correctQuestions: 0,
+        totalLessons: book.totalLessons,
+        doneLessons: 0,
+        lastDid: new Date(),
+        units: [],
+      };
+      userProgress?.books?.push(progressBook);
+    }
+    const unitInBook = book.units.find((element) => element._id === unitId);
+    const progressUnit = progressBook.units.find(
+      (element) => element.unitId === unitId,
+    );
+    const lessons: Array<number> = [];
+    for (let i = 0; i < levelTotalLessons; i++) lessons.push(i);
+    if (!progressUnit) {
+      const newProgressUnit: ProgressUnit = {
+        unitId: unitId,
+        totalLevels: unitTotalLevels,
+        passedLevels: 1,
+        doneLessons: 1,
+        doneQuestions: workInfo.doneQuestions,
+        correctQuestions: lessonTotalQuestions,
+        lastDid: workInfo.timeEnd,
+        normalImage: unitInBook?.normalImage,
+        blueImage: unitInBook?.blueImage,
+        levels: [
+          {
+            levelIndex: levelIndex,
+            totalLessons: levelTotalLessons,
+            passed: true,
+            doneLessons: levelTotalLessons,
+            lessons: lessons,
+          },
+        ],
+        unitName: unitInBook.name,
+        totalLessons: unitInBook.totalLessons,
+      };
+      progressBook.units.push(newProgressUnit);
+    } else {
+      const progressLevel = progressUnit?.levels?.find(
+        (element) => element.levelIndex === levelIndex,
+      );
+      if (!progressLevel) {
+        const newProgressLevel: ProgressLevel = {
+          levelIndex: levelIndex,
+          totalLessons: levelTotalLessons,
+          doneLessons: levelTotalLessons,
+          passed: true,
+          lessons: lessons,
+        };
+        progressUnit.levels.push(newProgressLevel);
+      } else {
+        progressLevel.lessons = lessons;
+        progressLevel.passed = true;
+      }
+      progressUnit.passedLevels++;
+      progressUnit.doneLessons += lessons.length;
+      progressUnit.doneQuestions += workInfo.doneQuestions;
+    }
+    progressBook.correctQuestions = +lessonTotalQuestions;
+    progressBook.lastDid = workInfo.timeEnd;
+    progressBook.score += lessons.length;
+    progressBook.doneLessons++;
+    progressBook.doneQuestions += workInfo.doneQuestions;
+    await userProgress.save();
+    return 'Passed level';
   }
 
   public latestActiveBookProgress(

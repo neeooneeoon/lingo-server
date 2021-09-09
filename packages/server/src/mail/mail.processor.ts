@@ -1,12 +1,7 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
-import {
-  ANDROID_URL,
-  DEFAULT_AVATAR,
-  IOS_URL,
-  WEB_URL,
-} from '@utils/constants';
+import { ANDROID_URL, IOS_URL, WEB_URL } from '@utils/constants';
 import { Job } from 'bull';
 
 @Processor('mail')
