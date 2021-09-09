@@ -34,8 +34,20 @@ export class SaveLessonDto {
   @ApiProperty({ type: String, format: 'date-time' })
   timeEnd: string;
 
-  @ApiProperty({ type: Number })
+  @ApiProperty({
+    type: Number,
+    required: true,
+    description: 'Tổng số câu hỏi đã làm trong bài học',
+  })
   doneQuestions: number;
+
+  @ApiProperty({
+    type: Number,
+    required: false,
+    default: 0,
+    description: 'Tổng số câu hỏi trong bài học',
+  })
+  totalQuestions?: number;
 
   @ApiProperty({
     type: 'array',

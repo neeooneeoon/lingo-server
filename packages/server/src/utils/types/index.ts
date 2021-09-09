@@ -1,8 +1,6 @@
 import { Role } from '@utils/enums';
 import { Types } from 'mongoose';
-import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { AddWordDto } from '@dto/evaluation';
-import { Type } from 'class-transformer';
 
 export class JwtPayLoad {
   userId: string;

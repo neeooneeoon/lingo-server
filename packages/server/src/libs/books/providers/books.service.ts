@@ -131,6 +131,9 @@ export class BooksService {
         this.getBook(bookId),
         this.worksService.getUserWork(userId, bookId),
       ]);
+      if (!book) {
+        throw new BadRequestException('Book not found');
+      }
       if (!instanceUserWork) {
         await this.worksService.createUserWork(userId, bookId);
       }
@@ -368,7 +371,7 @@ export class BooksService {
   }
 
   public async getLessonTree(input: GetLessonInput): Promise<LessonTree> {
-    const { bookId, unitId, levelIndex, lessonIndex } = input;
+    const { bookId, unitId, levelIndex, lessonIndex, isOverLevel } = input;
     let isLastLesson = false;
 
     const book = await this.getBook(bookId);
@@ -388,32 +391,50 @@ export class BooksService {
     if (!level) {
       throw new BadRequestException(`Can't find level ${levelIndex}`);
     }
-    const lessons = level.lessons;
-    if (!lessons || lessons.length === 0) {
-      throw new BadRequestException(`No lesson in ${levelIndex}`);
-    }
-    let lesson: LessonDocument;
-    if (levelIndex == unit.levels.length - 1 && lessonIndex == lessons.length) {
-      isLastLesson = true;
-      lesson = lessons[lessons.length - 1];
+    if (!isOverLevel) {
+      const lessons = level.lessons;
+      if (!lessons || lessons.length === 0) {
+        throw new BadRequestException(`No lesson in ${levelIndex}`);
+      }
+      let lesson: LessonDocument;
+      if (
+        levelIndex == unit.levels.length - 1 &&
+        lessonIndex == lessons.length
+      ) {
+        isLastLesson = true;
+        lesson = lessons[lessons.length - 1];
+      } else {
+        lesson = lessons.find((item) => item.lessonIndex === lessonIndex);
+      }
+      if (!lesson) {
+        throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
+      }
+      return {
+        isLastLesson: isLastLesson,
+        grade: book.grade,
+        bookId: book._id,
+        unitId: unit._id,
+        levelIndex: levelIndex,
+        lessonIndex: lessonIndex,
+        unitTotalLevels: unit.levels.length,
+        levelTotalLessons: level.lessons.length,
+        lessonTotalQuestions: lesson.totalQuestions,
+        book: book,
+      };
     } else {
-      lesson = lessons.find((item) => item.lessonIndex === lessonIndex);
+      return {
+        isLastLesson: isLastLesson,
+        grade: book.grade,
+        bookId: book._id,
+        unitId: unit._id,
+        levelIndex: levelIndex,
+        lessonIndex: -1,
+        unitTotalLevels: unit.levels.length,
+        levelTotalLessons: level.lessons.length,
+        lessonTotalQuestions: 0,
+        book: book,
+      };
     }
-    if (!lesson) {
-      throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
-    }
-    return {
-      isLastLesson: isLastLesson,
-      grade: book.grade,
-      bookId: book._id,
-      unitId: unit._id,
-      levelIndex: levelIndex,
-      lessonIndex: lessonIndex,
-      unitTotalLevels: unit.levels.length,
-      levelTotalLessons: level.lessons.length,
-      lessonTotalQuestions: lesson.totalQuestions,
-      book: book,
-    };
   }
 
   public async finByIds(ids: Array<string>) {

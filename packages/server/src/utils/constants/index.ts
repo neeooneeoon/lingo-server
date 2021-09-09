@@ -74,3 +74,7 @@ export const VIETNAM_TIME_ZONE = 'Asia/Ho_Chi_Minh';
 export const ANDROID_URL = 'https://bit.ly/3AEDnXs';
 export const IOS_URL = 'https://apple.co/2VNliY8';
 export const WEB_URL = 'https://bit.ly/3m0Y9gc';
+
+//REGEX
+export const NAME_REGEX =
+  /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$/g;

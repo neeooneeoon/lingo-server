@@ -19,6 +19,7 @@ import {
   ApiQuery,
   ApiParam,
   ApiResponse,
+  OmitType,
 } from '@nestjs/swagger';
 import {
   UserProfile,
@@ -28,8 +29,10 @@ import {
   ChangeAddressDto,
   ToggleNotificationDto,
   ToggleNotificationRes,
+  SaveOverLevelRes,
 } from '@dto/user';
 import { UsersService } from '../providers/users.service';
+import { UserLessonService } from '../providers/userLesson.service';
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
@@ -45,6 +48,7 @@ export class UserController {
     private readonly usersService: UsersService,
     private readonly userAddressService: UserAddressService,
     private readonly invitationService: InvitationService,
+    private readonly userLessonService: UserLessonService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -87,6 +91,24 @@ export class UserController {
     @UserCtx() user: JwtPayLoad,
   ) {
     return this.usersService.saveUserLesson(user, input);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('submitOverLevel')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Submit kết quả bài học vượt cấp' })
+  @ApiConsumes('application/json')
+  @ApiBody({
+    type: OmitType(SaveLessonDto, ['lessonIndex']),
+    required: true,
+    description: 'Kết quả bài học',
+  })
+  @ApiResponse({ type: SaveOverLevelRes, status: 200 })
+  async submitOverLevel(
+    @Body() input: Omit<SaveLessonDto, 'lessonIndex'>,
+    @UserCtx() user: JwtPayLoad,
+  ) {
+    return this.userLessonService.submitOverLevel(user.userId, input);
   }
 
   @UseGuards(JwtAuthGuard)

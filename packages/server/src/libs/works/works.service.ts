@@ -1,9 +1,15 @@
+import { OverLevelCalculating } from '@dto/works';
 import { Model, Types } from 'mongoose';
 import { Work, WorkDocument } from '@entities/work.entity';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { QuestionHoldersService } from '@libs/questionHolders/providers/questionHolders.service';
-import { UserDocument } from '@entities/user.entity';
 import { LessonTree } from '@dto/book';
 import { AnswerResult } from '@dto/lesson';
 import { LevelWork, UnitWork, WorkInfo } from '@dto/works';
@@ -11,15 +17,23 @@ import { QuestionHolderDocument } from '@entities/questionHolder.entity';
 import { AnswerService } from '@libs/questionHolders/providers/answer.service';
 import { PointService } from '@libs/questionHolders/providers/point.service';
 import { UserProfile } from '@dto/user';
+import { ConfigsService } from '@configs';
+import { Cache } from 'cache-manager';
+import { QuestionDocument } from '@entities/question.entity';
 
 @Injectable()
 export class WorksService {
+  private prefixKey: string;
   constructor(
     @InjectModel(Work.name) private workModel: Model<WorkDocument>,
     private questionHoldersService: QuestionHoldersService,
     private answerService: AnswerService,
     private pointService: PointService,
-  ) {}
+    private configsService: ConfigsService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   public async createUserWork(userId: string, bookId: string): Promise<void> {
     try {
@@ -210,6 +224,62 @@ export class WorksService {
         ? 0
         : Math.floor(questionPoint + bonusLevel + bonusLesson);
     } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  public async calculatePointForOverLevel(input: OverLevelCalculating) {
+    try {
+      const { bookId, unitId, levelIndex, results, workInfo } = input;
+      let questions = await this.cacheManager.get<QuestionDocument[] | null>(
+        `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
+      );
+      if (!questions) {
+        const questionHolders =
+          await this.questionHoldersService.getQuestionHolder({
+            bookId: bookId,
+            unitId: unitId,
+            level: levelIndex,
+          });
+        if (!questionHolders || !questionHolders?.questions) {
+          throw new BadRequestException();
+        }
+        questions = questionHolders.questions;
+        await this.cacheManager.set<QuestionDocument[]>(
+          `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
+          questions,
+        );
+      }
+      let totalPoint = 0;
+      let correctAnswer = 0;
+      if (results.length > 0) {
+        for (let i = 0; i < results.length; i++) {
+          if (!results[i]) continue;
+          const question = questions.find(
+            (element) => element._id === results[i]._id,
+          );
+          if (!question) {
+            correctAnswer++;
+            continue;
+          }
+          const isCorrect = await this.answerService.checkAnswer(
+            results[i],
+            question,
+          );
+          if (isCorrect) {
+            totalPoint += this.pointService.getQuestionPoint(question);
+            correctAnswer++;
+          }
+        }
+      }
+      return {
+        totalPoint,
+        correctAnswer,
+        totalQuestions: workInfo.totalQuestions,
+        percentage: Math.round(correctAnswer / workInfo.totalQuestions) * 100,
+      };
+    } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(error);
     }
   }

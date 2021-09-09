@@ -15,3 +15,4 @@ export {
   ToggleNotificationRes,
 } from './toggleNotification.dto';
 export { AppleLoginDto } from './appleLogin.dto';
+export { SaveOverLevelRes } from './saveOverLevelRes';

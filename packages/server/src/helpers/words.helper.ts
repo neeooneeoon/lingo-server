@@ -1,6 +1,5 @@
 import { EvaluateWordDto, WordInLesson } from '@dto/word';
 import { WordDocument } from '@entities/word.entity';
-import { LeanDocument } from 'mongoose';
 import { AddWordDto } from '@dto/evaluation';
 
 export class WordsHelper {
