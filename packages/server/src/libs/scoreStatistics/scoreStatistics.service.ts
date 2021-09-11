@@ -90,80 +90,7 @@ export class ScoreStatisticsService {
         role,
       );
     }
-    if (
-      !(await this.usersService.isUserInLocation(
-        userId,
-        location,
-        locationId,
-        schoolId,
-      )) ||
-      displayFollowings
-    ) {
-      return xpArr.slice(0, TOP_XP_LENGTH).map((element, index) => {
-        element.orderNumber = index + 1;
-        return element;
-      });
-    }
-    return await this.handleLastUser(userId, xpArr);
-  }
-  private async handleLastUser(
-    userId: string,
-    xpArr: UserRank[],
-  ): Promise<UserRank[]> {
-    let topLength = TOP_XP_LENGTH;
-    const userResult = await this.usersService.queryMe(userId);
-    if (xpArr.length == 0) {
-      xpArr.push({
-        orderNumber: 1,
-        displayName: userResult.displayName,
-        avatar: userResult.avatar,
-        userId: new Types.ObjectId(userId),
-        xp: 0,
-        isCurrentUser: true,
-      });
-      return xpArr;
-    }
-
-    if (xpArr.length < topLength) topLength = xpArr.length;
-    let isInTop = false;
-    for (let i = 0; i < topLength; i++) {
-      const item = xpArr[i];
-      if (item.userId.toHexString() == userId) {
-        isInTop = true;
-        item.isCurrentUser = true;
-      }
-      item.orderNumber = i + 1;
-    }
-    if (isInTop == false) {
-      let lastUser: UserRank;
-      for (let i = 0; i < xpArr.length; i++) {
-        const item = xpArr[i];
-        if (item.userId.toHexString() == userId) {
-          item.orderNumber = i + 1;
-          item.isCurrentUser = true;
-          lastUser = item;
-          break;
-        }
-      }
-      if (!lastUser) {
-        lastUser = {
-          orderNumber: xpArr.length + 1,
-          displayName: userResult.displayName,
-          avatar: userResult.avatar,
-          userId: new Types.ObjectId(userId),
-          xp: 0,
-          isCurrentUser: true,
-        };
-      }
-
-      if (topLength < TOP_XP_LENGTH) {
-        xpArr.push(lastUser);
-      } else {
-        xpArr = xpArr.slice(0, topLength - 1);
-        xpArr.push(lastUser);
-      }
-    }
-    return xpArr.slice(0, TOP_XP_LENGTH);
+    return xpArr;
   }
   public async getUserXpThisWeek(
     currentUserId: string,
@@ -237,49 +164,77 @@ export class ScoreStatisticsService {
     role?: Role,
   ): Promise<LeanDocument<ScoreStatisticDocument>[]> {
     try {
-      let tempArr: LeanDocument<ScoreStatisticDocument>[];
-      if (filter) {
-        tempArr = await this.scoreStatisticModel
-          .find(filter)
-          .lean()
-          .populate('user', ['displayName', 'avatar', 'address', 'role']);
-      } else {
-        tempArr = await this.scoreStatisticModel
-          .find({})
-          .lean()
-          .populate('user', ['displayName', 'avatar', 'address', 'role']);
+      let locationFilter: any = {};
+      let roleFilter: any = {};
+      if (role && role !== Role.Admin) {
+        roleFilter = { 'user.role': { $eq: role } };
       }
-
-      return tempArr.filter((i) => {
-        const user = i.user as unknown as UserDocument;
-        if (!user || !user?.address) return false;
-        let flag = false;
-        if (role && role !== Role.Admin) {
-          if (user.role == role) flag = true;
-          else flag = false;
-        } else if (!role) {
-          flag = true;
+      if (location) {
+        switch (location) {
+          case Location.Province:
+            locationFilter = { 'user.address.province': { $eq: locationId } };
+            break;
+          case Location.District:
+            locationFilter = { 'user.address.district': { $eq: locationId } };
+            break;
+          case Location.School:
+            locationFilter = { 'user.address.school': { $eq: locationId } };
+            break;
+          case Location.Grade:
+            locationFilter = {
+              'user.address.school': { $eq: schoolId },
+              'user.address.grade': { $eq: locationId },
+            };
+            break;
+          default:
+            break;
         }
-        if (flag === true) {
-          switch (location) {
-            case Location.Province:
-              return locationId === user.address?.province;
-            case Location.District:
-              return locationId === user.address?.district;
-            case Location.School:
-              return locationId === user.address?.school;
-            case Location.Grade:
-              return (
-                locationId === user.address?.grade &&
-                schoolId === user.address?.school
-              );
-            case Location.All:
-            default:
-              return true;
-          }
-        }
-        return false;
-      });
+      }
+      const result = await this.scoreStatisticModel
+        .aggregate([
+          { $match: filter },
+          {
+            $group: {
+              _id: { user: '$user' },
+              totalXp: { $sum: '$xp' },
+            },
+          },
+          { $sort: { totalXp: -1 } },
+          {
+            $lookup: {
+              from: 'users',
+              localField: '_id.user',
+              foreignField: '_id',
+              as: 'user',
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              xp: '$totalXp',
+              user: {
+                $arrayElemAt: ['$user', 0],
+              },
+            },
+          },
+          {
+            $project: {
+              xp: 1,
+              user: {
+                _id: '$user._id',
+                role: '$user.role',
+                avatar: '$user.avatar',
+                displayName: '$user.displayName',
+                address: '$user.address',
+              },
+            },
+          },
+          {
+            $match: { ...locationFilter, ...roleFilter },
+          },
+        ])
+        .limit(10);
+      return result;
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException(error);
@@ -323,58 +278,28 @@ export class ScoreStatisticsService {
       if (!tempArr || tempArr.length == 0) {
         return [];
       }
-      tempArr.sort(function compareFn(firstEl, secondEl) {
-        const user1 = firstEl.user as unknown as UserDocument;
-        const user2 = secondEl.user as unknown as UserDocument;
-        if (user1._id < user2._id) return -1;
-        if (user1._id > user2._id) return 1;
-        return 0;
-      });
-      let prevUser = this.scoreStatisticsHelper.getFirstUserNotNull(tempArr);
-      let totalXp = 0;
-      for (let i = 0; i < tempArr.length; i++) {
-        const item = tempArr[i];
-        const currentUser = item.user as unknown as UserDocument;
-        if (currentUser._id.toHexString() == prevUser._id.toHexString()) {
-          totalXp += item.xp;
-        } else {
-          const userRank: UserRank = {
-            orderNumber: 0,
-            displayName: prevUser.displayName,
-            avatar: prevUser.avatar,
-            userId: prevUser._id,
-            xp: totalXp,
-            isCurrentUser: false,
-            role: prevUser.role,
-          };
-
-          xpArr.push(userRank);
-          totalXp = 0;
-          prevUser = currentUser;
-          i--;
-        }
-
-        if (i == tempArr.length - 1) {
-          const userRank: UserRank = {
-            orderNumber: 0,
-            displayName: prevUser.displayName,
-            avatar: prevUser.avatar,
-            userId: prevUser._id,
-            xp: totalXp,
-            isCurrentUser: false,
-            role: prevUser.role,
-          };
-
-          xpArr.push(userRank);
-        }
+      const prevUser = this.scoreStatisticsHelper.getFirstUserNotNull(tempArr);
+      let orderNumber = 1;
+      if (tempArr?.length > 0) {
+        tempArr.forEach((element) => {
+          const user = element?.user as unknown as UserDocument;
+          if (user) {
+            const userRank: UserRank = {
+              orderNumber: orderNumber,
+              displayName: user?.displayName,
+              avatar: user?.avatar,
+              userId: user?._id,
+              xp: element.xp,
+              isCurrentUser: userId && user?._id === userId,
+              role: prevUser.role,
+            };
+            xpArr.push(userRank);
+            orderNumber++;
+          }
+        });
+        return xpArr;
       }
-      xpArr.sort(function compareFn(firstEl, secondEl) {
-        if (firstEl.xp < secondEl.xp) return 1;
-        if (firstEl.xp > secondEl.xp) return -1;
-        return 0;
-      });
-
-      return xpArr;
+      return [];
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -474,46 +399,6 @@ export class ScoreStatisticsService {
 
   public async getFollowingIds(userId: string): Promise<string[]> {
     const followings = await this.followingsService.followings(userId);
-    return followings.map((i) => i.followUser.toHexString());
+    return followings.map((i) => String(i.followUser));
   }
-  // public async getTopByTime(
-  //   timeSelect: string,
-  //   location?: string,
-  //   locationId?: number,
-  // ): Promise<UserRank[]> {
-  //   timeSelect = timeSelect.trim();
-  //   if (!timeSelect) {
-  //     throw new BadRequestException('timeSelect not entered');
-  //   }
-  //   dayjs.extend(utc)
-  //   let startTime: string;
-  //   let xpArr: UserRank[] = [];
-  //   switch (timeSelect) {
-  //     case 'week':
-  //       startTime = dayjs().startOf('week').utc().format();
-  //       break;
-  //     case 'month':
-  //       startTime = dayjs().startOf('month').utc().format();
-  //       break;
-  //     case 'all':
-  //       xpArr = await this.usersService.getAllTimeUserXpList(
-  //         location,
-  //         locationId,
-  //       );
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  //   const endTime = dayjs().utc().format();
-  //   if (timeSelect != 'all') {
-  //     const filter = {
-  //       createdAt: {
-  //         $gte: new Date(startTime),
-  //         $lte: new Date(endTime),
-  //       },
-  //     };
-  //     xpArr = await this.getTotalXp(filter, locationId, location);
-  //   }
-  //   return xpArr;
-  // }
 }

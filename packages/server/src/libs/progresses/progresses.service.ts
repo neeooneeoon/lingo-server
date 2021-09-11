@@ -477,7 +477,6 @@ export class ProgressesService {
       },
     });
     if (progresses?.length > 0) {
-      console.log(progresses?.length);
       const removeForSingleProgress = async (progress: ProgressDocument) => {
         const books = progress.books.filter((el) => el);
         return this.progressModel.updateOne(

@@ -286,47 +286,58 @@ export class UsersService {
       return result;
     }
     let filter = {};
-    switch (location) {
-      case Location.Province:
-        filter = { role: { $ne: Role.Admin }, 'address.province': locationId };
-        break;
-      case Location.District:
-        filter = { role: { $ne: Role.Admin }, 'address.district': locationId };
-        break;
-      case Location.School:
-        filter = { role: { $ne: Role.Admin }, 'address.school': locationId };
-        break;
-      case Location.Grade:
-        filter = {
-          role: { $ne: Role.Admin },
-          'address.grade': locationId,
-          'address.school': schoolId,
-        };
-        break;
-      case Location.All:
-      default:
-        filter = { role: { $ne: Role.Admin } };
-        break;
+    if (location) {
+      switch (location) {
+        case Location.Province:
+          filter = {
+            role: { $ne: Role.Admin },
+            'address.province': locationId,
+          };
+          break;
+        case Location.District:
+          filter = {
+            role: { $ne: Role.Admin },
+            'address.district': locationId,
+          };
+          break;
+        case Location.School:
+          filter = { role: { $ne: Role.Admin }, 'address.school': locationId };
+          break;
+        case Location.Grade:
+          filter = {
+            role: { $ne: Role.Admin },
+            'address.grade': locationId,
+            'address.school': schoolId,
+          };
+          break;
+        case Location.All:
+        default:
+          filter = { role: { $ne: Role.Admin } };
+          break;
+      }
     }
     const userRankList = await this.userModel
       .find(filter)
       .sort({ xp: -1 })
-      .select({ xp: 1, displayName: 1, avatar: 1 });
+      .select({ xp: 1, displayName: 1, avatar: 1 })
+      .limit(10)
+      .lean();
     const xpArr: UserRank[] = [];
     if (!userRankList) {
       throw new BadRequestException('Can not find users');
     }
-    for (let i = 0; i < userRankList.length; i++) {
-      const item = userRankList[i];
+    let orderNumber = 1;
+    userRankList.forEach((item) => {
       xpArr.push({
-        orderNumber: 0,
+        orderNumber: orderNumber,
         displayName: item.displayName,
         avatar: item.avatar,
         userId: item._id,
         xp: item.xp,
         isCurrentUser: false,
       });
-    }
+      orderNumber++;
+    });
     return xpArr;
   }
 
