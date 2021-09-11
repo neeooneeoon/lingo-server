@@ -1,5 +1,4 @@
 {
-  // "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
@@ -13,5 +12,21 @@
     "baseUrl": "./",
     "incremental": true,
     "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["ES2019"],
+    "paths": {
+      "@lingo/tools/*": [
+        "./*"
+      ],
+      "@lingo/tools": [
+        "./"
+      ],
+      "@google/*": [
+        "src/google/*"
+      ],
+      "@google": [
+        "src/google"
+      ]
+    }
   }
 }
