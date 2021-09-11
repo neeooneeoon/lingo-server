@@ -48,6 +48,16 @@ export class ProgressesService {
     return this.progressModel.findOne({ userId: Types.ObjectId(userId) });
   }
 
+  async findUserProgress(
+    userId: string,
+  ): Promise<LeanDocument<ProgressDocument>> {
+    const selectFields = ['books.doneLessons', 'books.doneQuestions'];
+    return this.progressModel
+      .findOne({ userId: Types.ObjectId(userId) })
+      .select(selectFields)
+      .lean();
+  }
+
   async getBookProgress(
     userId: string,
     book: BookDocument,
@@ -356,7 +366,7 @@ export class ProgressesService {
         const books: ProgressBook[] = r?.books;
         if (books && books.length > 0) {
           const learnedBooks = books.filter(
-            (book) => book.units && book.units.length > 0,
+            (book) => book.units && book?.units?.length > 0,
           );
           const lastActiveBooks = learnedBooks.sort((bookOne, bookTwo) => {
             if (bookOne.lastDid < bookTwo.lastDid) return 1;
@@ -463,5 +473,35 @@ export class ProgressesService {
         },
       },
     );
+  }
+
+  public async removeNullBooksFromProgress() {
+    const session = await this.transactionService.createSession();
+    session.startTransaction();
+
+    const progresses = await this.progressModel.find({
+      books: {
+        $elemMatch: {
+          $eq: null,
+        },
+      },
+    });
+    if (progresses?.length > 0) {
+      const removeForSingleProgress = async (progress: ProgressDocument) => {
+        const books = progress.books.filter((el) => el);
+        return this.progressModel.updateOne(
+          {
+            userId: progress.userId,
+          },
+          {
+            $set: { books: books },
+          },
+        );
+      };
+      const results = await Promise.all(
+        progresses.map((element) => removeForSingleProgress(element)),
+      );
+      return results;
+    }
   }
 }

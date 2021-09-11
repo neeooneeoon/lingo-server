@@ -11,3 +11,4 @@ export class Province {
 }
 export type ProvinceDocument = Document & Province;
 export const ProvinceSchema = SchemaFactory.createForClass(Province);
+ProvinceSchema.index({ name: 1 });

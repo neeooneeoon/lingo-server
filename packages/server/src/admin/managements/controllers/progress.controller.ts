@@ -31,4 +31,9 @@ export class ProgressController {
   async rollBackBooks() {
     return this.progressService.rollbackBooks();
   }
+
+  @Put('removeNullBooks')
+  async removeNullBooksFromProgress() {
+    return this.progressService.removeNullBooksFromProgress();
+  }
 }

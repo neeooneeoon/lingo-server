@@ -37,6 +37,7 @@ import { Cache } from 'cache-manager';
 import { QuestionDocument } from '@entities/question.entity';
 import { ConfigsService } from '@configs';
 import { OverLevelDto } from '@dto/book';
+import { TransactionService } from '@connect';
 
 @Injectable()
 export class BooksService {
@@ -52,6 +53,7 @@ export class BooksService {
     private questionHoldersService: QuestionHoldersService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly configsService: ConfigsService,
+    private readonly transactionService: TransactionService,
   ) {
     this.prefixKey = this.configsService.get('MODE');
   }
@@ -60,7 +62,9 @@ export class BooksService {
     book: Partial<ProgressBook>,
   ): Observable<ActiveBookProgress> {
     const unSelect = ['name', 'grade', 'cover', '-_id', 'units._id'];
-    return from(this.bookModel.findById(book.bookId).select(unSelect)).pipe(
+    return from(
+      this.bookModel.findById(book.bookId).select(unSelect).lean(),
+    ).pipe(
       map((result) => {
         return {
           name: result?.name,
@@ -85,6 +89,8 @@ export class BooksService {
     userId: string,
   ): Promise<BookGrade[]> {
     try {
+      const session = await this.transactionService.createSession();
+      session.startTransaction();
       const selectedFields = [
         '_id',
         'nId',
@@ -102,8 +108,9 @@ export class BooksService {
         this.bookModel
           .find({ grade: grade })
           .select(selectedFields)
-          .sort({ nId: 1 }),
-        this.progressesService.getUserProgress(userId),
+          .sort({ nId: 1 })
+          .lean(),
+        this.progressesService.findUserProgress(userId),
       ]);
       if (!userProgress) {
         userProgress = await this.progressesService.createUserProgress({
@@ -111,6 +118,8 @@ export class BooksService {
           books: [],
         });
       }
+      await session.commitTransaction();
+      session.endSession();
       return books.map((book) => {
         const progressBook = userProgress.books.find(
           (item) => item.bookId === book._id,
@@ -127,9 +136,11 @@ export class BooksService {
     userId: string,
   ): Promise<ProgressBookMapping> {
     try {
+      const session = await this.transactionService.createSession();
+      session.startTransaction();
       const [book, instanceUserWork] = await Promise.all([
         this.getBook(bookId),
-        this.worksService.getUserWork(userId, bookId),
+        this.worksService.findUserWork(userId, bookId),
       ]);
       if (!book) {
         throw new BadRequestException('Book not found');
@@ -137,6 +148,8 @@ export class BooksService {
       if (!instanceUserWork) {
         await this.worksService.createUserWork(userId, bookId);
       }
+      await session.commitTransaction();
+      session.endSession();
       return this.progressesService.getBookProgress(userId, book);
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -198,7 +211,7 @@ export class BooksService {
       }
     }
 
-    if (lesson?.questionIds?.length == 0 && questions?.length !== 0) {
+    if (lesson?.questionIds?.length == 0 && questions?.length > 0) {
       const userWork = await this.worksService.getUserWork(userId, bookId);
       const userWorkUnit = userWork?.units?.find(
         (item) => item.unitId === unitId,
@@ -216,7 +229,6 @@ export class BooksService {
         const setReviewQuestions =
           this.questionHoldersService.questionsLatestLesson(
             incorrectPercent,
-            incorrectList,
             questions,
             maxSize,
           );
@@ -226,9 +238,11 @@ export class BooksService {
             questions.length > maxSize
           ) {
             const index = Math.floor(Math.random() * questions.length);
-            setReviewQuestions.add(String(questions[index]._id));
+            // setReviewQuestions.add(String(questions[index]._id));
             if (!setReviewQuestions.has(String(questions[index]._id))) {
               setReviewQuestions.add(String(questions[index]._id));
+              questions.splice(index, 1);
+            } else {
               questions.splice(index, 1);
             }
           }
@@ -560,7 +574,7 @@ export class BooksService {
   }
 
   public async getLevelsInUnit(bookId: string, unitId: string) {
-    const book = await this.bookModel.findById(bookId);
+    const book = await this.bookModel.findById(bookId).select(['units']).lean();
     const units = book?.units;
     if (units?.length > 0) {
       const currentUnit = units.find((element) => element._id === unitId);

@@ -3,9 +3,9 @@
     "license": "MIT",
     "version": "0.0.1",
     "dependencies": {
-        "md5": "2.3.0",
-        "string-similarity": "^4.0.4",
-        "@lingo/core": "2.2.0"
+        "@lingo/core": "2.2.0",
+        "md5": "^2.3.0",
+        "string-similarity": "^4.0.4"
     },
     "devDependencies": {
         "@types/md5": "^2.3.1",
@@ -16,5 +16,4 @@
         "format": "prettier --write \"src/**/*.ts\" ",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
     }
-
 }

@@ -10,6 +10,7 @@ import {
   GoogleAuthorization,
   GoogleSpreadsheetService,
 } from '../google/services';
+import { UnitDemo } from './services/unitDemo.service';
 
 async function run() {
   const result = dotenv.config();
@@ -79,4 +80,24 @@ async function run() {
   }
 }
 
-run().then();
+async function vocabularyWithoutSound() {
+  const result = dotenv.config();
+  if (result.error) {
+    throw result.error;
+  } else {
+    const envConfig = result.parsed;
+    const spreadsheetId = envConfig.DATA_DEMO;
+    const auth = await GoogleAuthorization.authorize();
+    const spreadsheetService = new GoogleSpreadsheetService(
+      spreadsheetId,
+      auth,
+    );
+    const SHEET_NAME = 'Tiếng Anh 3 (Unit 10-demo) Mới';
+    const listSheetNames = ['Tiếng Anh 3 (Unit 10-demo) Mới'];
+    const unitDemo = new UnitDemo(spreadsheetService, SHEET_NAME);
+    await unitDemo.vocabularyWithoutSound();
+  }
+}
+
+// run().then();
+vocabularyWithoutSound().then();

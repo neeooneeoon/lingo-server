@@ -198,7 +198,6 @@ export class QuestionHoldersService {
 
   public questionsLatestLesson(
     incorrectPercent: number,
-    incorrectList: string[],
     rootQuestions: QuestionDocument[],
     maxSize: number,
   ): Set<string> {

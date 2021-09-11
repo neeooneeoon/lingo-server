@@ -12,3 +12,4 @@ export class District {
 }
 export type DistrictDocument = Document & District;
 export const DistrictSchema = SchemaFactory.createForClass(District);
+DistrictSchema.index({ province: 1 });

@@ -1,10 +1,11 @@
 import { BookGrade } from '@dto/book';
 import { ProgressBook } from '@dto/progress';
 import { BookDocument } from '@entities/book.entity';
+import { LeanDocument } from 'mongoose';
 
 export class BooksHelper {
   public mapToBookGrade(
-    book: BookDocument,
+    book: LeanDocument<BookDocument>,
     progressBook?: ProgressBook | undefined,
   ): BookGrade {
     return {
@@ -19,14 +20,14 @@ export class BooksHelper {
       totalQuestions: book.totalQuestions,
       totalLessons: book.totalLessons,
       doneLessons: progressBook
-        ? progressBook.doneLessons > book.totalLessons
+        ? progressBook?.doneLessons > book.totalLessons
           ? book.totalLessons
-          : progressBook.doneLessons
+          : progressBook?.doneLessons
         : 0,
       doneQuestions: progressBook
-        ? progressBook.doneQuestions > book.totalQuestions
+        ? progressBook?.doneQuestions > book.totalQuestions
           ? book.totalQuestions
-          : progressBook.doneQuestions
+          : progressBook?.doneQuestions
         : 0,
     };
   }
@@ -52,40 +53,40 @@ export class BooksHelper {
     const totalUnits = Math.floor(rootSize / minSize);
     const remainder = rootSize % minSize;
     const ranges = new Array(totalUnits).fill(0);
-    let i = 0,
+    const i = 0,
       j = 0;
-    while (true) {
-      if (totalUnits <= remainder) {
-        if (i < totalUnits) {
-          if (ranges[i] == 0) {
-            ranges[i] = minSize + 1;
-          } else {
-            ranges[i] = ranges[i] + 1;
-          }
-          i++;
-          j++;
-        }
-        if (i >= totalUnits) {
-          i = 0;
-        }
-        if (j >= remainder) {
-          break;
-        }
-      } else {
-        if (i < totalUnits) {
-          if (i < remainder) {
-            ranges[i] = minSize + 1;
-          } else {
-            ranges[i] = minSize;
-          }
-          i++;
-          j++;
-        }
-        if (i >= totalUnits) {
-          break;
-        }
-      }
-    }
+    // while (true) {
+    //   if (totalUnits <= remainder) {
+    //     if (i < totalUnits) {
+    //       if (ranges[i] == 0) {
+    //         ranges[i] = minSize + 1;
+    //       } else {
+    //         ranges[i] = ranges[i] + 1;
+    //       }
+    //       i++;
+    //       j++;
+    //     }
+    //     if (i >= totalUnits) {
+    //       i = 0;
+    //     }
+    //     if (j >= remainder) {
+    //       break;
+    //     }
+    //   } else {
+    //     if (i < totalUnits) {
+    //       if (i < remainder) {
+    //         ranges[i] = minSize + 1;
+    //       } else {
+    //         ranges[i] = minSize;
+    //       }
+    //       i++;
+    //       j++;
+    //     }
+    //     if (i >= totalUnits) {
+    //       break;
+    //     }
+    //   }
+    // }
     return ranges;
   }
 }

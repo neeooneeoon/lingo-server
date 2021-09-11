@@ -1,9 +1,10 @@
 import { EvaluateWordDto, WordInLesson } from '@dto/word';
 import { WordDocument } from '@entities/word.entity';
 import { AddWordDto } from '@dto/evaluation';
+import { LeanDocument } from 'mongoose';
 
 export class WordsHelper {
-  public mapWordToWordInLesson(word: WordDocument): WordInLesson {
+  public mapWordToWordInLesson(word: LeanDocument<WordDocument>): WordInLesson {
     return {
       _id: word._id,
       content: word.content,

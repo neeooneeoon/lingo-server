@@ -124,9 +124,12 @@ export class FollowingsService {
 
   public async followings(currentUser: string) {
     try {
-      return await this.followingModel.find({
-        user: Types.ObjectId(currentUser),
-      });
+      return this.followingModel
+        .find({
+          user: Types.ObjectId(currentUser),
+        })
+        .select(['followUser'])
+        .lean();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

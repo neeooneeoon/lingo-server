@@ -48,6 +48,16 @@ export class WorksService {
     }
   }
 
+  public async findUserWork(userId: string, bookId: string) {
+    return this.workModel
+      .findOne({
+        bookId: bookId,
+        userId: Types.ObjectId(userId),
+      })
+      .select(['_id'])
+      .lean();
+  }
+
   public async getUserWork(
     userId: string,
     bookId: string,
