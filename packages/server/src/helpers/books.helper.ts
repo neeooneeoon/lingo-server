@@ -1,10 +1,11 @@
 import { BookGrade } from '@dto/book';
 import { ProgressBook } from '@dto/progress';
 import { BookDocument } from '@entities/book.entity';
+import { LeanDocument } from 'mongoose';
 
 export class BooksHelper {
   public mapToBookGrade(
-    book: BookDocument,
+    book: LeanDocument<BookDocument>,
     progressBook?: ProgressBook | undefined,
   ): BookGrade {
     return {
@@ -19,14 +20,14 @@ export class BooksHelper {
       totalQuestions: book.totalQuestions,
       totalLessons: book.totalLessons,
       doneLessons: progressBook
-        ? progressBook.doneLessons > book.totalLessons
+        ? progressBook?.doneLessons > book.totalLessons
           ? book.totalLessons
-          : progressBook.doneLessons
+          : progressBook?.doneLessons
         : 0,
       doneQuestions: progressBook
-        ? progressBook.doneQuestions > book.totalQuestions
+        ? progressBook?.doneQuestions > book.totalQuestions
           ? book.totalQuestions
-          : progressBook.doneQuestions
+          : progressBook?.doneQuestions
         : 0,
     };
   }

@@ -48,6 +48,16 @@ export class ProgressesService {
     return this.progressModel.findOne({ userId: Types.ObjectId(userId) });
   }
 
+  async findUserProgress(
+    userId: string,
+  ): Promise<LeanDocument<ProgressDocument>> {
+    const selectFields = ['books.doneLessons', 'books.doneQuestions'];
+    return this.progressModel
+      .findOne({ userId: Types.ObjectId(userId) })
+      .select(selectFields)
+      .lean();
+  }
+
   async getBookProgress(
     userId: string,
     book: BookDocument,
@@ -356,7 +366,7 @@ export class ProgressesService {
         const books: ProgressBook[] = r?.books;
         if (books && books.length > 0) {
           const learnedBooks = books.filter(
-            (book) => book.units && book.units.length > 0,
+            (book) => book.units && book?.units?.length > 0,
           );
           const lastActiveBooks = learnedBooks.sort((bookOne, bookTwo) => {
             if (bookOne.lastDid < bookTwo.lastDid) return 1;

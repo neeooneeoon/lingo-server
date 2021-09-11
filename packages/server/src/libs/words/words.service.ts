@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { LeanDocument, Model } from 'mongoose';
 import { from, Observable } from 'rxjs';
 import { SaveLessonDto } from '@dto/user/saveLesson.dto';
 import { ListWorQuestionCodes } from '@utils/constants';
@@ -34,11 +34,22 @@ export class WordsService {
 
   async findByIds(ids: string[]): Promise<WordInLesson[]> {
     try {
-      const words = await this.wordModel.find({
-        _id: {
-          $in: ids,
-        },
-      });
+      const selectFields = [
+        '_id',
+        'content',
+        'types',
+        'meaning',
+        'imageRoot',
+        'pronunciations',
+      ];
+      const words = await this.wordModel
+        .find({
+          _id: {
+            $in: ids,
+          },
+        })
+        .select(selectFields)
+        .lean();
       return words.map((word) => {
         return this.wordsHelper.mapWordToWordInLesson(word);
       });
@@ -48,12 +59,16 @@ export class WordsService {
   }
 
   public async findById(id: string) {
-    return this.wordModel.findById(id);
+    return this.wordModel.findById(id).select(['_id']).lean();
   }
 
-  public async getWord(id: string): Promise<WordDocument> {
+  public async getWord(id: string): Promise<LeanDocument<WordDocument>> {
     try {
-      const word = await this.wordModel.findById(id);
+      const selectFields = ['content', 'meaning'];
+      const word = await this.wordModel
+        .findById(id)
+        .select(selectFields)
+        .lean();
       if (!word) {
         throw new BadRequestException(`Can't find word ${id}`);
       }
@@ -73,10 +88,21 @@ export class WordsService {
       if (cacheWords) {
         return cacheWords;
       } else {
-        const words = await this.wordModel.find({
-          bookNId: bookNId,
-          unitNId: unitNId,
-        });
+        const selectFields = [
+          '_id',
+          'content',
+          'types',
+          'meaning',
+          'imageRoot',
+          'pronunciations',
+        ];
+        const words = await this.wordModel
+          .find({
+            bookNId: bookNId,
+            unitNId: unitNId,
+          })
+          .select(selectFields)
+          .lean();
         const result = words.map((word) =>
           this.wordsHelper.mapWordToWordInLesson(word),
         );

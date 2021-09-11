@@ -62,7 +62,9 @@ export class BooksService {
     book: Partial<ProgressBook>,
   ): Observable<ActiveBookProgress> {
     const unSelect = ['name', 'grade', 'cover', '-_id', 'units._id'];
-    return from(this.bookModel.findById(book.bookId).select(unSelect)).pipe(
+    return from(
+      this.bookModel.findById(book.bookId).select(unSelect).lean(),
+    ).pipe(
       map((result) => {
         return {
           name: result?.name,
@@ -106,8 +108,9 @@ export class BooksService {
         this.bookModel
           .find({ grade: grade })
           .select(selectedFields)
-          .sort({ nId: 1 }),
-        this.progressesService.getUserProgress(userId),
+          .sort({ nId: 1 })
+          .lean(),
+        this.progressesService.findUserProgress(userId),
       ]);
       if (!userProgress) {
         userProgress = await this.progressesService.createUserProgress({
@@ -137,7 +140,7 @@ export class BooksService {
       session.startTransaction();
       const [book, instanceUserWork] = await Promise.all([
         this.getBook(bookId),
-        this.worksService.getUserWork(userId, bookId),
+        this.worksService.findUserWork(userId, bookId),
       ]);
       if (!book) {
         throw new BadRequestException('Book not found');
@@ -571,7 +574,7 @@ export class BooksService {
   }
 
   public async getLevelsInUnit(bookId: string, unitId: string) {
-    const book = await this.bookModel.findById(bookId);
+    const book = await this.bookModel.findById(bookId).select(['units']).lean();
     const units = book?.units;
     if (units?.length > 0) {
       const currentUnit = units.find((element) => element._id === unitId);

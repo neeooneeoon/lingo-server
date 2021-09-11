@@ -120,19 +120,14 @@ export class ScoreStatisticsService {
       },
     };
     const promises = await Promise.all([
-      this.usersService.queryMe(followUserId),
       this.getTotalXp(false, filter),
       this.getXpStatistic(followUserId, startTime, endTime),
       this.getXpStatistic(currentUserId, startTime, endTime),
     ]);
-    const followUser = promises[0];
-    if (!followUser) {
-      throw new BadRequestException('Can not find follow user');
-    }
 
-    const xpArr = promises[1];
-    const followUserWeekStatistic = promises[2];
-    const currentUserWeekStatistic = promises[3];
+    const xpArr = promises[0];
+    const followUserWeekStatistic = promises[1];
+    const currentUserWeekStatistic = promises[2];
     const result: Statistic = {
       currentUserXp: -1,
       followUserXp: -1,
@@ -340,13 +335,16 @@ export class ScoreStatisticsService {
     dayjs.extend(utc);
     dayjs.extend(timezone);
     const statisticLength = 7;
-    const xpStatistic = await this.scoreStatisticModel.find({
-      user: new Types.ObjectId(userId),
-      createdAt: {
-        $gte: startTime,
-        $lte: endTime,
-      },
-    });
+    const xpStatistic = await this.scoreStatisticModel
+      .find({
+        user: new Types.ObjectId(userId),
+        createdAt: {
+          $gte: startTime,
+          $lte: endTime,
+        },
+      })
+      .select(['xp'])
+      .lean();
     const xpStatisticResult: number[] = new Array(statisticLength).fill(0);
     for (const item of xpStatistic) {
       xpStatisticResult[

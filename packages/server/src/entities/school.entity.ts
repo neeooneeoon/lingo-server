@@ -14,3 +14,4 @@ export class School {
 }
 export type SchoolDocument = School & Document;
 export const SchoolSchema = SchemaFactory.createForClass(School);
+SchoolSchema.index({ province: 1, district: 1 });
