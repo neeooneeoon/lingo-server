@@ -10,6 +10,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import admin from 'firebase-admin';
 import { ServiceAccount } from 'firebase-admin';
+import { AppClusterService } from './app-cluster.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -60,5 +61,5 @@ async function bootstrap() {
   console.log('\nCompile successfully!\n');
   console.log(`🚀 Lingo Server is listening at http://localhost:${port}`);
 }
-bootstrap();
-// AppClusterService.clusterize(bootstrap);
+// bootstrap();
+AppClusterService.clusterize(bootstrap);

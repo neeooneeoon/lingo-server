@@ -208,7 +208,7 @@ export class BooksService {
       }
     }
 
-    if (lesson?.questionIds?.length == 0 && questions?.length !== 0) {
+    if (lesson?.questionIds?.length == 0 && questions?.length > 0) {
       const userWork = await this.worksService.getUserWork(userId, bookId);
       const userWorkUnit = userWork?.units?.find(
         (item) => item.unitId === unitId,
@@ -226,7 +226,6 @@ export class BooksService {
         const setReviewQuestions =
           this.questionHoldersService.questionsLatestLesson(
             incorrectPercent,
-            incorrectList,
             questions,
             maxSize,
           );
@@ -236,9 +235,11 @@ export class BooksService {
             questions.length > maxSize
           ) {
             const index = Math.floor(Math.random() * questions.length);
-            setReviewQuestions.add(String(questions[index]._id));
+            // setReviewQuestions.add(String(questions[index]._id));
             if (!setReviewQuestions.has(String(questions[index]._id))) {
               setReviewQuestions.add(String(questions[index]._id));
+              questions.splice(index, 1);
+            } else {
               questions.splice(index, 1);
             }
           }

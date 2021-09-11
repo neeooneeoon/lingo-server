@@ -199,7 +199,6 @@ export class ScoreStatisticsService {
               totalXp: { $sum: '$xp' },
             },
           },
-          { $sort: { totalXp: -1 } },
           {
             $lookup: {
               from: 'users',
@@ -232,6 +231,7 @@ export class ScoreStatisticsService {
           {
             $match: { ...locationFilter, ...roleFilter },
           },
+          { $sort: { xp: -1 } },
         ])
         .limit(10);
       return result;
