@@ -464,4 +464,35 @@ export class ProgressesService {
       },
     );
   }
+
+  public async removeNullBooksFromProgress() {
+    const session = await this.transactionService.createSession();
+    session.startTransaction();
+
+    const progresses = await this.progressModel.find({
+      books: {
+        $elemMatch: {
+          $eq: null,
+        },
+      },
+    });
+    if (progresses?.length > 0) {
+      console.log(progresses?.length);
+      const removeForSingleProgress = async (progress: ProgressDocument) => {
+        const books = progress.books.filter((el) => el);
+        return this.progressModel.updateOne(
+          {
+            userId: progress.userId,
+          },
+          {
+            $set: { books: books },
+          },
+        );
+      };
+      const results = await Promise.all(
+        progresses.map((element) => removeForSingleProgress(element)),
+      );
+      return results;
+    }
+  }
 }

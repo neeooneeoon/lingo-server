@@ -12,6 +12,7 @@ import { WordsModule } from '@libs/words';
 import { UnitsModule } from '@libs/units/units.module';
 import { SentencesModule } from '@libs/sentences';
 import { CacheModule } from '@cache';
+import { ConnectModule } from '@connect';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CacheModule } from '@cache';
     QuestionHoldersModule,
     forwardRef(() => UnitsModule),
     CacheModule,
+    ConnectModule,
   ],
   providers: [BooksService, BooksHelper, BookPrivateService],
   controllers: [BooksController],

@@ -37,6 +37,7 @@ import { Cache } from 'cache-manager';
 import { QuestionDocument } from '@entities/question.entity';
 import { ConfigsService } from '@configs';
 import { OverLevelDto } from '@dto/book';
+import { TransactionService } from '@connect';
 
 @Injectable()
 export class BooksService {
@@ -52,6 +53,7 @@ export class BooksService {
     private questionHoldersService: QuestionHoldersService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly configsService: ConfigsService,
+    private readonly transactionService: TransactionService,
   ) {
     this.prefixKey = this.configsService.get('MODE');
   }
@@ -85,6 +87,8 @@ export class BooksService {
     userId: string,
   ): Promise<BookGrade[]> {
     try {
+      const session = await this.transactionService.createSession();
+      session.startTransaction();
       const selectedFields = [
         '_id',
         'nId',
@@ -111,6 +115,8 @@ export class BooksService {
           books: [],
         });
       }
+      await session.commitTransaction();
+      session.endSession();
       return books.map((book) => {
         const progressBook = userProgress.books.find(
           (item) => item.bookId === book._id,
@@ -127,6 +133,8 @@ export class BooksService {
     userId: string,
   ): Promise<ProgressBookMapping> {
     try {
+      const session = await this.transactionService.createSession();
+      session.startTransaction();
       const [book, instanceUserWork] = await Promise.all([
         this.getBook(bookId),
         this.worksService.getUserWork(userId, bookId),
@@ -137,6 +145,8 @@ export class BooksService {
       if (!instanceUserWork) {
         await this.worksService.createUserWork(userId, bookId);
       }
+      await session.commitTransaction();
+      session.endSession();
       return this.progressesService.getBookProgress(userId, book);
     } catch (error) {
       throw new InternalServerErrorException(error);
