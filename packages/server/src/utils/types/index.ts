@@ -41,3 +41,9 @@ export interface WordInEvaluation
   unitId: string;
   level: number;
 }
+
+export class BookProgressMetaData {
+  doneLessons: number;
+  doneQuestions: number;
+  bookId: string;
+}

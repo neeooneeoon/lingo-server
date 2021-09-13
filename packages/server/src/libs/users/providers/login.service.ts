@@ -126,7 +126,7 @@ export class LoginService {
       });
       await Promise.all([
         this.progressesService.createUserProgress({
-          userId: newUser._id,
+          userId: String(newUser._id),
           books: [],
         }),
         this.notificationsService.storeDeviceToken(

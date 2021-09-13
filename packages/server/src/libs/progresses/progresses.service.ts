@@ -2,9 +2,11 @@ import { LeanDocument, Model, Types, UpdateWriteOpResult } from 'mongoose';
 import { Progress, ProgressDocument } from '@entities/progress.entity';
 import {
   BadRequestException,
+  CACHE_MANAGER,
   forwardRef,
   Inject,
   Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserProgressDto } from '@dto/progress/createProgress.dto';
@@ -25,37 +27,71 @@ import { forkJoin, from, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { BooksService } from '@libs/books/providers/books.service';
 import { TransactionService } from '@connect';
+import { BookProgressMetaData } from '@utils/types';
+import { Cache } from 'cache-manager';
+import { ConfigsService } from '@configs';
 
 @Injectable()
 export class ProgressesService {
+  private readonly prefixKey: string;
   constructor(
     @InjectModel(Progress.name) private progressModel: Model<ProgressDocument>,
     private progressesHelper: ProgressesHelper,
     @Inject(forwardRef(() => BooksService)) private booksService: BooksService,
     private transactionService: TransactionService,
-  ) {}
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   async createUserProgress(
     input: CreateUserProgressDto,
   ): Promise<ProgressDocument> {
-    return this.progressModel.create({
+    const newUserProgress = await this.progressModel.create({
       userId: Types.ObjectId(String(input.userId)),
       books: input.books,
     });
+    if (!newUserProgress) {
+      throw new InternalServerErrorException('Can not create user progress');
+    }
+    return newUserProgress;
   }
 
   async getUserProgress(userId: string): Promise<ProgressDocument> {
     return this.progressModel.findOne({ userId: Types.ObjectId(userId) });
   }
 
-  async findUserProgress(
-    userId: string,
-  ): Promise<LeanDocument<ProgressDocument>> {
-    const selectFields = ['books.doneLessons', 'books.doneQuestions'];
-    return this.progressModel
-      .findOne({ userId: Types.ObjectId(userId) })
-      .select(selectFields)
-      .lean();
+  async booksProgress(userId: string): Promise<BookProgressMetaData[]> {
+    let progressBooks = await this.cacheManager.get<BookProgressMetaData[]>(
+      `${this.prefixKey}/${userId}/progressBooks`,
+    );
+    if (!progressBooks) {
+      const selectFields = [
+        'books.doneLessons',
+        'books.doneQuestions',
+        'books.bookId',
+      ];
+      const progress = await this.progressModel
+        .findOne({ userId: Types.ObjectId(userId) })
+        .select(selectFields)
+        .lean();
+      progressBooks = progress?.books?.map((element) => {
+        return {
+          bookId: element.bookId,
+          doneLessons: element?.doneLessons ? element?.doneLessons : 0,
+          doneQuestions: element?.doneQuestions ? element?.doneQuestions : 0,
+        };
+      });
+      await this.cacheManager.set<BookProgressMetaData[]>(
+        `${this.prefixKey}/${userId}/progressBooks`,
+        progressBooks,
+        { ttl: 1800 },
+      );
+      return progressBooks;
+    } else {
+      return progressBooks;
+    }
   }
 
   async getBookProgress(
@@ -65,7 +101,7 @@ export class ProgressesService {
     let userProgress = await this.getUserProgress(userId);
     if (!userProgress) {
       userProgress = await this.createUserProgress({
-        userId: Types.ObjectId(userId),
+        userId: userId,
         books: [],
       });
     }
@@ -231,7 +267,23 @@ export class ProgressesService {
       progressBook.doneLessons++;
       progressBook.doneQuestions += workInfo.doneQuestions;
     }
-    await userProgress.save();
+    const booksProgress: BookProgressMetaData[] = userProgress.books.map(
+      (element) => {
+        return {
+          doneLessons: element.doneLessons,
+          doneQuestions: element.doneQuestions,
+          bookId: element.bookId,
+        };
+      },
+    );
+    await Promise.all([
+      userProgress.save(),
+      this.cacheManager.set<BookProgressMetaData[]>(
+        `${this.prefixKey}/${userId}/progressBooks`,
+        booksProgress,
+        { ttl: 1800 },
+      ),
+    ]);
     return result;
   }
 

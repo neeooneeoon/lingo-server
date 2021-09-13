@@ -55,11 +55,18 @@ async function bootstrap() {
     .setVersion('0.0.1')
     .build();
   const apiDocument = SwaggerModule.createDocument(app, openApiConfig);
-  SwaggerModule.setup('api-docs', app, apiDocument);
+  if (process.env.NODE_ENV === 'production') {
+    app.use('/docs', (req, res, next) => {
+      res.status(404).send('Not Found');
+    });
+  } else {
+    SwaggerModule.setup('docs', app, apiDocument);
+  }
 
   await app.listen(port);
   console.log('\nCompile successfully!\n');
   console.log(`🚀 Lingo Server is listening at http://localhost:${port}`);
+  console.log(process.env.NODE_ENV);
 }
-// bootstrap();
-AppClusterService.clusterize(bootstrap);
+bootstrap();
+// AppClusterService.clusterize(bootstrap);

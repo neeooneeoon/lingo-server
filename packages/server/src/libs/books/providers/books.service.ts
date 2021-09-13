@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Book, BookDocument } from '@entities/book.entity';
-import { Model } from 'mongoose';
+import { LeanDocument, Model } from 'mongoose';
 import { ProgressesService } from '@libs/progresses/progresses.service';
 import {
   BookGrade,
@@ -84,13 +84,13 @@ export class BooksService {
     return this.bookModel.findById(bookId);
   }
 
-  public async getBooksByGrade(
+  public async booksFromCache(
     grade: number,
-    userId: string,
-  ): Promise<BookGrade[]> {
-    try {
-      const session = await this.transactionService.createSession();
-      session.startTransaction();
+  ): Promise<LeanDocument<BookDocument>[]> {
+    let books = await this.cacheManager.get<LeanDocument<BookDocument>[]>(
+      `${this.prefixKey}/books/${grade}`,
+    );
+    if (!books) {
       const selectedFields = [
         '_id',
         'nId',
@@ -103,25 +103,43 @@ export class BooksService {
         'totalLessons',
         'units._id',
       ];
-      // eslint-disable-next-line prefer-const
-      let [books, userProgress] = await Promise.all([
-        this.bookModel
-          .find({ grade: grade })
-          .select(selectedFields)
-          .sort({ nId: 1 })
-          .lean(),
-        this.progressesService.findUserProgress(userId),
-      ]);
-      if (!userProgress) {
-        userProgress = await this.progressesService.createUserProgress({
-          userId: userId,
-          books: [],
-        });
+      books = await this.bookModel
+        .find({ grade: grade })
+        .select(selectedFields)
+        .sort({ nId: 1 })
+        .lean();
+      if (books?.length > 0) {
+        await this.cacheManager.set<LeanDocument<BookDocument>[]>(
+          `${this.prefixKey}/books/${grade}`,
+          books,
+          { ttl: 1800 },
+        );
+        return books;
+      } else {
+        console.log('No books');
+        throw new BadRequestException(`Not books in grade ${grade}.`);
       }
+    } else {
+      return books;
+    }
+  }
+
+  public async getBooksByGrade(
+    grade: number,
+    userId: string,
+  ): Promise<BookGrade[]> {
+    try {
+      const session = await this.transactionService.createSession();
+      session.startTransaction();
+      // eslint-disable-next-line prefer-const
+      let [books, booksProgress] = await Promise.all([
+        this.booksFromCache(grade),
+        this.progressesService.booksProgress(userId),
+      ]);
       await session.commitTransaction();
       session.endSession();
       return books.map((book) => {
-        const progressBook = userProgress.books.find(
+        const progressBook = booksProgress?.find(
           (item) => item.bookId === book._id,
         );
         return this.booksHelper.mapToBookGrade(book, progressBook);
@@ -191,9 +209,9 @@ export class BooksService {
     if (!lesson) {
       throw new BadRequestException(`Can't find lesson ${lessonIndex}`);
     }
-    let questions = await this.cacheManager.get<QuestionDocument[] | null>(
-      `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
-    );
+    let questions = await this.cacheManager.get<
+      LeanDocument<QuestionDocument>[] | null
+    >(`${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`);
     if (!questions || questions?.length === 0) {
       const questionHolder =
         await this.questionHoldersService.getQuestionHolder({
@@ -203,7 +221,7 @@ export class BooksService {
         });
       questions = questionHolder?.questions;
       if (questions?.length > 0) {
-        await this.cacheManager.set<QuestionDocument[]>(
+        await this.cacheManager.set<LeanDocument<QuestionDocument>[]>(
           `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
           questions,
           { ttl: 7200 },
@@ -233,17 +251,19 @@ export class BooksService {
             maxSize,
           );
         if (setReviewQuestions.size < maxSize) {
+          const cloned = Array.from(questions);
           while (
             setReviewQuestions.size < maxSize &&
-            questions.length > maxSize
+            cloned.length > maxSize &&
+            cloned.length > 0
           ) {
-            const index = Math.floor(Math.random() * questions.length);
+            const index = Math.floor(Math.random() * cloned.length);
             // setReviewQuestions.add(String(questions[index]._id));
-            if (!setReviewQuestions.has(String(questions[index]._id))) {
-              setReviewQuestions.add(String(questions[index]._id));
-              questions.splice(index, 1);
+            if (!setReviewQuestions.has(String(cloned[index]._id))) {
+              setReviewQuestions.add(String(cloned[index]._id));
+              cloned.splice(index, 1);
             } else {
-              questions.splice(index, 1);
+              cloned.splice(index, 1);
             }
           }
         }
@@ -267,9 +287,9 @@ export class BooksService {
 
   public async getQuestionsOverLevel(input: OverLevelDto) {
     const { bookId, unitId, levelIndex } = input;
-    let questions = await this.cacheManager.get<QuestionDocument[] | null>(
-      `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
-    );
+    let questions = await this.cacheManager.get<
+      LeanDocument<QuestionDocument>[] | null
+    >(`${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`);
     const book = await this.getBook(bookId);
     if (!book) {
       throw new BadRequestException('Book not found');
@@ -283,7 +303,7 @@ export class BooksService {
         });
       questions = questionHolder?.questions;
       if (questions?.length > 0) {
-        await this.cacheManager.set<QuestionDocument[]>(
+        await this.cacheManager.set<LeanDocument<QuestionDocument>[]>(
           `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
           questions,
           { ttl: 7200 },
@@ -299,10 +319,10 @@ export class BooksService {
       }
       const group = (() => {
         const MINIMUM = 0.8;
-        const levelOneQuestions: Array<QuestionDocument> = [];
-        const levelTwoQuestions: Array<QuestionDocument> = [];
-        const levelThreeQuestions: Array<QuestionDocument> = [];
-        const levelFourQuestions: Array<QuestionDocument> = [];
+        const levelOneQuestions: Array<LeanDocument<QuestionDocument>> = [];
+        const levelTwoQuestions: Array<LeanDocument<QuestionDocument>> = [];
+        const levelThreeQuestions: Array<LeanDocument<QuestionDocument>> = [];
+        const levelFourQuestions: Array<LeanDocument<QuestionDocument>> = [];
         questions.forEach((element) => {
           switch (element.rank) {
             case 1:
@@ -321,17 +341,17 @@ export class BooksService {
               break;
           }
         });
-        function shuffle(array: Array<QuestionDocument>) {
+        function shuffle(array: Array<LeanDocument<QuestionDocument>>) {
           if (array.length > 1) {
-            let currentIndex = array.length;
-            while (currentIndex != 0) {
-              const randomIndex = Math.floor(Math.random() * currentIndex);
-              currentIndex--;
-              [array[currentIndex], array[randomIndex]] = [
-                array[randomIndex],
-                array[currentIndex],
-              ];
-            }
+            const currentIndex = array.length;
+            // while (currentIndex != 0) {
+            //   const randomIndex = Math.floor(Math.random() * currentIndex);
+            //   currentIndex--;
+            //   [array[currentIndex], array[randomIndex]] = [
+            //     array[randomIndex],
+            //     array[currentIndex],
+            //   ];
+            // }
           }
           return array;
         }

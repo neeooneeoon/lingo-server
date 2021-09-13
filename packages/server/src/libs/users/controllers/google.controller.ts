@@ -1,4 +1,10 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GoogleService } from '../providers/google.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,6 +26,9 @@ export class GoogleController {
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Google chuyển hướng xác thực, nhận accessToken' })
   googleAuthRedirect(@Req() req: any): any {
-    return this.googleService.googleRedirect(req);
+    if (process.env.NODE_ENV !== 'production') {
+      return this.googleService.googleRedirect(req);
+    }
+    throw new NotFoundException();
   }
 }

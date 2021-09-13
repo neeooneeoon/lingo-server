@@ -350,16 +350,34 @@ export class UsersService {
       this.cache.get<UserProfile>(`${this.prefixKey}/profile/${userId}`),
     ).pipe(
       switchMap((r) => {
-        const cachedUser = r;
-        if (cachedUser !== null) return of(cachedUser);
+        if (r !== null) return of(r);
+        const selectFields = [
+          'email',
+          'avatar',
+          'displayName',
+          'role',
+          'level',
+          'score',
+          'streak',
+          'lastActive',
+          'grade',
+          'xp',
+          'rank',
+          '_id',
+          'createdAt',
+          'address',
+          'enableNotification',
+        ];
         return from(
           this.userModel
             .findById(userId)
+            .select(selectFields)
             .populate('address.province', ['name'], Province.name)
             .populate('address.district', ['name'], District.name)
-            .populate('address.school', ['name'], School.name),
+            .populate('address.school', ['name'], School.name)
+            .lean(),
         ).pipe(
-          map((user) => {
+          map((user: any) => {
             if (!user)
               throw new BadRequestException(`Can't find user ${userId}`);
             const userProfile = this.usersHelper.mapToUserProfile(user);

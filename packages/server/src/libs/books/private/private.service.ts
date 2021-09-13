@@ -26,7 +26,7 @@ export class BookPrivateService {
       });
 
     let book: BookDocument;
-    let questionHolder: QuestionHolderDocument;
+    let questionHolder;
 
     await Promise.all([findBookPromise, findQuestionHolderPromise])
       .then(([bookResult, questionHolderResult]) => {

@@ -1,12 +1,12 @@
 import { BookGrade } from '@dto/book';
-import { ProgressBook } from '@dto/progress';
 import { BookDocument } from '@entities/book.entity';
 import { LeanDocument } from 'mongoose';
+import { BookProgressMetaData } from '@utils/types';
 
 export class BooksHelper {
   public mapToBookGrade(
     book: LeanDocument<BookDocument>,
-    progressBook?: ProgressBook | undefined,
+    progressBook?: BookProgressMetaData | undefined,
   ): BookGrade {
     return {
       _id: book._id,

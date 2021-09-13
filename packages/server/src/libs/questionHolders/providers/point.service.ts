@@ -1,10 +1,11 @@
 import { QuestionDocument } from '@entities/question.entity';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { QuestionTypeCode } from '@utils/enums';
+import { LeanDocument } from 'mongoose';
 
 @Injectable()
 export class PointService {
-  public getQuestionPoint(question: QuestionDocument): number {
+  public getQuestionPoint(question: LeanDocument<QuestionDocument>): number {
     try {
       if (
         [

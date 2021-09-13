@@ -9,7 +9,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { LeanDocument, Model } from 'mongoose';
 import {
   GetQuestionHolderInput,
   QuestionReducingInput,
@@ -44,16 +44,16 @@ export class QuestionHoldersService {
     private questionsHelper: QuestionsHelper,
   ) {}
 
-  public async getQuestionHolder(
-    input: GetQuestionHolderInput,
-  ): Promise<QuestionHolderDocument> {
+  public async getQuestionHolder(input: GetQuestionHolderInput) {
     try {
       const { bookId, unitId, level } = input;
-      const questionHolder = await this.questionHolderModel.findOne({
-        bookId: bookId,
-        unitId: unitId,
-        level: level,
-      });
+      const questionHolder = await this.questionHolderModel
+        .findOne({
+          bookId: bookId,
+          unitId: unitId,
+          level: level,
+        })
+        .lean();
       if (!questionHolder) {
         throw new BadRequestException(
           `Can't not find question holder with ${input}`,
@@ -198,7 +198,7 @@ export class QuestionHoldersService {
 
   public questionsLatestLesson(
     incorrectPercent: number,
-    rootQuestions: QuestionDocument[],
+    rootQuestions: LeanDocument<QuestionDocument>[],
     maxSize: number,
   ): Set<string> {
     if (incorrectPercent < 20) {
