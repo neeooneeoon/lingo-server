@@ -156,6 +156,7 @@ export class UsersService {
     await this.cache.set<UserProfile>(
       `${this.prefixKey}/profile/${String(userId)}`,
       profile,
+      { ttl: 86400 },
     );
     return profile;
   }
@@ -386,7 +387,7 @@ export class UsersService {
                 `${this.prefixKey}/profile/${userId}`,
                 userProfile,
                 {
-                  ttl: 7200,
+                  ttl: 86400,
                 },
               )
               .then((r) => r)
@@ -544,5 +545,42 @@ export class UsersService {
         );
       }
     }
+  }
+
+  public async pushToCache() {
+    const selectFields = [
+      'email',
+      'avatar',
+      'displayName',
+      'role',
+      'level',
+      'score',
+      'streak',
+      'lastActive',
+      'grade',
+      'xp',
+      'rank',
+      '_id',
+      'createdAt',
+      'address',
+      'enableNotification',
+    ];
+    const users = await this.userModel
+      .find({ xp: { $ne: 0 } })
+      .select(selectFields)
+      .populate('address.province', ['name'], Province.name)
+      .populate('address.district', ['name'], District.name)
+      .populate('address.school', ['name'], School.name)
+      .lean();
+    await Promise.all(
+      users.map((user: any) => {
+        const userProfile = this.usersHelper.mapToUserProfile(user);
+        return this.cache.set<UserProfile>(
+          `${this.prefixKey}/profile/${userProfile.userId}`,
+          userProfile,
+          { ttl: 86400 },
+        );
+      }),
+    );
   }
 }

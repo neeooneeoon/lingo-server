@@ -66,7 +66,7 @@ export class UserAddressService {
       `${this.prefixKey}/profile/${currentUser}`,
       userProfile,
       {
-        ttl: 7200,
+        ttl: 86400,
       },
     );
 

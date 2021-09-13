@@ -38,6 +38,7 @@ import { QuestionDocument } from '@entities/question.entity';
 import { ConfigsService } from '@configs';
 import { OverLevelDto } from '@dto/book';
 import { TransactionService } from '@connect';
+import { grades } from '../constants';
 
 @Injectable()
 export class BooksService {
@@ -112,7 +113,7 @@ export class BooksService {
         await this.cacheManager.set<LeanDocument<BookDocument>[]>(
           `${this.prefixKey}/books/${grade}`,
           books,
-          { ttl: 1800 },
+          { ttl: 86400 },
         );
         return books;
       } else {
@@ -611,5 +612,28 @@ export class BooksService {
     } else {
       throw new BadRequestException('No unit in book');
     }
+  }
+
+  private async pushBooksToCache(grade: number) {
+    const books = await this.booksFromCache(grade);
+    if (books) {
+      await this.cacheManager.set<LeanDocument<BookDocument>[]>(
+        `${this.prefixKey}/books/${grade}`,
+        books,
+        { ttl: 86400 },
+      );
+    }
+  }
+
+  public async pushToCache() {
+    const grades = Array(12)
+      .fill(0)
+      .map((_, i) => i + 1);
+    await Promise.all(
+      grades.map((grade) => {
+        return this.pushBooksToCache(grade);
+      }),
+    );
+    return;
   }
 }

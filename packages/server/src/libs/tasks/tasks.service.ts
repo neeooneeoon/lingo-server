@@ -1,3 +1,4 @@
+import { BooksService } from '@libs/books/providers/books.service';
 import { UsersService } from '@libs/users/providers/users.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
@@ -9,6 +10,7 @@ export class TasksService {
   constructor(
     private usersService: UsersService,
     private notificationsService: NotificationsService,
+    private booksService: BooksService,
   ) {}
 
   @Cron('0 0 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
@@ -40,5 +42,19 @@ export class TasksService {
   async scoreReminderMorning() {
     this.logger.log('Score reminder');
     return this.notificationsService.scoreReminderNotification();
+  }
+
+  @Cron('30 1 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async pushProfileToCache() {
+    this.logger.log('Push profile to cache');
+    await this.usersService.pushToCache();
+    return;
+  }
+
+  @Cron('15 1 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async pushBooksToCache() {
+    this.logger.log('Push books to cache');
+    await this.booksService.pushToCache();
+    return;
   }
 }
