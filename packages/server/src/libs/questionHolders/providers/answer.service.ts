@@ -5,6 +5,7 @@ import { WordsService } from '@libs/words/words.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ListWorQuestionCodes } from '@utils/constants';
 import { QuestionTypeCode } from '@utils/enums';
+import { LeanDocument } from 'mongoose';
 
 @Injectable()
 export class AnswerService {
@@ -32,7 +33,7 @@ export class AnswerService {
 
   public async checkAnswerWordQuestion(
     result: AnswerResult,
-    question: QuestionDocument,
+    question: LeanDocument<QuestionDocument>,
   ): Promise<boolean> {
     try {
       let isCorrect = false;
@@ -81,7 +82,7 @@ export class AnswerService {
 
   public async checkAnswerSentenceQuestion(
     result: AnswerResult,
-    question: QuestionDocument,
+    question: LeanDocument<QuestionDocument>,
   ): Promise<boolean> {
     try {
       let isCorrect = false;
@@ -171,7 +172,7 @@ export class AnswerService {
 
   public async checkAnswer(
     result: AnswerResult,
-    question: QuestionDocument,
+    question: LeanDocument<QuestionDocument>,
   ): Promise<boolean> {
     try {
       let isCorrect: boolean;

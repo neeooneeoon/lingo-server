@@ -12,16 +12,16 @@ export class FacebookController {
     return HttpStatus.OK;
   }
 
-  @Get('/redirect')
-  @UseGuards(AuthGuard('facebook'))
-  @ApiOperation({ summary: 'Facebook chuyển hướng xác thực, nhận accessToken' })
-  facebookAuthRedirect(@Req() req: Request): {
-    statusCode: HttpStatus;
-    data: Express.User;
-  } {
-    return {
-      statusCode: HttpStatus.OK,
-      data: req.user,
-    };
-  }
+  // @Get('/redirect')
+  // @UseGuards(AuthGuard('facebook'))
+  // @ApiOperation({ summary: 'Facebook chuyển hướng xác thực, nhận accessToken' })
+  // facebookAuthRedirect(@Req() req: Request): {
+  //   statusCode: HttpStatus;
+  //   data: Express.User;
+  // } {
+  //   return {
+  //     statusCode: HttpStatus.OK,
+  //     data: req.user,
+  //   };
+  // }
 }

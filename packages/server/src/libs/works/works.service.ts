@@ -1,5 +1,5 @@
 import { OverLevelCalculating } from '@dto/works';
-import { Model, Types } from 'mongoose';
+import { LeanDocument, Model, Types } from 'mongoose';
 import { Work, WorkDocument } from '@entities/work.entity';
 import {
   BadRequestException,
@@ -97,7 +97,7 @@ export class WorksService {
           level: levelIndex,
         });
       let userWork: WorkDocument;
-      let questionHolder: QuestionHolderDocument;
+      let questionHolder: LeanDocument<QuestionHolderDocument>;
       await Promise.all([userWorkPromise, questionHolderPromise])
         .then(([userWorkResult, questionHolderResult]) => {
           userWork = userWorkResult;
@@ -241,9 +241,9 @@ export class WorksService {
   public async calculatePointForOverLevel(input: OverLevelCalculating) {
     try {
       const { bookId, unitId, levelIndex, results, workInfo } = input;
-      let questions = await this.cacheManager.get<QuestionDocument[] | null>(
-        `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
-      );
+      let questions = await this.cacheManager.get<
+        LeanDocument<QuestionDocument>[] | null
+      >(`${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`);
       if (!questions) {
         const questionHolders =
           await this.questionHoldersService.getQuestionHolder({
@@ -255,7 +255,7 @@ export class WorksService {
           throw new BadRequestException();
         }
         questions = questionHolders.questions;
-        await this.cacheManager.set<QuestionDocument[]>(
+        await this.cacheManager.set<LeanDocument<QuestionDocument>[]>(
           `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
           questions,
         );

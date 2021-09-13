@@ -2,6 +2,7 @@ import { QuestionDocument } from '@entities/question.entity';
 import { QuestionTypeCode } from '@utils/enums';
 import { ListWorQuestionCodes } from '@utils/constants';
 import { DistractedChoice } from '@utils/types';
+import { LeanDocument } from 'mongoose';
 
 export class QuestionsHelper {
   public getContent(code: QuestionTypeCode, grade: number): string {
@@ -94,7 +95,10 @@ export class QuestionsHelper {
     }
   }
 
-  public getDetailQuestionOutput(question: QuestionDocument, grade: number) {
+  public getDetailQuestionOutput(
+    question: LeanDocument<QuestionDocument>,
+    grade: number,
+  ) {
     if (ListWorQuestionCodes.includes(question.code)) {
       return {
         _id: question._id,
@@ -130,7 +134,7 @@ export class QuestionsHelper {
   }
 
   public getQuestionOutPut(
-    question: QuestionDocument,
+    question: LeanDocument<QuestionDocument>,
     activeDistracted: DistractedChoice[],
     grade: number,
   ) {
