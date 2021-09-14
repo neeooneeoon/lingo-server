@@ -146,6 +146,7 @@ export class BooksService {
         return this.booksHelper.mapToBookGrade(book, progressBook);
       });
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(error);
     }
   }

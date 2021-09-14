@@ -1,5 +1,5 @@
 class WorkResult {
-  results: any[];
+  results: any;
   timeStart: Date;
   timeEnd: Date;
 }

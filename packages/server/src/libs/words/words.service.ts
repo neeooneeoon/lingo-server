@@ -109,7 +109,7 @@ export class WordsService {
         await this.cache.set<WordInLesson[]>(
           `${this.prefixKey}/words/in-unit/${bookNId}/${unitNId}`,
           result,
-          { ttl: 7200 },
+          { ttl: 86400 },
         );
         return result;
       }

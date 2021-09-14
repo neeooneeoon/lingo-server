@@ -4,7 +4,7 @@ module.exports = {
       name: 'lingo-server',
       script: './dist/main.js',
       cwd: __dirname,
-      instances: 1,
+      instances: 'max',
       autorestart: true,
       exec_mode: 'cluster',
       env: {
