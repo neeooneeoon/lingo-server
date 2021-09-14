@@ -101,53 +101,26 @@ export class ScoreStatisticsService {
     currentUserId = currentUserId.trim();
     followUserId = followUserId.trim();
     if (!currentUserId || !followUserId) {
-      throw new BadRequestException(
-        'currentUserId or followUserId not entered ',
-      );
+      throw new BadRequestException();
     }
     const startTime = dayjs().tz(VIETNAM_TIME_ZONE).startOf('week').toDate();
-    const endTime = dayjs().toDate();
-    const filter = {
-      user: {
-        $in: [
-          new Types.ObjectId(currentUserId),
-          new Types.ObjectId(followUserId),
-        ],
-      },
-      createdAt: {
-        $gte: startTime,
-        $lte: endTime,
-      },
-    };
-    const promises = await Promise.all([
-      this.getTotalXp(false, filter),
-      this.getXpStatistic(followUserId, startTime, endTime),
+    const endTime = dayjs().subtract(1, 'day').endOf('day').toDate();
+    // eslint-disable-next-line prefer-const
+    let [currentUserXps, refUserXps] = await Promise.all([
       this.getXpStatistic(currentUserId, startTime, endTime),
+      currentUserId !== followUserId
+        ? this.getXpStatistic(followUserId, startTime, endTime)
+        : new Promise<number[]>((resolve) => {
+            resolve(new Array(7).fill(0));
+          }),
     ]);
-
-    const xpArr = promises[0];
-    const followUserWeekStatistic = promises[1];
-    const currentUserWeekStatistic = promises[2];
+    refUserXps = currentUserXps;
     const result: Statistic = {
-      currentUserXp: -1,
-      followUserXp: -1,
-      followUserXpStatistic: followUserWeekStatistic,
-      currentUserXpStatistic: currentUserWeekStatistic,
+      currentUserXp: currentUserXps.reduce((prev, curr) => prev + curr),
+      followUserXp: refUserXps.reduce((prev, curr) => prev + curr),
+      followUserXpStatistic: refUserXps,
+      currentUserXpStatistic: currentUserXps,
     };
-    for (let i = 0; i < 2; i++) {
-      if (i >= xpArr.length) {
-        if (result.currentUserXp == -1) result.currentUserXp = 0;
-        if (result.followUserXp == -1) result.followUserXp = 0;
-      } else {
-        if (xpArr[i].userId.toHexString() == currentUserId) {
-          result.currentUserXp = xpArr[i].xp;
-        }
-        if (xpArr[i].userId.toHexString() == followUserId) {
-          result.followUserXp = xpArr[i].xp;
-        }
-      }
-    }
-
     return result;
   }
 
@@ -185,6 +158,7 @@ export class ScoreStatisticsService {
             break;
         }
       }
+      console.log(filter);
       const result = await this.scoreStatisticModel
         .aggregate([
           { $match: filter },
@@ -343,6 +317,7 @@ export class ScoreStatisticsService {
           $lte: endTime,
         },
       })
+      .limit(statisticLength)
       .select(['xp'])
       .lean();
     const xpStatisticResult: number[] = new Array(statisticLength).fill(0);

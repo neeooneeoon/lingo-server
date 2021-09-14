@@ -450,11 +450,13 @@ export class ProgressesService {
   public getAllUserScoresInProgress(
     userId: string,
   ): Observable<Pick<ScoreOverviewDto, 'correctQuestions' | 'doneLessons'>> {
+    const selectFields = ['books.doneLessons', 'books.correctQuestions'];
     return from(
       this.progressModel
         .findOne({
           userId: Types.ObjectId(userId),
         })
+        .select(selectFields)
         .lean(),
     ).pipe(
       map((progress) => {
@@ -534,8 +536,8 @@ export class ProgressesService {
   }
 
   public async removeNullBooksFromProgress() {
-    const session = await this.transactionService.createSession();
-    session.startTransaction();
+    // const session = await this.transactionService.createSession();
+    // session.startTransaction();
 
     const progresses = await this.progressModel.find({
       books: {

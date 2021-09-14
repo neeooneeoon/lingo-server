@@ -92,10 +92,23 @@ async function vocabularyWithoutSound() {
       spreadsheetId,
       auth,
     );
-    const SHEET_NAME = 'Tiếng Anh 3 (Unit 10-demo) Mới';
-    const listSheetNames = ['Tiếng Anh 3 (Unit 10-demo) Mới'];
-    const unitDemo = new UnitDemo(spreadsheetService, SHEET_NAME);
-    await unitDemo.vocabularyWithoutSound();
+    const listSheetNames = [
+      'Tiếng Anh 3 (Unit 10-demo) Mới',
+      'Tiếng Anh 7 (Unit 4-demo) Mới',
+      'Tiếng Anh 10 (Unit 10-demo) Mới',
+    ];
+    const unitDemo = new UnitDemo(spreadsheetService);
+    const outputSheet = 'Từ Thiếu Âm Thanh';
+    const results = await Promise.all(
+      listSheetNames.map((element) => {
+        return unitDemo.vocabularyWithoutSound(element);
+      }),
+    );
+    await spreadsheetService.clearAll(outputSheet);
+    await spreadsheetService.writeAll(
+      outputSheet,
+      results.flat().map((element) => [element]),
+    );
   }
 }
 

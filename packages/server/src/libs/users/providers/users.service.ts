@@ -165,8 +165,8 @@ export class UsersService {
     userCtx: JwtPayLoad,
     input: SaveLessonDto,
   ): Promise<string> {
-    const session = await this.transactionService.createSession();
-    session.startTransaction();
+    // const session = await this.transactionService.createSession();
+    // session.startTransaction();
     // eslint-disable-next-line prefer-const
     let [userProfile, lessonTree] = await Promise.all([
       this.cache.get<UserProfile | null>(
@@ -225,8 +225,8 @@ export class UsersService {
       console.log(error);
       throw new InternalServerErrorException(error);
     });
-    await session.commitTransaction();
-    session.endSession();
+    // await session.commitTransaction();
+    // session.endSession();
     return 'save user work';
   }
 
