@@ -5,6 +5,7 @@
     ],
     "scripts": {
         "build": "lerna run build",
+        "format": "lerna run format",
         "core:dev": "yarn workspace @lingo/core run start:dev",
         "core:debug": "yarn workspace @lingo/core run start:debug",
         "core:prod": "yarn workspace @lingo/core run start:prod"

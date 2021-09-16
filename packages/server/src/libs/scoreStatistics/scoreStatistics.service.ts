@@ -21,7 +21,6 @@ import timezone from 'dayjs/plugin/timezone';
 import { VIETNAM_TIME_ZONE } from '@utils/constants';
 import { LeanDocument, Model, Types } from 'mongoose';
 import { Location, Role } from '@utils/enums';
-import { TOP_XP_LENGTH } from '@utils/constants';
 import { CreateRecordDto } from '@dto/leaderBoard/createRecord.dto';
 import { FollowingsService } from '@libs/followings/providers/followings.service';
 
