@@ -126,7 +126,7 @@ export class SentenceService {
           _id: `${baseId}S${i}`,
           content: listContents[i],
           bookNId: bookNId,
-          unitNId: unitNId,
+          unitNId: unitNId[0],
           position: i,
           baseId: baseId,
           tempTranslates: [],
@@ -150,10 +150,22 @@ export class SentenceService {
         });
       }
     }
-    await this.sentencesCollection.deleteMany({
-      bookNId: usefulRows[0].bookNIdCol,
-      unitNId: usefulRows[0].unitNIdCol,
-    });
+    await Promise.all(
+      usefulRows[0].unitNIdCol.map((unitNId) =>
+        this.sentencesCollection.updateMany(
+          {
+            bookNId: usefulRows[0].bookNIdCol,
+            unitNId: unitNId,
+          },
+          {
+            $set: {
+              bookNId: usefulRows[0].bookNIdCol * 100,
+              unitNId: unitNId * 100,
+            },
+          },
+        ),
+      ),
+    );
     await this.sentencesCollection.insertMany(result);
     // const destinationFile = path.join(__dirname, './sentenceDemo.json');
     // fs.writeFileSync(destinationFile, JSON.stringify(result));

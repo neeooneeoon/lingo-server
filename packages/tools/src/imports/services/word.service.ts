@@ -33,7 +33,7 @@ export class WordsService {
           haveImageWords: [],
           noImageWords: [],
           bookNId: element.bookNIdCol,
-          unitNId: element.unitNIdCol,
+          unitNId: element.unitNIdCol[0],
           content: element.contentCol.replace(/[\n]/g, '').trim(),
           imageRoot: element.imageRootCol,
           isUseToMakeQuestion: true,
@@ -41,10 +41,22 @@ export class WordsService {
         words.push(word);
       }
     });
-    await this.wordsCollection.deleteMany({
-      bookNId: params[0].bookNIdCol,
-      unitNId: params[0].unitNIdCol,
-    });
+    await Promise.all(
+      params[0].unitNIdCol.map((unitNId) =>
+        this.wordsCollection.updateMany(
+          {
+            bookNId: params[0].bookNIdCol,
+            unitNId: unitNId,
+          },
+          {
+            $set: {
+              bookNId: params[0].bookNIdCol * 100,
+              unitNId: unitNId * 100,
+            },
+          },
+        ),
+      ),
+    );
     await this.wordsCollection.insertMany(words);
     // const destinationFile = path.join(__dirname, 'wordDemo.json');
     // fs.writeFileSync(destinationFile, JSON.stringify(words));

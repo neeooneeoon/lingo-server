@@ -73,7 +73,7 @@ export type SentenceSmoothingParam = {
   baseIdCol: string;
   wordBaseCol: string;
   bookNIdCol: number;
-  unitNIdCol: number;
+  unitNIdCol: number[];
   contentCol: string;
   meaningCol: string;
   phraseCol: string;
@@ -89,5 +89,5 @@ export type WordSmoothingParam = {
   imageRootCol: string;
   pronunciationCol: string;
   bookNIdCol: number;
-  unitNIdCol: number;
+  unitNIdCol: number[];
 };
