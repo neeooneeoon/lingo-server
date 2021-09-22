@@ -38,7 +38,6 @@ import { QuestionDocument } from '@entities/question.entity';
 import { ConfigsService } from '@configs';
 import { OverLevelDto } from '@dto/book';
 import { TransactionService } from '@connect';
-import { grades } from '../constants';
 
 @Injectable()
 export class BooksService {
