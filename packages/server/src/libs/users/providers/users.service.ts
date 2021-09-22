@@ -156,6 +156,7 @@ export class UsersService {
     await this.cache.set<UserProfile>(
       `${this.prefixKey}/profile/${String(userId)}`,
       profile,
+      { ttl: 86400 },
     );
     return profile;
   }
@@ -164,8 +165,8 @@ export class UsersService {
     userCtx: JwtPayLoad,
     input: SaveLessonDto,
   ): Promise<string> {
-    const session = await this.transactionService.createSession();
-    session.startTransaction();
+    // const session = await this.transactionService.createSession();
+    // session.startTransaction();
     // eslint-disable-next-line prefer-const
     let [userProfile, lessonTree] = await Promise.all([
       this.cache.get<UserProfile | null>(
@@ -224,8 +225,8 @@ export class UsersService {
       console.log(error);
       throw new InternalServerErrorException(error);
     });
-    await session.commitTransaction();
-    session.endSession();
+    // await session.commitTransaction();
+    // session.endSession();
     return 'save user work';
   }
 
@@ -386,7 +387,7 @@ export class UsersService {
                 `${this.prefixKey}/profile/${userId}`,
                 userProfile,
                 {
-                  ttl: 7200,
+                  ttl: 86400,
                 },
               )
               .then((r) => r)
@@ -544,5 +545,42 @@ export class UsersService {
         );
       }
     }
+  }
+
+  public async pushToCache() {
+    const selectFields = [
+      'email',
+      'avatar',
+      'displayName',
+      'role',
+      'level',
+      'score',
+      'streak',
+      'lastActive',
+      'grade',
+      'xp',
+      'rank',
+      '_id',
+      'createdAt',
+      'address',
+      'enableNotification',
+    ];
+    const users = await this.userModel
+      .find({ xp: { $ne: 0 } })
+      .select(selectFields)
+      .populate('address.province', ['name'], Province.name)
+      .populate('address.district', ['name'], District.name)
+      .populate('address.school', ['name'], School.name)
+      .lean();
+    await Promise.all(
+      users.map((user: any) => {
+        const userProfile = this.usersHelper.mapToUserProfile(user);
+        return this.cache.set<UserProfile>(
+          `${this.prefixKey}/profile/${userProfile.userId}`,
+          userProfile,
+          { ttl: 86400 },
+        );
+      }),
+    );
   }
 }

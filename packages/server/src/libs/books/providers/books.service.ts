@@ -112,7 +112,7 @@ export class BooksService {
         await this.cacheManager.set<LeanDocument<BookDocument>[]>(
           `${this.prefixKey}/books/${grade}`,
           books,
-          { ttl: 1800 },
+          { ttl: 86400 },
         );
         return books;
       } else {
@@ -129,15 +129,15 @@ export class BooksService {
     userId: string,
   ): Promise<BookGrade[]> {
     try {
-      const session = await this.transactionService.createSession();
-      session.startTransaction();
+      // const session = await this.transactionService.createSession();
+      // session.startTransaction();
       // eslint-disable-next-line prefer-const
       let [books, booksProgress] = await Promise.all([
         this.booksFromCache(grade),
         this.progressesService.booksProgress(userId),
       ]);
-      await session.commitTransaction();
-      session.endSession();
+      // await session.commitTransaction();
+      // session.endSession();
       return books.map((book) => {
         const progressBook = booksProgress?.find(
           (item) => item.bookId === book._id,
@@ -145,6 +145,7 @@ export class BooksService {
         return this.booksHelper.mapToBookGrade(book, progressBook);
       });
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(error);
     }
   }
@@ -154,8 +155,8 @@ export class BooksService {
     userId: string,
   ): Promise<ProgressBookMapping> {
     try {
-      const session = await this.transactionService.createSession();
-      session.startTransaction();
+      // const session = await this.transactionService.createSession();
+      // session.startTransaction();
       const [book, instanceUserWork] = await Promise.all([
         this.getBook(bookId),
         this.worksService.findUserWork(userId, bookId),
@@ -166,8 +167,8 @@ export class BooksService {
       if (!instanceUserWork) {
         await this.worksService.createUserWork(userId, bookId);
       }
-      await session.commitTransaction();
-      session.endSession();
+      // await session.commitTransaction();
+      // session.endSession();
       return this.progressesService.getBookProgress(userId, book);
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -611,5 +612,28 @@ export class BooksService {
     } else {
       throw new BadRequestException('No unit in book');
     }
+  }
+
+  private async pushBooksToCache(grade: number) {
+    const books = await this.booksFromCache(grade);
+    if (books) {
+      await this.cacheManager.set<LeanDocument<BookDocument>[]>(
+        `${this.prefixKey}/books/${grade}`,
+        books,
+        { ttl: 86400 },
+      );
+    }
+  }
+
+  public async pushToCache() {
+    const grades = Array(12)
+      .fill(0)
+      .map((_, i) => i + 1);
+    await Promise.all(
+      grades.map((grade) => {
+        return this.pushBooksToCache(grade);
+      }),
+    );
+    return;
   }
 }

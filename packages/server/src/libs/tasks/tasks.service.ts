@@ -1,7 +1,10 @@
+import { BooksService } from '@libs/books/providers/books.service';
 import { UsersService } from '@libs/users/providers/users.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { NotificationsService } from '@libs/notifications/providers/notifications.service';
+import { ProgressesService } from '@libs/progresses/progresses.service';
+import { VersionsService } from '@admin/versions/versions.service';
 
 @Injectable()
 export class TasksService {
@@ -9,6 +12,9 @@ export class TasksService {
   constructor(
     private usersService: UsersService,
     private notificationsService: NotificationsService,
+    private booksService: BooksService,
+    private progressesService: ProgressesService,
+    private versionsService: VersionsService,
   ) {}
 
   @Cron('0 0 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
@@ -40,5 +46,32 @@ export class TasksService {
   async scoreReminderMorning() {
     this.logger.log('Score reminder');
     return this.notificationsService.scoreReminderNotification();
+  }
+
+  @Cron('30 1 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async pushProfileToCache() {
+    this.logger.log('Push profile to cache');
+    await this.usersService.pushToCache();
+    return;
+  }
+
+  @Cron('15 1 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async pushBooksToCache() {
+    this.logger.log('Push books to cache');
+    await this.booksService.pushToCache();
+    return;
+  }
+
+  @Cron('10 1 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async pushVersionToCache() {
+    this.logger.log('Push version to cache');
+    await this.versionsService.pushToCache();
+  }
+
+  @Cron('20 1 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async pushProgressBooksToCache() {
+    this.logger.log('Push progress books to cache');
+    await this.progressesService.pushToCache();
+    return;
   }
 }

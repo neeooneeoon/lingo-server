@@ -8,7 +8,7 @@ export class QuestionsHelper {
   public getContent(code: QuestionTypeCode, grade: number): string {
     switch (code) {
       case QuestionTypeCode.W3:
-        return grade == 1
+        return grade <= 5
           ? 'Chọn hình ảnh tương ứng'
           : 'Chọn hình ảnh và nghĩa tương ứng';
       case QuestionTypeCode.W6:

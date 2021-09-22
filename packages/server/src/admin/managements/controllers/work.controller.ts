@@ -1,7 +1,7 @@
 import { JwtAuthGuard } from '@authentication/guard/jwtAuth.guard';
 import { WorksService } from '@libs/works/works.service';
 import { PoliciesGuard } from '@middlewares/policy/policy.guard';
-import { Controller, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('api/admin/works')
@@ -14,5 +14,10 @@ export class WorkManagementController {
   @Delete('rollbackBooks')
   rollbackBooks() {
     return this.worksService.rollbackBooks();
+  }
+
+  @Post('pushToCache')
+  pushToCache() {
+    return this.worksService.pushToCache();
   }
 }

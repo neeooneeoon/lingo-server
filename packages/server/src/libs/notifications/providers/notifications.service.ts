@@ -284,25 +284,24 @@ export class NotificationsService {
       const list = (
         await Promise.all(
           messageObject.map(async (element) => {
-            const devices = await this.deviceTokenModel.find({
-              user: Types.ObjectId(element.currentUser),
-            });
+            const devices = await this.deviceTokenModel
+              .find({
+                user: Types.ObjectId(element.currentUser),
+              })
+              .sort({ createdAt: 1 });
             if (devices.length > 0) {
-              return devices.map((device) => {
-                return {
-                  token: device.token,
-                  notification: {
-                    title: '🔥🔥🔥 THI ĐUA NGAY',
-                    body: element.message,
-                  },
-                };
-              });
+              const latestDevice = devices[devices.length - 1];
+              return {
+                token: latestDevice.token,
+                notification: {
+                  title: '🔥🔥🔥 THI ĐUA NGAY',
+                  body: element.message,
+                },
+              };
             }
           }),
         )
-      )
-        .flat()
-        .filter((element) => element);
+      ).filter((element) => element);
       if (list.length > 0) {
         const remainder = Math.floor(list.length / MAX_MESSAGES) + 1;
         const groupMessages: Array<Array<messaging.Message>> = [];

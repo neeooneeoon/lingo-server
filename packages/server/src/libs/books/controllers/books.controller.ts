@@ -146,4 +146,10 @@ export class BooksController {
   ) {
     return this.booksService.getLevelsInUnit(bookId, unitId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('pushToCahe')
+  async pushToCache() {
+    return this.booksService.pushToCache();
+  }
 }

@@ -1,0 +1,5546 @@
+[
+    {
+        "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42dS0",
+        "content": "Viet Nam’s national anthem is Tien Quan Ca. ",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d",
+        "tempTranslates": [],
+        "wordBaseIndex": 3,
+        "translate": "Bài quốc ca của Việt Nam là Tiến Quân Ca.",
+        "translates": [
+            "Bài quốc ca của Việt Nam là Tiến Quân Ca."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/1_2.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0en0",
+                "text": "Viet",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0en1",
+                "text": "Nam’s",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0en2",
+                "text": "national",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0en3",
+                "text": "anthem",
+                "wordId": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0en4",
+                "text": "is",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0en5",
+                "text": "Tien",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0en6",
+                "text": "Quan",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0en7",
+                "text": "Ca.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0vn0",
+                "text": "Bài",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0vn1",
+                "text": "quốc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0vn2",
+                "text": "ca",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0vn3",
+                "text": "của",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0vn4",
+                "text": "Việt",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0vn5",
+                "text": "Nam",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0vn6",
+                "text": "là",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0vn7",
+                "text": "Tiến",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0vn8",
+                "text": "Quân",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d0vn9",
+                "text": "Ca.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Viet Nam’s national anthem is Tien Quan Ca.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "national anthem"
+    },
+    {
+        "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42dS1",
+        "content": "The students stand in the schoolyard and sing the national anthem every Monday.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d",
+        "tempTranslates": [],
+        "wordBaseIndex": 10,
+        "translate": "Học sinh đứng ở sân trường và hát quốc ca vào mỗi ngày thứ Hai.",
+        "translates": [
+            "Học sinh đứng ở sân trường và hát quốc ca vào mỗi ngày thứ Hai."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/2_3.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en0",
+                "text": "The",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en1",
+                "text": "students",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en2",
+                "text": "stand",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en3",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en4",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en5",
+                "text": "schoolyard",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en6",
+                "text": "and",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en7",
+                "text": "sing",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en8",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en9",
+                "text": "national",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en10",
+                "text": "anthem",
+                "wordId": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en11",
+                "text": "every",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1en12",
+                "text": "Monday.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn0",
+                "text": "Học",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn1",
+                "text": "sinh",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn2",
+                "text": "đứng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn3",
+                "text": "ở",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn4",
+                "text": "sân",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn5",
+                "text": "trường",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn6",
+                "text": "và",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn7",
+                "text": "hát",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn8",
+                "text": "quốc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn9",
+                "text": "ca",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn10",
+                "text": "vào",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn11",
+                "text": "mỗi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn12",
+                "text": "ngày",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn13",
+                "text": "thứ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e5e473799c7ae461f9fa952d933ed42d1vn14",
+                "text": "Hai.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "The students stand in the schoolyard and sing the national anthem every Monday.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "sing the national anthem every Monday."
+    },
+    {
+        "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6eS0",
+        "content": "Who plays the main character in the film?",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-a956161a69928cd130a889b88082fb6e",
+        "tempTranslates": [],
+        "wordBaseIndex": 4,
+        "translate": "Ai đóng vai nhân vật chính trong phim?",
+        "translates": [
+            "Ai đóng vai nhân vật chính trong phim?"
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/3_4.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0en0",
+                "text": "Who",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0en1",
+                "text": "plays",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0en2",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0en3",
+                "text": "main",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0en4",
+                "text": "character",
+                "wordId": "TA7-DEMO-a956161a69928cd130a889b88082fb6e",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0en5",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0en6",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0en7",
+                "text": "film?",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0vn0",
+                "text": "Ai",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0vn1",
+                "text": "đóng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0vn2",
+                "text": "vai",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0vn3",
+                "text": "nhân",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0vn4",
+                "text": "vật",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0vn5",
+                "text": "chính",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0vn6",
+                "text": "trong",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e0vn7",
+                "text": "phim?",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Who plays the main character in the film",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "the main character"
+    },
+    {
+        "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6eS1",
+        "content": "The characters in the film are different from the ones in the play.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-a956161a69928cd130a889b88082fb6e",
+        "tempTranslates": [],
+        "wordBaseIndex": 1,
+        "translate": "Các nhân vật trong phim khác với các nhân vật trong kịch.",
+        "translates": [
+            "Các nhân vật trong phim khác với các nhân vật trong kịch."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/4_5.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en0",
+                "text": "The",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en1",
+                "text": "characters",
+                "wordId": "TA7-DEMO-a956161a69928cd130a889b88082fb6e",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en2",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en3",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en4",
+                "text": "film",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en5",
+                "text": "are",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en6",
+                "text": "different",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en7",
+                "text": "from",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en8",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en9",
+                "text": "ones",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en10",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en11",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1en12",
+                "text": "play.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1vn0",
+                "text": "Các",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1vn1",
+                "text": "nhân vật",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1vn2",
+                "text": "trong",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1vn3",
+                "text": "phim",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1vn4",
+                "text": "khác",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1vn5",
+                "text": "với",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1vn6",
+                "text": "các",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1vn7",
+                "text": "nhân vật",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1vn8",
+                "text": "trong",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-a956161a69928cd130a889b88082fb6e1vn9",
+                "text": "kịch.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "The characters in the film are different from the ones in the play.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "The characters in the film"
+    },
+    {
+        "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967eS0",
+        "content": "What kind of music did he compose then? ",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e",
+        "tempTranslates": [],
+        "wordBaseIndex": 6,
+        "translate": "Sau đó ông ấy đã soạn những thể loại nhạc gì? ",
+        "translates": [
+            "Sau đó ông ấy đã soạn những thể loại nhạc gì? "
+        ],
+        "audio": " https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/5_6.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0en0",
+                "text": "What",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0en1",
+                "text": "kind",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0en2",
+                "text": "of",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0en3",
+                "text": "music",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0en4",
+                "text": "did",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0en5",
+                "text": "he",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0en6",
+                "text": "compose",
+                "wordId": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0en7",
+                "text": "then?",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0vn0",
+                "text": "Sau",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0vn1",
+                "text": "đó",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0vn2",
+                "text": "ông ấy",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0vn3",
+                "text": "đã",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0vn4",
+                "text": "soạn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0vn5",
+                "text": "những",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0vn6",
+                "text": "thể loại",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0vn7",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0vn8",
+                "text": "gì?",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e0vn9",
+                "text": "",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "What kind of music did he compose then",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": ""
+    },
+    {
+        "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967eS1",
+        "content": "Although he stopped performing in public, he continued to compose music.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e",
+        "tempTranslates": [],
+        "wordBaseIndex": 9,
+        "translate": "Mặc dù ông đã thôi không biểu diễn trước công chúng, ông tiếp tục soạn nhạc.",
+        "translates": [
+            "Mặc dù ông đã thôi không biểu diễn trước công chúng, ông tiếp tục soạn nhạc."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/6_7.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en0",
+                "text": "Although",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en1",
+                "text": "he",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en2",
+                "text": "stopped",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en3",
+                "text": "performing",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en4",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en5",
+                "text": "public,",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en6",
+                "text": "he",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en7",
+                "text": "continued",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en8",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en9",
+                "text": "compose",
+                "wordId": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1en10",
+                "text": "music.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn0",
+                "text": "Mặc dù",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn1",
+                "text": "ông",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn2",
+                "text": "đã",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn3",
+                "text": "thôi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn4",
+                "text": "không",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn5",
+                "text": "biểu diễn",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn6",
+                "text": "trước",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn7",
+                "text": "công chúng,",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn8",
+                "text": "ông",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn9",
+                "text": "tiếp tục",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn10",
+                "text": "soạn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-13b3f3e76ed018a105bdeac77aa8967e1vn11",
+                "text": "nhạc.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Although he stopped performing in public, he continued to compose music.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "he continued to compose music"
+    },
+    {
+        "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f43S0",
+        "content": "Beethoven is a famous classical music composer.  ",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-180b81a58ca6dde990aba761b7299f43",
+        "tempTranslates": [],
+        "wordBaseIndex": 6,
+        "translate": "Beethoven là một nhà soạn nhạc cổ điển nổi tiếng. ",
+        "translates": [
+            "Beethoven là một nhà soạn nhạc cổ điển nổi tiếng. "
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/7_8.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430en0",
+                "text": "Beethoven",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430en1",
+                "text": "is",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430en2",
+                "text": "a",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430en3",
+                "text": "famous",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430en4",
+                "text": "classical",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430en5",
+                "text": "music",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430en6",
+                "text": "composer.",
+                "wordId": "TA7-DEMO-180b81a58ca6dde990aba761b7299f43",
+                "types": []
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430vn0",
+                "text": "Beethoven",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430vn1",
+                "text": "là",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430vn2",
+                "text": "một",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430vn3",
+                "text": "nhà",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430vn4",
+                "text": "soạn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430vn5",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430vn6",
+                "text": "cổ điển",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430vn7",
+                "text": "nổi tiếng.",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f430vn8",
+                "text": "",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Beethoven is a famous classical music composer.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "classical music composer"
+    },
+    {
+        "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f43S1",
+        "content": "Who is the composer of Viet Nam’s national anthem?",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-180b81a58ca6dde990aba761b7299f43",
+        "tempTranslates": [],
+        "wordBaseIndex": 3,
+        "translate": "Ai là người sáng tác bài quốc ca của Việt Nam?",
+        "translates": [
+            "Ai là người sáng tác bài quốc ca của Việt Nam?"
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/8_9.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431en0",
+                "text": "Who",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431en1",
+                "text": "is",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431en2",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431en3",
+                "text": "composer",
+                "wordId": "TA7-DEMO-180b81a58ca6dde990aba761b7299f43",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431en4",
+                "text": "of",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431en5",
+                "text": "Viet",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431en6",
+                "text": "Nam’s",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431en7",
+                "text": "national",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431en8",
+                "text": "anthem?",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431vn0",
+                "text": "Ai",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431vn1",
+                "text": "là",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431vn2",
+                "text": "người",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431vn3",
+                "text": "sáng tác",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431vn4",
+                "text": "bài",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431vn5",
+                "text": "quốc ca",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431vn6",
+                "text": "của",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-180b81a58ca6dde990aba761b7299f431vn7",
+                "text": "Việt Nam?",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Who is the composer of Viet Nam’s national anthem",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "Viet Nam’s national anthem"
+    },
+    {
+        "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551dS0",
+        "content": "The orchestra will perform its concert tomorrow.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d",
+        "tempTranslates": [],
+        "wordBaseIndex": 5,
+        "translate": "Dàn nhạc sẽ biểu diễn buổi hòa nhạc vào ngày mai.",
+        "translates": [
+            "Dàn nhạc sẽ biểu diễn buổi hòa nhạc vào ngày mai."
+        ],
+        "audio": "\"https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/9_10.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0en0",
+                "text": "The",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0en1",
+                "text": "orchestra",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0en2",
+                "text": "will",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0en3",
+                "text": "perform",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0en4",
+                "text": "its",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0en5",
+                "text": "concert",
+                "wordId": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0en6",
+                "text": "tomorrow.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn0",
+                "text": "Dàn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn1",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn2",
+                "text": "sẽ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn3",
+                "text": "biểu",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn4",
+                "text": "diễn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn5",
+                "text": "buổi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn6",
+                "text": "hòa",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn7",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn8",
+                "text": "vào",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn9",
+                "text": "ngày",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d0vn10",
+                "text": "mai.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "The orchestra will perform its concert tomorrow.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": ""
+    },
+    {
+        "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551dS1",
+        "content": "It’s a pity you didn’t go to the concert last night.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d",
+        "tempTranslates": [],
+        "wordBaseIndex": 8,
+        "translate": "Thật tiếc vì bạn đã không đến buổi hòa nhạc tối qua.\r",
+        "translates": [
+            "Thật tiếc vì bạn đã không đến buổi hòa nhạc tối qua.\r"
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/10_11.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en0",
+                "text": "It’s",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en1",
+                "text": "a",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en2",
+                "text": "pity",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en3",
+                "text": "you",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en4",
+                "text": "didn’t",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en5",
+                "text": "go",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en6",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en7",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en8",
+                "text": "concert",
+                "wordId": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en9",
+                "text": "last",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1en10",
+                "text": "night.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn0",
+                "text": "Thật",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn1",
+                "text": "tiếc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn2",
+                "text": "vì",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn3",
+                "text": "bạn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn4",
+                "text": "đã",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn5",
+                "text": "không",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn6",
+                "text": "đến",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn7",
+                "text": "buổi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn8",
+                "text": "hòa",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn9",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn10",
+                "text": "tối",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d1vn11",
+                "text": "qua.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "It’s a pity you didn’t go to the concert last night.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "go to the concert last night"
+    },
+    {
+        "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551dS2",
+        "content": "The concert hall was full, and the performance was great.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 2,
+        "baseId": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d",
+        "tempTranslates": [],
+        "wordBaseIndex": 1,
+        "translate": "Phòng hòa nhạc đã chật kín, và buổi biểu diễn thật tuyệt vời.\r",
+        "translates": [
+            "Phòng hòa nhạc đã chật kín, và buổi biểu diễn thật tuyệt vời.\r"
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/11_12.mp3\"",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2en0",
+                "text": "The",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2en1",
+                "text": "concert",
+                "wordId": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2en2",
+                "text": "hall",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2en3",
+                "text": "was",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2en4",
+                "text": "full,",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2en5",
+                "text": "and",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2en6",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2en7",
+                "text": "performance",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2en8",
+                "text": "was",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2en9",
+                "text": "great.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn0",
+                "text": "Phòng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn1",
+                "text": "hòa",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn2",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn3",
+                "text": "đã",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn4",
+                "text": "chật",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn5",
+                "text": "kín,",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn6",
+                "text": "và",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn7",
+                "text": "buổi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn8",
+                "text": "biểu",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn9",
+                "text": "diễn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn10",
+                "text": "thật",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn11",
+                "text": "tuyệt",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-0909553c7a647d10dbff1b00394c551d2vn12",
+                "text": "vời.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "The concert hall was full, and the performance was great.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "concert hall"
+    },
+    {
+        "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4bS0",
+        "content": "People use a computer to control the system. ",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b",
+        "tempTranslates": [],
+        "wordBaseIndex": 5,
+        "translate": "Con người sử dụng máy tính để điều khiển hệ thống.",
+        "translates": [
+            "Con người sử dụng máy tính để điều khiển hệ thống."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/12_13.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0en0",
+                "text": "People",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0en1",
+                "text": "use",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0en2",
+                "text": "a",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0en3",
+                "text": "computer",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0en4",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0en5",
+                "text": "control",
+                "wordId": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0en6",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0en7",
+                "text": "system.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0vn0",
+                "text": "Con người",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0vn1",
+                "text": "sử dụng",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0vn2",
+                "text": "máy tính",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0vn3",
+                "text": "để",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0vn4",
+                "text": "điều khiển",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b0vn5",
+                "text": "hệ thống.",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "People use a computer to control the system.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "control the system"
+    },
+    {
+        "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4bS1",
+        "content": "They used strings under the water to control the puppets.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b",
+        "tempTranslates": [],
+        "wordBaseIndex": 7,
+        "translate": "Họ đã sử dụng những sợi dây ở dưới nước để điều khiển các con rối.",
+        "translates": [
+            "Họ đã sử dụng những sợi dây ở dưới nước để điều khiển các con rối."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/13_14.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1en0",
+                "text": "They",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1en1",
+                "text": "used",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1en2",
+                "text": "strings",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1en3",
+                "text": "under",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1en4",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1en5",
+                "text": "water",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1en6",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1en7",
+                "text": "control",
+                "wordId": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1en8",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1en9",
+                "text": "puppets.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn0",
+                "text": "Họ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn1",
+                "text": "đã",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn2",
+                "text": "sử",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn3",
+                "text": "dụng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn4",
+                "text": "những",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn5",
+                "text": "sợi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn6",
+                "text": "dây",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn7",
+                "text": "ở",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn8",
+                "text": "dưới",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn9",
+                "text": "nước",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn10",
+                "text": "để",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn11",
+                "text": "điều",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn12",
+                "text": "khiển",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn13",
+                "text": "các",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-fc5364bf9dbfa34954526becad136d4b1vn14",
+                "text": "con rối.",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "They used strings under the water to control the puppets.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "control the puppets"
+    },
+    {
+        "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7cS0",
+        "content": "Rock is very different from country music.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c",
+        "tempTranslates": [],
+        "wordBaseIndex": 5,
+        "translate": "Nhạc rock rất khác với nhạc đồng quê.",
+        "translates": [
+            "Nhạc rock rất khác với nhạc đồng quê."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/14_15.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0en0",
+                "text": "Rock",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0en1",
+                "text": "is",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0en2",
+                "text": "very",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0en3",
+                "text": "different",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0en4",
+                "text": "from",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0en5",
+                "text": "country music.",
+                "wordId": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c",
+                "types": []
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0vn0",
+                "text": "Nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0vn1",
+                "text": "rock",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0vn2",
+                "text": "rất",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0vn3",
+                "text": "khác",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0vn4",
+                "text": "với",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0vn5",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c0vn6",
+                "text": "đồng quê.",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 0,
+        "upperBound": 0,
+        "questionSection": "Rock is very different from country music.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": ""
+    },
+    {
+        "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7cS1",
+        "content": "I think classical music is as exciting as country music.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c",
+        "tempTranslates": [],
+        "wordBaseIndex": 8,
+        "translate": "Tôi nghĩ rằng nhạc cổ điển hấp dẫn như nhạc đồng quê.",
+        "translates": [
+            "Tôi nghĩ rằng nhạc cổ điển hấp dẫn như nhạc đồng quê."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/15_16.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1en0",
+                "text": "I",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1en1",
+                "text": "think",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1en2",
+                "text": "classical",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1en3",
+                "text": "music",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1en4",
+                "text": "is",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1en5",
+                "text": "as",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1en6",
+                "text": "exciting",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1en7",
+                "text": "as",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1en8",
+                "text": "country music.",
+                "wordId": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c",
+                "types": []
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1vn0",
+                "text": "Tôi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1vn1",
+                "text": "nghĩ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1vn2",
+                "text": "rằng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1vn3",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1vn4",
+                "text": "cổ điển",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1vn5",
+                "text": "hấp dẫn",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1vn6",
+                "text": "như",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1vn7",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-6a3c160abc970f79f8b0300c330cae7c1vn8",
+                "text": "đồng quê.",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "I think classical music is as exciting as country music.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": ""
+    },
+    {
+        "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa70S0",
+        "content": "The museum has an exhibition of 537 paintings.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa70",
+        "tempTranslates": [],
+        "wordBaseIndex": 4,
+        "translate": "Bảo tàng có một cuộc triển lãm 537 bức tranh.",
+        "translates": [
+            "Bảo tàng có một cuộc triển lãm 537 bức tranh."
+        ],
+        "audio": " https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/16_17.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700en0",
+                "text": "The",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700en1",
+                "text": "museum",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700en2",
+                "text": "has",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700en3",
+                "text": "an",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700en4",
+                "text": "exhibition",
+                "wordId": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa70",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700en5",
+                "text": "of",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700en6",
+                "text": "537",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700en7",
+                "text": "paintings.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700vn0",
+                "text": "Bảo",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700vn1",
+                "text": "tàng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700vn2",
+                "text": "có",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700vn3",
+                "text": "một",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700vn4",
+                "text": "cuộc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700vn5",
+                "text": "triển",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700vn6",
+                "text": "lãm",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700vn7",
+                "text": "537",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700vn8",
+                "text": "bức",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa700vn9",
+                "text": "tranh.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "The museum has an exhibition of 537 paintings.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "The museum has an exhibition of"
+    },
+    {
+        "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa70S1",
+        "content": "What do you think about the art exhibition at the Fine Arts Gallery?",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa70",
+        "tempTranslates": [],
+        "wordBaseIndex": 7,
+        "translate": "Bạn nghĩ sao về triển lãm nghệ thuật tại Phòng trưng bày Mỹ thuật?",
+        "translates": [
+            "Bạn nghĩ sao về triển lãm nghệ thuật tại Phòng trưng bày Mỹ thuật?"
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/17_18.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en0",
+                "text": "What",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en1",
+                "text": "do",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en2",
+                "text": "you",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en3",
+                "text": "think",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en4",
+                "text": "about",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en5",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en6",
+                "text": "art",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en7",
+                "text": "exhibition",
+                "wordId": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa70",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en8",
+                "text": "at",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en9",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en10",
+                "text": "Fine",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en11",
+                "text": "Arts",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701en12",
+                "text": "Gallery?",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701vn0",
+                "text": "Bạn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701vn1",
+                "text": "nghĩ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701vn2",
+                "text": "sao",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701vn3",
+                "text": "về",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701vn4",
+                "text": "triển lãm",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701vn5",
+                "text": "nghệ thuật",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701vn6",
+                "text": "tại",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701vn7",
+                "text": "Phòng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701vn8",
+                "text": "trưng bày",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-f99377de092fda397eecdfa5e5fbfa701vn9",
+                "text": "Mỹ thuật?",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "What do you think about the art exhibition at the Fine Arts Gallery",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "art exhibition"
+    },
+    {
+        "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1fS0",
+        "content": "Which do you prefer, pop or folk music?",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f",
+        "tempTranslates": [],
+        "wordBaseIndex": 6,
+        "translate": "Bạn thích nhạc nào, nhạc pop hay nhạc dân gian?",
+        "translates": [
+            "Bạn thích nhạc nào, nhạc pop hay nhạc dân gian?"
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/18_19.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0en0",
+                "text": "Which",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0en1",
+                "text": "do",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0en2",
+                "text": "you",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0en3",
+                "text": "prefer,",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0en4",
+                "text": "pop",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0en5",
+                "text": "or",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0en6",
+                "text": "folk music?",
+                "wordId": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f",
+                "types": []
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0vn0",
+                "text": "Bạn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0vn1",
+                "text": "thích",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0vn2",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0vn3",
+                "text": "nào,",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0vn4",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0vn5",
+                "text": "pop",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0vn6",
+                "text": "hay",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0vn7",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0vn8",
+                "text": "dân",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f0vn9",
+                "text": "gian?",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Which do you prefer, pop or folk music",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "pop or folk music"
+    },
+    {
+        "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1fS1",
+        "content": "Quan ho singing is a Vietnamese style of folk music.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f",
+        "tempTranslates": [],
+        "wordBaseIndex": 8,
+        "translate": "Hát Quan họ là một thể loại nhạc dân ca của Việt Nam.",
+        "translates": [
+            "Hát Quan họ là một thể loại nhạc dân ca của Việt Nam."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/19_20.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1en0",
+                "text": "Quan",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1en1",
+                "text": "ho",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1en2",
+                "text": "singing",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1en3",
+                "text": "is",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1en4",
+                "text": "a",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1en5",
+                "text": "Vietnamese",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1en6",
+                "text": "style",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1en7",
+                "text": "of",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1en8",
+                "text": "folk music.",
+                "wordId": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f",
+                "types": []
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1vn0",
+                "text": "Hát Quan họ",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1vn1",
+                "text": "là",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1vn2",
+                "text": "một",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1vn3",
+                "text": "thể",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1vn4",
+                "text": "loại",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1vn5",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1vn6",
+                "text": "dân ca",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1vn7",
+                "text": "của",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e0a98284de9bf24854fc936be413fc1f1vn8",
+                "text": "Việt Nam.",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Quan ho singing is a Vietnamese style of folk music.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "Vietnamese style of folk music"
+    },
+    {
+        "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565cS0",
+        "content": "Maybe we should go to an art gallery next weekend.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c",
+        "tempTranslates": [],
+        "wordBaseIndex": 7,
+        "translate": "Có lẽ chúng ta nên đến một phòng triển lãm tranh vào cuối tuần tới.",
+        "translates": [
+            "Có lẽ chúng ta nên đến một phòng triển lãm tranh vào cuối tuần tới."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/20_21.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0en0",
+                "text": "Maybe",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0en1",
+                "text": "we",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0en2",
+                "text": "should",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0en3",
+                "text": "go",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0en4",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0en5",
+                "text": "an",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0en6",
+                "text": "art",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0en7",
+                "text": "gallery",
+                "wordId": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0en8",
+                "text": "next",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0en9",
+                "text": "weekend.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn0",
+                "text": "Có",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn1",
+                "text": "lẽ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn2",
+                "text": "chúng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn3",
+                "text": "ta",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn4",
+                "text": "nên",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn5",
+                "text": "đến",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn6",
+                "text": "một",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn7",
+                "text": "phòng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn8",
+                "text": "triển",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn9",
+                "text": "lãm",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn10",
+                "text": "tranh",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn11",
+                "text": "vào",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn12",
+                "text": "cuối",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn13",
+                "text": "tuần",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c0vn14",
+                "text": "tới.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Maybe we should go to an art gallery next weekend.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "art gallery"
+    },
+    {
+        "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565cS1",
+        "content": "What do you think about the paintings at the art gallery?",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c",
+        "tempTranslates": [],
+        "wordBaseIndex": 10,
+        "translate": "Bạn nghĩ gì về các bức tranh ở phòng triển lãm.",
+        "translates": [
+            "Bạn nghĩ gì về các bức tranh ở phòng triển lãm."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/21_22.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en0",
+                "text": "What",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en1",
+                "text": "do",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en2",
+                "text": "you",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en3",
+                "text": "think",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en4",
+                "text": "about",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en5",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en6",
+                "text": "paintings",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en7",
+                "text": "at",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en8",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en9",
+                "text": "art",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1en10",
+                "text": "gallery?",
+                "wordId": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c",
+                "types": []
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn0",
+                "text": "Bạn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn1",
+                "text": "nghĩ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn2",
+                "text": "gì",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn3",
+                "text": "về",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn4",
+                "text": "các",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn5",
+                "text": "bức",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn6",
+                "text": "tranh",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn7",
+                "text": "ở",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn8",
+                "text": "phòng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn9",
+                "text": "triển",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-2767cc3ede7592a47bd6657e3799565c1vn10",
+                "text": "lãm.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "What do you think about the paintings at the art gallery",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "the paintings at the art gallery"
+    },
+    {
+        "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d28S0",
+        "content": "My friend can play three musical instruments.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d28",
+        "tempTranslates": [],
+        "wordBaseIndex": 5,
+        "translate": "Bạn tôi có thể chơi ba nhạc cụ.",
+        "translates": [
+            "Bạn tôi có thể chơi ba nhạc cụ."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/22_23.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280en0",
+                "text": "My",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280en1",
+                "text": "friend",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280en2",
+                "text": "can",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280en3",
+                "text": "play",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280en4",
+                "text": "three",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280en5",
+                "text": "musical instruments.",
+                "wordId": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d28",
+                "types": []
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280vn0",
+                "text": "Bạn tôi",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280vn1",
+                "text": "có",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280vn2",
+                "text": "thể",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280vn3",
+                "text": "chơi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280vn4",
+                "text": "ba",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d280vn5",
+                "text": "nhạc cụ.",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 0,
+        "upperBound": 0,
+        "questionSection": "My friend can play three musical instruments.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "play three musical instruments"
+    },
+    {
+        "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d28S1",
+        "content": "He learnt to play musical instruments by himself.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d28",
+        "tempTranslates": [],
+        "wordBaseIndex": 4,
+        "translate": "Anh ấy đã tự học để chơi các nhạc cụ.",
+        "translates": [
+            "Anh ấy đã tự học để chơi các nhạc cụ."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/23_24.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281en0",
+                "text": "He",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281en1",
+                "text": "learnt",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281en2",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281en3",
+                "text": "play",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281en4",
+                "text": "musical instruments",
+                "wordId": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d28",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281en6",
+                "text": "by",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281en7",
+                "text": "himself.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281vn0",
+                "text": "Anh ấy",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281vn1",
+                "text": "đã",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281vn2",
+                "text": "tự",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281vn3",
+                "text": "học",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281vn4",
+                "text": "để",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281vn5",
+                "text": "chơi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281vn6",
+                "text": "các",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281vn7",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-e47169b0b2be87b8bdf3219a1d590d281vn8",
+                "text": "cụ.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "He learnt to play musical instruments by himself.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "He learnt to play musical instruments"
+    },
+    {
+        "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f8S0",
+        "content": "Where did the art of paper folding originate?",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f8",
+        "tempTranslates": [],
+        "wordBaseIndex": 7,
+        "translate": "Nghệ thuật gấp giấy bắt nguồn từ đâu?",
+        "translates": [
+            "Nghệ thuật gấp giấy bắt nguồn từ đâu?"
+        ],
+        "audio": " https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/24_25.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80en0",
+                "text": "Where",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80en1",
+                "text": "did",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80en2",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80en3",
+                "text": "art",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80en4",
+                "text": "of",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80en5",
+                "text": "paper",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80en6",
+                "text": "folding",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80en7",
+                "text": "originate?",
+                "wordId": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f8",
+                "types": []
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80vn0",
+                "text": "Nghệ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80vn1",
+                "text": "thuật",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80vn2",
+                "text": "gấp",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80vn3",
+                "text": "giấy",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80vn4",
+                "text": "bắt",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80vn5",
+                "text": "nguồn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80vn6",
+                "text": "từ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f80vn7",
+                "text": "đâu?",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Where did the art of paper folding originate",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "paper folding originate"
+    },
+    {
+        "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f8S1",
+        "content": "Origami originated in Japan in the 17th century.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f8",
+        "tempTranslates": [],
+        "wordBaseIndex": 1,
+        "translate": "Origami bắt nguồn từ Nhật Bản vào thế kỷ 17.",
+        "translates": [
+            "Origami bắt nguồn từ Nhật Bản vào thế kỷ 17."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/25_26.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81en0",
+                "text": "Origami",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81en1",
+                "text": "originated",
+                "wordId": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f8",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81en2",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81en3",
+                "text": "Japan",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81en4",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81en5",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81en6",
+                "text": "17th",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81en7",
+                "text": "century.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81vn0",
+                "text": "Origami",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81vn1",
+                "text": "bắt",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81vn2",
+                "text": "nguồn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81vn3",
+                "text": "từ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81vn4",
+                "text": "Nhật",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81vn5",
+                "text": "Bản",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81vn6",
+                "text": "vào",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81vn7",
+                "text": "thế",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81vn8",
+                "text": "kỷ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-aae3f235f2df29c44c69dec1ac0f67f81vn9",
+                "text": "17.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Origami originated in Japan in the 17th century.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "Origami originated in Japan"
+    },
+    {
+        "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8cS0",
+        "content": "The school even has a choir, and they perform every month. ",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c",
+        "tempTranslates": [],
+        "wordBaseIndex": 8,
+        "translate": "Nhà trường thậm chí còn có một dàn hợp xướng, và họ biểu diễn hàng tháng.",
+        "translates": [
+            "Nhà trường thậm chí còn có một dàn hợp xướng, và họ biểu diễn hàng tháng."
+        ],
+        "audio": " https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/26_27.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en0",
+                "text": "The",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en1",
+                "text": "school",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en2",
+                "text": "even",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en3",
+                "text": "has",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en4",
+                "text": "a",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en5",
+                "text": "choir,",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en6",
+                "text": "and",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en7",
+                "text": "they",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en8",
+                "text": "perform",
+                "wordId": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en9",
+                "text": "every",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0en10",
+                "text": "month.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn0",
+                "text": "Nhà",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn1",
+                "text": "trường",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn2",
+                "text": "thậm",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn3",
+                "text": "chí",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn4",
+                "text": "còn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn5",
+                "text": "có",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn6",
+                "text": "một",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn7",
+                "text": "dàn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn8",
+                "text": "hợp",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn9",
+                "text": "xướng,",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn10",
+                "text": "và",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn11",
+                "text": "họ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn12",
+                "text": "biểu",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn13",
+                "text": "diễn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn14",
+                "text": "hàng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c0vn15",
+                "text": "tháng.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "The school even has a choir, and they perform every month.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "they perform every month"
+    },
+    {
+        "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8cS1",
+        "content": "It was a pleasure to listen to the musicians performing yesterday.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c",
+        "tempTranslates": [],
+        "wordBaseIndex": 9,
+        "translate": "Thật hân hạnh khi được nghe các nhạc công biểu diễn ngày hôm qua.",
+        "translates": [
+            "Thật hân hạnh khi được nghe các nhạc công biểu diễn ngày hôm qua."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/27_28.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en0",
+                "text": "It",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en1",
+                "text": "was",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en2",
+                "text": "a",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en3",
+                "text": "pleasure",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en4",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en5",
+                "text": "listen",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en6",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en7",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en8",
+                "text": "musicians",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en9",
+                "text": "performing",
+                "wordId": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1en10",
+                "text": "yesterday.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn0",
+                "text": "Thật",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn1",
+                "text": "hân",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn2",
+                "text": "hạnh",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn3",
+                "text": "khi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn4",
+                "text": "được",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn5",
+                "text": "nghe",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn6",
+                "text": "các",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn7",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn8",
+                "text": "công",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn9",
+                "text": "biểu",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn10",
+                "text": "diễn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn11",
+                "text": "ngày",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn12",
+                "text": "hôm",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-f4081916a1eac690d982fb9da667dd8c1vn13",
+                "text": "qua.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "It was a pleasure to listen to the musicians performing yesterday.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "the musicians performing yesterday"
+    },
+    {
+        "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3cS0",
+        "content": "Did you see Mark’s musical performance?",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c",
+        "tempTranslates": [],
+        "wordBaseIndex": 5,
+        "translate": "Bạn có xem buổi biểu diễn nhạc kịch của Mark không?",
+        "translates": [
+            "Bạn có xem buổi biểu diễn nhạc kịch của Mark không?"
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/28_29.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0en0",
+                "text": "Did",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0en1",
+                "text": "you",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0en2",
+                "text": "see",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0en3",
+                "text": "Mark’s",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0en4",
+                "text": "musical",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0en5",
+                "text": "performance?",
+                "wordId": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c",
+                "types": []
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn0",
+                "text": "Bạn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn1",
+                "text": "có",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn2",
+                "text": "xem",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn3",
+                "text": "buổi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn4",
+                "text": "biểu",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn5",
+                "text": "diễn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn6",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn7",
+                "text": "kịch",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn8",
+                "text": "của",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn9",
+                "text": "Mark",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c0vn10",
+                "text": "không?",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 0,
+        "upperBound": 0,
+        "questionSection": "Did you see Mark’s musical performance",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "musical performance"
+    },
+    {
+        "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3cS1",
+        "content": "I can’t wait for their live performance!",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c",
+        "tempTranslates": [],
+        "wordBaseIndex": 6,
+        "translate": "Tôi không thể chờ buổi biểu diễn trực tiếp của họ!",
+        "translates": [
+            "Tôi không thể chờ buổi biểu diễn trực tiếp của họ!"
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/29_30.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1en0",
+                "text": "I",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1en1",
+                "text": "can’t",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1en2",
+                "text": "wait",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1en3",
+                "text": "for",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1en4",
+                "text": "their",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1en5",
+                "text": "live",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1en6",
+                "text": "performance!",
+                "wordId": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c",
+                "types": []
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn0",
+                "text": "Tôi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn1",
+                "text": "không",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn2",
+                "text": "thể",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn3",
+                "text": "chờ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn4",
+                "text": "buổi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn5",
+                "text": "biểu",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn6",
+                "text": "diễn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn7",
+                "text": "trực",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn8",
+                "text": "tiếp",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn9",
+                "text": "của",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-c05f6c233521207f6fe311afef550c3c1vn10",
+                "text": "họ!",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "I can’t wait for their live performance!",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": ""
+    },
+    {
+        "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed360S0",
+        "content": "The photography of the film was excellent.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-1b2072547afb75e49f33b016751ed360",
+        "tempTranslates": [],
+        "wordBaseIndex": 1,
+        "translate": "Hình ảnh của bộ phim rất xuất sắc.",
+        "translates": [
+            "Hình ảnh của bộ phim rất xuất sắc."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/30_31.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600en0",
+                "text": "The",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600en1",
+                "text": "photography",
+                "wordId": "TA7-DEMO-1b2072547afb75e49f33b016751ed360",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600en2",
+                "text": "of",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600en3",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600en4",
+                "text": "film",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600en5",
+                "text": "was",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600en6",
+                "text": "excellent.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600vn0",
+                "text": "Hình",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600vn1",
+                "text": "ảnh",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600vn2",
+                "text": "của",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600vn3",
+                "text": "bộ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600vn4",
+                "text": "phim",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600vn5",
+                "text": "rất",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600vn6",
+                "text": "xuất",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3600vn7",
+                "text": "sắc.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "The photography of the film was excellent.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": ""
+    },
+    {
+        "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed360S1",
+        "content": "I think photography is an interesting art form.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-1b2072547afb75e49f33b016751ed360",
+        "tempTranslates": [],
+        "wordBaseIndex": 2,
+        "translate": "Tôi nghĩ rằng nhiếp ảnh là một loại hình nghệ thuật thú vị.",
+        "translates": [
+            "Tôi nghĩ rằng nhiếp ảnh là một loại hình nghệ thuật thú vị."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/31_32.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601en0",
+                "text": "I",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601en1",
+                "text": "think",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601en2",
+                "text": "photography",
+                "wordId": "TA7-DEMO-1b2072547afb75e49f33b016751ed360",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601en3",
+                "text": "is",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601en4",
+                "text": "an",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601en5",
+                "text": "interesting",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601en6",
+                "text": "art",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601en7",
+                "text": "form.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn0",
+                "text": "Tôi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn1",
+                "text": "nghĩ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn2",
+                "text": "rằng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn3",
+                "text": "nhiếp ảnh",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn4",
+                "text": "là",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn5",
+                "text": "một",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn6",
+                "text": "loại",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn7",
+                "text": "hình",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn8",
+                "text": "nghệ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn9",
+                "text": "thuật",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-1b2072547afb75e49f33b016751ed3601vn10",
+                "text": "thú vị.",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "I think photography is an interesting art form.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "photography is an interesting"
+    },
+    {
+        "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb4S0",
+        "content": "Is it a portrait of your grandfather? ",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb4",
+        "tempTranslates": [],
+        "wordBaseIndex": 3,
+        "translate": "Đây có phải là bức chân dung ông của bạn không?",
+        "translates": [
+            "Đây có phải là bức chân dung ông của bạn không?"
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/32_33.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40en0",
+                "text": "Is",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40en1",
+                "text": "it",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40en2",
+                "text": "a",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40en3",
+                "text": "portrait",
+                "wordId": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb4",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40en4",
+                "text": "of",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40en5",
+                "text": "your",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40en6",
+                "text": "grandfather?",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40vn0",
+                "text": "Đây",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40vn1",
+                "text": "có",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40vn2",
+                "text": "phải",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40vn3",
+                "text": "là",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40vn4",
+                "text": "bức",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40vn5",
+                "text": "chân",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40vn6",
+                "text": "dung",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40vn7",
+                "text": "ông",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40vn8",
+                "text": "của bạn",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb40vn9",
+                "text": "không?",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Is it a portrait of your grandfather",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "portrait of your grandfather"
+    },
+    {
+        "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb4S1",
+        "content": "Painting portraits is different from painting landscapes.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb4",
+        "tempTranslates": [],
+        "wordBaseIndex": 1,
+        "translate": "Vẽ tranh chân dung khác với vẽ tranh phong cảnh.",
+        "translates": [
+            "Vẽ tranh chân dung khác với vẽ tranh phong cảnh."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/33_34.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41en0",
+                "text": "Painting",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41en1",
+                "text": "portraits",
+                "wordId": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb4",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41en2",
+                "text": "is",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41en3",
+                "text": "different",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41en4",
+                "text": "from",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41en5",
+                "text": "painting",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41en6",
+                "text": "landscapes.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41vn0",
+                "text": "Vẽ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41vn1",
+                "text": "tranh",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41vn2",
+                "text": "chân dung",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41vn3",
+                "text": "khác",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41vn4",
+                "text": "với",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41vn5",
+                "text": "vẽ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41vn6",
+                "text": "tranh",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-ad9b8a7b14ee53434eba710fb4086cb41vn7",
+                "text": "phong cảnh.",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Painting portraits is different from painting landscapes.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "Painting portraits"
+    },
+    {
+        "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d3S0",
+        "content": "I prefer going to an art gallery.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-02a048690ba283e399247f7fad7710d3",
+        "tempTranslates": [],
+        "wordBaseIndex": 1,
+        "translate": "Tôi thích đến một phòng trưng bày nghệ thuật hơn.",
+        "translates": [
+            "Tôi thích đến một phòng trưng bày nghệ thuật hơn."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/34_35.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30en0",
+                "text": "I",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30en1",
+                "text": "prefer",
+                "wordId": "TA7-DEMO-02a048690ba283e399247f7fad7710d3",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30en2",
+                "text": "going",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30en3",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30en4",
+                "text": "an",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30en5",
+                "text": "art",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30en6",
+                "text": "gallery.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30vn0",
+                "text": "Tôi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30vn1",
+                "text": "thích",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30vn2",
+                "text": "đến",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30vn3",
+                "text": "một",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30vn4",
+                "text": "phòng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30vn5",
+                "text": "trưng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30vn6",
+                "text": "bày",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30vn7",
+                "text": "nghệ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30vn8",
+                "text": "thuật",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d30vn9",
+                "text": "hơn.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "I prefer going to an art gallery.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": ""
+    },
+    {
+        "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d3S1",
+        "content": "She prefers classical music to rock.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-02a048690ba283e399247f7fad7710d3",
+        "tempTranslates": [],
+        "wordBaseIndex": 1,
+        "translate": "Cô ấy thích nhạc cổ điển hơn nhạc rock.",
+        "translates": [
+            "Cô ấy thích nhạc cổ điển hơn nhạc rock."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/35_36.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31en0",
+                "text": "She",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31en1",
+                "text": "prefers",
+                "wordId": "TA7-DEMO-02a048690ba283e399247f7fad7710d3",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31en2",
+                "text": "classical",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31en3",
+                "text": "music",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31en4",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31en5",
+                "text": "rock.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31vn0",
+                "text": "Cô",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31vn1",
+                "text": "ấy",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31vn2",
+                "text": "thích",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31vn3",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31vn4",
+                "text": "cổ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31vn5",
+                "text": "điển",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31vn6",
+                "text": "hơn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31vn7",
+                "text": "nhạc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-02a048690ba283e399247f7fad7710d31vn8",
+                "text": "rock.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 0,
+        "upperBound": 0,
+        "questionSection": "She prefers classical music to rock.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": ""
+    },
+    {
+        "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897aS0",
+        "content": "Yesterday I went to see a show at the puppet theatre in the centre of Ha Noi.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a",
+        "tempTranslates": [],
+        "wordBaseIndex": 9,
+        "translate": "Hôm qua tôi đã đi xem một buổi biểu diễn ở nhà hát múa rối ở trung tâm Hà Nội.",
+        "translates": [
+            "Hôm qua tôi đã đi xem một buổi biểu diễn ở nhà hát múa rối ở trung tâm Hà Nội."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/36_37.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en0",
+                "text": "Yesterday",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en1",
+                "text": "I",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en2",
+                "text": "went",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en3",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en4",
+                "text": "see",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en5",
+                "text": "a",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en6",
+                "text": "show",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en7",
+                "text": "at",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en8",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en9",
+                "text": "puppet",
+                "wordId": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en10",
+                "text": "theatre",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en11",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en12",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en13",
+                "text": "centre",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en14",
+                "text": "of",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en15",
+                "text": "Ha",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0en16",
+                "text": "Noi.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn0",
+                "text": "Hôm",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn1",
+                "text": "qua",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn2",
+                "text": "tôi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn3",
+                "text": "đã",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn4",
+                "text": "đi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn5",
+                "text": "xem",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn6",
+                "text": "một",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn7",
+                "text": "buổi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn8",
+                "text": "biểu diễn",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn9",
+                "text": "ở",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn10",
+                "text": "nhà",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn11",
+                "text": "hát",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn12",
+                "text": "múa rối",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn13",
+                "text": "ở",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn14",
+                "text": "trung",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn15",
+                "text": "tâm",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn16",
+                "text": "Hà",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a0vn17",
+                "text": "Nội.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Yesterday I went to see a show at the puppet theatre in the centre of Ha Noi.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "puppet theatre"
+    },
+    {
+        "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897aS1",
+        "content": "Let’s go to see the water puppet show this Saturday night at 8 p.m.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a",
+        "tempTranslates": [],
+        "wordBaseIndex": 6,
+        "translate": "Hãy đi xem múa rối nước vào tối thứ Bảy tuần này lúc 8 giờ tối.",
+        "translates": [
+            "Hãy đi xem múa rối nước vào tối thứ Bảy tuần này lúc 8 giờ tối."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/37_38.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en0",
+                "text": "Let’s",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en1",
+                "text": "go",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en2",
+                "text": "to",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en3",
+                "text": "see",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en4",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en5",
+                "text": "water",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en6",
+                "text": "puppet",
+                "wordId": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en7",
+                "text": "show",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en8",
+                "text": "this",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en9",
+                "text": "Saturday",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en10",
+                "text": "night",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en11",
+                "text": "at",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en12",
+                "text": "8",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1en13",
+                "text": "p.m.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn0",
+                "text": "Hãy",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn1",
+                "text": "đi",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn2",
+                "text": "xem",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn3",
+                "text": "múa",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn4",
+                "text": "rối",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn5",
+                "text": "nước",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn6",
+                "text": "vào",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn7",
+                "text": "tối",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn8",
+                "text": "thứ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn9",
+                "text": "Bảy",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn10",
+                "text": "tuần",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn11",
+                "text": "này",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn12",
+                "text": "lúc",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn13",
+                "text": "8",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn14",
+                "text": "giờ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-768747907b90c39ab6f16fcb3320897a1vn15",
+                "text": "tối.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Let’s go to see the water puppet show this Saturday night at 8 p.m.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "water puppet"
+    },
+    {
+        "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b198S0",
+        "content": "The museum exhibits sculptures, paintings, and other valuable works.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b198",
+        "tempTranslates": [],
+        "wordBaseIndex": 3,
+        "translate": "Bảo tàng trưng bày các tác phẩm điêu khắc, tranh vẽ và các tác phẩm có giá trị khác.",
+        "translates": [
+            "Bảo tàng trưng bày các tác phẩm điêu khắc, tranh vẽ và các tác phẩm có giá trị khác."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/38_39.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980en0",
+                "text": "The",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980en1",
+                "text": "museum",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980en2",
+                "text": "exhibits",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980en3",
+                "text": "sculptures,",
+                "wordId": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b198",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980en4",
+                "text": "paintings,",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980en5",
+                "text": "and",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980en6",
+                "text": "other",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980en7",
+                "text": "valuable",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980en8",
+                "text": "works.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn0",
+                "text": "Bảo",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn1",
+                "text": "tàng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn2",
+                "text": "trưng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn3",
+                "text": "bày",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn4",
+                "text": "các",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn5",
+                "text": "tác",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn6",
+                "text": "phẩm",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn7",
+                "text": "điêu",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn8",
+                "text": "khắc,",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn9",
+                "text": "tranh",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn10",
+                "text": "vẽ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn11",
+                "text": "và",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn12",
+                "text": "các",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn13",
+                "text": "tác",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn14",
+                "text": "phẩm",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn15",
+                "text": "có",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn16",
+                "text": "giá",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn17",
+                "text": "trị",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1980vn18",
+                "text": "khác.",
+                "isFocus": false
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "The museum exhibits sculptures, paintings, and other valuable works.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "The museum exhibits sculptures"
+    },
+    {
+        "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b198S1",
+        "content": "The Cham Museum in Da Nang has the largest collection of Cham sculptures in Viet Nam.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b198",
+        "tempTranslates": [],
+        "wordBaseIndex": 12,
+        "translate": "Bảo tàng Chăm ở Đà Nẵng có bộ sưu tập điêu khắc Chăm lớn nhất Việt Nam.",
+        "translates": [
+            "Bảo tàng Chăm ở Đà Nẵng có bộ sưu tập điêu khắc Chăm lớn nhất Việt Nam."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/39_40.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en0",
+                "text": "The",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en1",
+                "text": "Cham",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en2",
+                "text": "Museum",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en3",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en4",
+                "text": "Da",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en5",
+                "text": "Nang",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en6",
+                "text": "has",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en7",
+                "text": "the",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en8",
+                "text": "largest",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en9",
+                "text": "collection",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en10",
+                "text": "of",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en11",
+                "text": "Cham",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en12",
+                "text": "sculptures",
+                "wordId": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b198",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en13",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en14",
+                "text": "Viet",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981en15",
+                "text": "Nam.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn0",
+                "text": "Bảo",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn1",
+                "text": "tàng",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn2",
+                "text": "Chăm",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn3",
+                "text": "ở",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn4",
+                "text": "Đà Nẵng",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn5",
+                "text": "có",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn6",
+                "text": "bộ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn7",
+                "text": "sưu",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn8",
+                "text": "tập",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn9",
+                "text": "điêu khắc",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn10",
+                "text": "Chăm",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn11",
+                "text": "lớn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn12",
+                "text": "nhất",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-5aeef5db05c9a97bec5efdee3e85b1981vn13",
+                "text": "Việt Nam.",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "The Cham Museum in Da Nang has the largest collection of Cham sculptures in Viet Nam.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": "Cham sculptures in Viet Nam"
+    },
+    {
+        "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1aS0",
+        "content": "Where in Viet Nam did water puppetry originate?",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 0,
+        "baseId": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a",
+        "tempTranslates": [],
+        "wordBaseIndex": 5,
+        "translate": "Múa rối nước bắt nguồn từ đâu ở Việt Nam?",
+        "translates": [
+            "Múa rối nước bắt nguồn từ đâu ở Việt Nam?"
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/40_41.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0en0",
+                "text": "Where",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0en1",
+                "text": "in",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0en2",
+                "text": "Viet",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0en3",
+                "text": "Nam",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0en4",
+                "text": "did",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0en5",
+                "text": "water puppetry",
+                "wordId": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0en7",
+                "text": "originate?",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0vn0",
+                "text": "Múa",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0vn1",
+                "text": "rối",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0vn2",
+                "text": "nước",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0vn3",
+                "text": "bắt",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0vn4",
+                "text": "nguồn",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0vn5",
+                "text": "từ",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0vn6",
+                "text": "đâu",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0vn7",
+                "text": "ở",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a0vn8",
+                "text": "Việt Nam?",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Where in Viet Nam did water puppetry originate",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": ""
+    },
+    {
+        "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1aS1",
+        "content": "Water puppetry is a special traditional Vietnamese art form.",
+        "bookNId": 12,
+        "unitNId": 6400,
+        "position": 1,
+        "baseId": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a",
+        "tempTranslates": [],
+        "wordBaseIndex": 0,
+        "translate": "Múa rối nước là một loại hình nghệ thuật truyền thống đặc sắc của Việt Nam.",
+        "translates": [
+            "Múa rối nước là một loại hình nghệ thuật truyền thống đặc sắc của Việt Nam."
+        ],
+        "audio": "https://cauhoi-api.sachmem.vn/api/media/1hHAXcNR7Vl62-SE27R0VItx-iPRN_tWOEIlklcMMVFY_TA_Lop7_moi/41_42.mp3",
+        "contentSplit": [
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1en0",
+                "text": "Water puppetry",
+                "wordId": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a",
+                "types": []
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1en2",
+                "text": "is",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1en3",
+                "text": "a",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1en4",
+                "text": "special",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1en5",
+                "text": "traditional",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1en6",
+                "text": "Vietnamese",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1en7",
+                "text": "art",
+                "types": [],
+                "wordId": ""
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1en8",
+                "text": "form.",
+                "types": [],
+                "wordId": ""
+            }
+        ],
+        "translateSplit": [
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn0",
+                "text": "Múa",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn1",
+                "text": "rối",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn2",
+                "text": "nước",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn3",
+                "text": "là",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn4",
+                "text": "một",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn5",
+                "text": "loại hình",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn6",
+                "text": "nghệ thuật",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn7",
+                "text": "truyền thống",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn8",
+                "text": "đặc sắc",
+                "isFocus": true
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn9",
+                "text": "của",
+                "isFocus": false
+            },
+            {
+                "_id": "TA7-DEMO-8a90c547b5220babd68eadb1dfedbb1a1vn10",
+                "text": "Việt Nam.",
+                "isFocus": true
+            }
+        ],
+        "replaceWords": [],
+        "lowerBound": 2,
+        "upperBound": 6,
+        "questionSection": "Water puppetry is a special traditional Vietnamese art form.",
+        "contextSection": "",
+        "isConversation": false,
+        "phrase": ""
+    }
+]

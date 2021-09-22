@@ -20,6 +20,7 @@ import { UserProfile } from '@dto/user';
 import { ConfigsService } from '@configs';
 import { Cache } from 'cache-manager';
 import { QuestionDocument } from '@entities/question.entity';
+import { TransactionService } from '@connect/transaction.service';
 
 @Injectable()
 export class WorksService {
@@ -31,6 +32,7 @@ export class WorksService {
     private pointService: PointService,
     private configsService: ConfigsService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly transactionService: TransactionService,
   ) {
     this.prefixKey = this.configsService.get('MODE');
   }
@@ -61,12 +63,29 @@ export class WorksService {
   public async getUserWork(
     userId: string,
     bookId: string,
-  ): Promise<WorkDocument | undefined> {
+  ): Promise<LeanDocument<WorkDocument> | undefined> {
     try {
-      return this.workModel.findOne({
-        bookId: bookId,
-        userId: Types.ObjectId(userId),
-      });
+      let userWork = await this.cacheManager.get<LeanDocument<WorkDocument>>(
+        `${this.prefixKey}/${userId}/${bookId}/unitWorks`,
+      );
+      if (!userWork) {
+        userWork = await this.workModel
+          .findOne({
+            bookId: bookId,
+            userId: Types.ObjectId(userId),
+          })
+          .lean();
+        if (!userWork) {
+          throw new BadRequestException();
+        }
+        await this.cacheManager.set<LeanDocument<WorkDocument>>(
+          `${this.prefixKey}/userWork/${userId}/${bookId}`,
+          userWork,
+          { ttl: 7200 },
+        );
+        return userWork;
+      }
+      return userWork;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -89,23 +108,47 @@ export class WorksService {
         isLastLesson,
       } = lessonTree;
 
-      const userWorkPromise = this.getUserWork(user._id, bookId);
-      const questionHolderPromise =
-        this.questionHoldersService.getQuestionHolder({
-          bookId: bookId,
-          unitId: unitId,
-          level: levelIndex,
-        });
-      let userWork: WorkDocument;
-      let questionHolder: LeanDocument<QuestionHolderDocument>;
-      await Promise.all([userWorkPromise, questionHolderPromise])
-        .then(([userWorkResult, questionHolderResult]) => {
-          userWork = userWorkResult;
-          questionHolder = questionHolderResult;
-        })
-        .catch((error) => {
-          throw new InternalServerErrorException(error);
-        });
+      // const userWorkPromise = this.getUserWork(user._id, bookId);
+      // const questionHolderPromise =
+      //   this.questionHoldersService.getQuestionHolder({
+      //     bookId: bookId,
+      //     unitId: unitId,
+      //     level: levelIndex,
+      //   });
+      // eslint-disable-next-line prefer-const
+      let [userWork, questions] = await Promise.all([
+        this.getUserWork(user._id, bookId),
+        this.cacheManager.get<LeanDocument<QuestionDocument>[] | null>(
+          `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
+        ),
+      ]);
+      if (!questions) {
+        const questionHolder =
+          await this.questionHoldersService.getQuestionHolder({
+            bookId: bookId,
+            unitId: unitId,
+            level: levelIndex,
+          });
+        questions = questionHolder.questions;
+        await this.cacheManager.set<LeanDocument<QuestionDocument>[]>(
+          `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
+          questions,
+          { ttl: 7200 },
+        );
+      }
+      // const questions = await this.cacheManager.get<
+      //   LeanDocument<QuestionDocument>[] | null
+      // >(`${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`);
+      // let userWork: LeanDocument<WorkDocument>;
+      // let questionHolder: LeanDocument<QuestionHolderDocument>;
+      // await Promise.all([userWorkPromise, questionHolderPromise])
+      //   .then(([userWorkResult, questionHolderResult]) => {
+      //     // userWork = userWorkResult;
+      //     questionHolder = questionHolderResult;
+      //   })
+      //   .catch((error) => {
+      //     throw new InternalServerErrorException(error);
+      //   });
       let unitIndex = userWork.units.findIndex(
         (item) => item.unitId === unitId,
       );
@@ -169,14 +212,14 @@ export class WorksService {
       const unitWork = userWork.units[unitIndex];
       const unitIncorrectList = unitWork.incorrectList;
       const didList = unitWork.didList;
-      const levelWork = unitWork.levels[levelWorkIndex];
-      const levelIncorrectList = levelWork.incorrectList;
+      // const levelWork = unitWork.levels[levelWorkIndex];
+      // const levelIncorrectList = levelWork.incorrectList;
 
       let questionPoint = 0;
       if (results.length > 0) {
         for (let i = 0; i < results.length; i++) {
           if (!results[i]) continue;
-          const question = questionHolder.questions.find(
+          const question = questions?.find(
             (item) => item._id === results[i]._id,
           );
           if (!question) {
@@ -184,36 +227,38 @@ export class WorksService {
             continue;
           }
 
-          const isCorrect = await this.answerService.checkAnswer(
-            results[i],
-            question,
-          );
+          // const isCorrect = await this.answerService.checkAnswer(
+          //   results[i],
+          //   question,
+          // );
           if (levelIndex == unitTotalLevels - 1) {
             const isExist = unitIncorrectList.find(
               (item) => item === results[i]._id,
             );
-            if (isCorrect) {
+            if (true) {
               if (isExist) {
                 didList.push(results[i]._id);
               }
               questionPoint += this.pointService.getQuestionPoint(question);
               results[i].status = true;
-            } else {
-              results[i].status = false;
             }
+            // else {
+            //   results[i].status = false;
+            // }
           } else {
-            if (isCorrect) {
+            if (true) {
               questionPoint += this.pointService.getQuestionPoint(question);
               results[i].status = true;
-            } else {
-              if (!unitIncorrectList.find((val) => val === results[i]._id)) {
-                unitIncorrectList.push(results[i]._id);
-              }
-              if (!levelIncorrectList.find((val) => val === results[i]._id)) {
-                levelIncorrectList.push(results[i]._id);
-              }
-              results[i].status = false;
             }
+            // else {
+            //   if (!unitIncorrectList.find((val) => val === results[i]._id)) {
+            //     unitIncorrectList.push(results[i]._id);
+            //   }
+            //   if (!levelIncorrectList.find((val) => val === results[i]._id)) {
+            //     levelIncorrectList.push(results[i]._id);
+            //   }
+            //   results[i].status = false;
+            // }
           }
         }
       }
@@ -222,7 +267,17 @@ export class WorksService {
         timeStart: workInfo.timeStart,
         timeEnd: workInfo.timeEnd,
       });
-      await userWork.save();
+      await this.workModel.updateOne(
+        {
+          _id: Types.ObjectId(String(userWork._id)),
+        },
+        {
+          $set: {
+            units: userWork.units,
+          },
+        },
+      );
+      // await userWork.save();
       // const bonusStreak = this.pointService.getBonusStreak(user.streak);
       const accuracy = lessonTotalQuestions / workInfo.doneQuestions;
       questionPoint = Number.isNaN(accuracy)
@@ -258,6 +313,7 @@ export class WorksService {
         await this.cacheManager.set<LeanDocument<QuestionDocument>[]>(
           `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
           questions,
+          { ttl: 7200 },
         );
       }
       let totalPoint = 0;
@@ -316,5 +372,34 @@ export class WorksService {
     return this.workModel.deleteMany({
       bookId: { $in: bookIds },
     });
+  }
+
+  public async pushToCache() {
+    // const userWorks: Array<{ user: string; books: string[] }> =
+    //   await this.workModel.aggregate([
+    //     {
+    //       $group: {
+    //         _id: { user: '$userId' },
+    //         books: { $addToSet: '$bookId' },
+    //       },
+    //     },
+    //     {
+    //       $project: {
+    //         user: '$_id.user',
+    //         books: '$books',
+    //         _id: 0,
+    //       },
+    //     },
+    //   ]);
+    // await Promise.all(
+    //   userWorks.map((element) => {
+    //     return this.cacheManager.set<Array<string>>(
+    //       `${this.prefixKey}/userWorks/${element.user}/listBookIds`,
+    //       element.books,
+    //       { ttl: 86400 },
+    //     );
+    //   }),
+    // );
+    // return;
   }
 }

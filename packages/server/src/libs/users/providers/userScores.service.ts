@@ -47,7 +47,7 @@ export class UserScoresService {
       await this.cache.set<UserProfile>(
         `${this.prefixKey}/profile/${String(userDidUpdated._id)}`,
         profile,
-        { ttl: 7200 },
+        { ttl: 86400 },
       );
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -71,6 +71,7 @@ export class UserScoresService {
       await this.cache.set<UserProfile>(
         `${this.prefixKey}/profile/${userId}`,
         profile,
+        { ttl: 86400 },
       );
       return;
     }

@@ -32,8 +32,8 @@ export class UserLessonService {
     userId: string,
     input: Omit<SaveLessonDto, 'lessonIndex'>,
   ) {
-    const session = await this.transactionService.createSession();
-    session.startTransaction();
+    // const session = await this.transactionService.createSession();
+    // session.startTransaction();
     const userProfile = await this.usesService.findUser(userId).toPromise();
     if (!userProfile) {
       throw new BadRequestException('User not found');
@@ -71,16 +71,16 @@ export class UserLessonService {
         lessonTree,
         userWork,
       );
-      await session.commitTransaction();
-      session.endSession();
+      // await session.commitTransaction();
+      // session.endSession();
       return {
         message,
         success: true,
         passed: true,
       };
     }
-    await session.commitTransaction();
-    session.endSession();
+    // await session.commitTransaction();
+    // session.endSession();
     return {
       message: 'Not passed',
       success: true,

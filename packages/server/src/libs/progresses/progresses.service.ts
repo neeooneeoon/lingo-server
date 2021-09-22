@@ -72,10 +72,16 @@ export class ProgressesService {
         'books.doneQuestions',
         'books.bookId',
       ];
-      const progress = await this.progressModel
+      let progress = await this.progressModel
         .findOne({ userId: Types.ObjectId(userId) })
         .select(selectFields)
         .lean();
+      if (!progress) {
+        progress = await this.createUserProgress({
+          userId: userId,
+          books: [],
+        });
+      }
       progressBooks = progress?.books?.map((element) => {
         return {
           bookId: element.bookId,
@@ -86,7 +92,7 @@ export class ProgressesService {
       await this.cacheManager.set<BookProgressMetaData[]>(
         `${this.prefixKey}/${userId}/progressBooks`,
         progressBooks,
-        { ttl: 1800 },
+        { ttl: 86400 },
       );
       return progressBooks;
     } else {
@@ -281,7 +287,7 @@ export class ProgressesService {
       this.cacheManager.set<BookProgressMetaData[]>(
         `${this.prefixKey}/${userId}/progressBooks`,
         booksProgress,
-        { ttl: 1800 },
+        { ttl: 86400 },
       ),
     ]);
     return result;
@@ -444,11 +450,13 @@ export class ProgressesService {
   public getAllUserScoresInProgress(
     userId: string,
   ): Observable<Pick<ScoreOverviewDto, 'correctQuestions' | 'doneLessons'>> {
+    const selectFields = ['books.doneLessons', 'books.correctQuestions'];
     return from(
       this.progressModel
         .findOne({
           userId: Types.ObjectId(userId),
         })
+        .select(selectFields)
         .lean(),
     ).pipe(
       map((progress) => {
@@ -528,8 +536,8 @@ export class ProgressesService {
   }
 
   public async removeNullBooksFromProgress() {
-    const session = await this.transactionService.createSession();
-    session.startTransaction();
+    // const session = await this.transactionService.createSession();
+    // session.startTransaction();
 
     const progresses = await this.progressModel.find({
       books: {
@@ -554,6 +562,37 @@ export class ProgressesService {
         progresses.map((element) => removeForSingleProgress(element)),
       );
       return results;
+    }
+  }
+
+  public async pushToCache() {
+    const progresses = await this.progressModel.find().lean();
+    if (progresses?.length > 0) {
+      await Promise.all([
+        progresses.map((progress) => {
+          const books = progress?.books;
+          const userId = String(progress.userId);
+          if (books) {
+            const progressBooks: BookProgressMetaData[] = books?.map(
+              (element) => {
+                return {
+                  bookId: element?.bookId ? element?.bookId : '',
+                  doneLessons: element?.doneLessons ? element?.doneLessons : 0,
+                  doneQuestions: element?.doneQuestions
+                    ? element?.doneQuestions
+                    : 0,
+                };
+              },
+            );
+            return this.cacheManager.set<BookProgressMetaData[]>(
+              `${this.prefixKey}/${userId}/progressBooks`,
+              progressBooks,
+              { ttl: 86400 },
+            );
+          }
+        }),
+      ]);
+      return;
     }
   }
 }

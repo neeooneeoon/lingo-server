@@ -109,7 +109,7 @@ export class LoginService {
         this.cache.set(
           `${this.prefixKey}/profile/${String(user._id)}`,
           profile,
-          { ttl: 7200 },
+          { ttl: 86400 },
         ),
       ]);
       return {
@@ -137,7 +137,7 @@ export class LoginService {
           `${this.prefixKey}/profile/${String(newUser._id)}`,
           profile,
           {
-            ttl: 7200,
+            ttl: 86400,
           },
         ),
       ]);
