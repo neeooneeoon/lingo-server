@@ -217,10 +217,10 @@ export class UsersService {
         isFinishLevel: isPassedLevel,
         point: point,
       }),
-      this.leaderBoardsService.updateUserPointDto(
-        { ...userProfile, _id: userCtx.userId },
-        point,
-      ),
+      // this.leaderBoardsService.updateUserPointDto(
+      //   { ...userProfile, _id: userCtx.userId },
+      //   point,
+      // ),
     ]).catch((error) => {
       console.log(error);
       throw new InternalServerErrorException(error);

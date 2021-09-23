@@ -45,7 +45,7 @@ async function exportWordsNoSound() {
   );
 
   function findWordsNoAudio(setWords: string[], sourcePath: string) {
-    const data = new Set<string[]>();
+    const data = new Set<string>();
     const files = fs.readFileSync(path.join(__dirname, sourcePath), {
       encoding: 'utf8',
     });
@@ -64,7 +64,7 @@ async function exportWordsNoSound() {
       if (!formattedContent.match(/^[0-9]+$/)) {
         const md5Hashed = md5(formattedContent);
         if (!files.includes(md5Hashed)) {
-          data.add([formattedContent]);
+          data.add(formattedContent.trim());
         }
       }
     });
@@ -80,14 +80,16 @@ async function exportWordsNoSound() {
     'data/dict3Audio.txt',
   );
 
-  const combined = new Set<string[]>([...noAudioDict2, ...noAudioDict3]);
+  const mergeSet = new Set<string>([...noAudioDict2, ...noAudioDict3]);
   // const destination = path.join(__dirname, 'data/noAudio.json');
   // fs.writeFileSync(destination, JSON.stringify([...combined]));
+  const writeData = [...mergeSet].map((element) => [element]);
   const SPREADSHEET_ID = envConfig.DATA_DEMO;
   const SHEET_NAME = 'Từ Thiếu Âm Thanh';
   const auth = await GoogleAuthorization.authorize();
   const spreadsheetService = new GoogleSpreadsheetService(SPREADSHEET_ID, auth);
-  await spreadsheetService.writeAll(SHEET_NAME, [...combined]);
+  await spreadsheetService.clearAll(SHEET_NAME);
+  await spreadsheetService.writeAll(SHEET_NAME, writeData);
   await client.close();
 }
 

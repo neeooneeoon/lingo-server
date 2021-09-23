@@ -9,6 +9,7 @@ import { ScoreStatisticsHelper } from '@helpers/scoreStatistics.helper';
 import { UsersService } from '@libs/users/providers/users.service';
 import {
   BadRequestException,
+  CACHE_MANAGER,
   forwardRef,
   Inject,
   Injectable,
@@ -23,16 +24,23 @@ import { LeanDocument, Model, Types } from 'mongoose';
 import { Location, Role } from '@utils/enums';
 import { CreateRecordDto } from '@dto/leaderBoard/createRecord.dto';
 import { FollowingsService } from '@libs/followings/providers/followings.service';
+import { Cache } from 'cache-manager';
+import { ConfigsService } from '@configs';
 
 @Injectable()
 export class ScoreStatisticsService {
+  private readonly prefixKey: string;
   constructor(
     @InjectModel(ScoreStatistic.name)
     private scoreStatisticModel: Model<ScoreStatisticDocument>,
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     private scoreStatisticsHelper: ScoreStatisticsHelper,
     private followingsService: FollowingsService,
-  ) {}
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly configsService: ConfigsService,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
   public async getRankByTime(
     userId: string,
@@ -120,6 +128,7 @@ export class ScoreStatisticsService {
       followUserXpStatistic: refUserXps,
       currentUserXpStatistic: currentUserXps,
     };
+    console.log(result);
     return result;
   }
 
@@ -272,6 +281,7 @@ export class ScoreStatisticsService {
       throw new InternalServerErrorException(error);
     }
   }
+
   public async addXpAfterSaveLesson(xp: number, userId: string): Promise<void> {
     try {
       dayjs.extend(utc);
@@ -285,17 +295,15 @@ export class ScoreStatisticsService {
           $lte: endTime,
         },
       };
-      const userXpRecord = await this.scoreStatisticModel.findOne(filter);
+      const userXpRecord = await this.scoreStatisticModel
+        .findOne(filter)
+        .lean();
       if (userXpRecord) {
         await this.scoreStatisticModel.findOneAndUpdate(filter, {
           xp: userXpRecord.xp + xp,
         });
         return;
       }
-      await new this.scoreStatisticModel({
-        xp: xp,
-        user: new Types.ObjectId(userId),
-      }).save();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
