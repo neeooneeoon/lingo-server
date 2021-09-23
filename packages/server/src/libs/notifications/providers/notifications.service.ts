@@ -34,6 +34,29 @@ export class NotificationsService {
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
   ) {}
 
+  public async getDeviceToken(objectMessage: {
+    currentUser: string;
+    message: string;
+  }) {
+    const devices = await this.deviceTokenModel
+      .find({
+        user: { $eq: Types.ObjectId(objectMessage.currentUser) },
+      })
+      .sort({ createdAt: 1 });
+    const total = devices?.length;
+    if (total > 0) {
+      const latestDevice = devices[total - 1];
+      return {
+        token: latestDevice.token,
+        notification: {
+          title: '🔥🔥🔥 THI ĐUA NGAY',
+          body: objectMessage.message,
+        },
+      };
+    }
+    return undefined;
+  }
+
   public async getListNotifications(): Promise<{
     notifications: LeanDocument<NotificationDocument>[];
     total: number;
@@ -283,25 +306,9 @@ export class NotificationsService {
       const MAX_MESSAGES = 500;
       const list = (
         await Promise.all(
-          messageObject.map(async (element) => {
-            const devices = await this.deviceTokenModel
-              .find({
-                user: Types.ObjectId(element.currentUser),
-              })
-              .sort({ createdAt: 1 });
-            if (devices.length > 0) {
-              const latestDevice = devices[devices.length - 1];
-              return {
-                token: latestDevice.token,
-                notification: {
-                  title: '🔥🔥🔥 THI ĐUA NGAY',
-                  body: element.message,
-                },
-              };
-            }
-          }),
+          messageObject.map((element) => this.getDeviceToken(element)),
         )
-      ).filter((element) => element);
+      ).filter((element) => element !== undefined);
       if (list.length > 0) {
         const remainder = Math.floor(list.length / MAX_MESSAGES) + 1;
         const groupMessages: Array<Array<messaging.Message>> = [];

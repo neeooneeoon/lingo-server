@@ -22,26 +22,72 @@ async function exportWordsNoSound() {
 
   const database = client.db(DB_NAME);
   const wordsCollection = database.collection('words');
+  const sentencesCollection = database.collection('sentences');
 
-  const words = await wordsCollection
-    .find({ _id: 'TA10-DEMO-8cb554127837a4002338c10a299289fb' })
-    .toArray();
-  const SHEET_ID = '1GI8UHxNSt0-sPlq_u0lkW3cOnrfgR78vuTml78e_Pnw';
-  const SHEET_NAME = 'Từ Thiếu Âm Thanh';
-  const auth = await GoogleAuthorization.authorize();
-  const spreadsheetService = new GoogleSpreadsheetService(SHEET_ID, auth);
-  const data: string[][] = [];
-  const dataPath = path.join(__dirname, './data/manh.txt');
-  fs.readFile(dataPath, { encoding: 'utf8' }, (err, files) => {
-    words.forEach((element) => {
-      const encode = md5(element.content).concat('.mp3');
-      if (!files.includes(encode)) {
-        data.push([element.content]);
+  const [words, sentences] = await Promise.all([
+    wordsCollection.find().toArray(),
+    sentencesCollection.find().toArray(),
+  ]);
+  const wordsContent = words.map((element) => element.content);
+  const wordsInSentence = sentences
+    .map((element) => {
+      const contentSplit = element.contentSplit;
+      return contentSplit.map((element) => {
+        return element.text;
+      });
+    })
+    .flat();
+  const regex = new RegExp(
+    /[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\|\~\`\_\?\,]/g,
+  );
+  const deepRegex = new RegExp(
+    /[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\|\~\`\_\?\,\“\”\’\"\']/g,
+  );
+
+  function findWordsNoAudio(setWords: string[], sourcePath: string) {
+    const data = new Set<string[]>();
+    const files = fs.readFileSync(path.join(__dirname, sourcePath), {
+      encoding: 'utf8',
+    });
+    setWords.forEach((element: string) => {
+      let formattedContent = element.replaceAll(regex, '').toLowerCase().trim();
+      const length = formattedContent.length;
+      const firstChar = formattedContent[0];
+      const latestChar = formattedContent[length - 1];
+      if (firstChar && firstChar.match(deepRegex)) {
+        formattedContent = formattedContent.slice(1);
+      }
+      if (latestChar && latestChar.match(deepRegex)) {
+        const limit = formattedContent.length - 1;
+        formattedContent = formattedContent.slice(0, limit);
+      }
+      if (!formattedContent.match(/^[0-9]+$/)) {
+        const md5Hashed = md5(formattedContent);
+        if (!files.includes(md5Hashed)) {
+          data.add([formattedContent]);
+        }
       }
     });
-  });
-  // await spreadsheetService.clearAll(SHEET_NAME);
-  await spreadsheetService.writeAll(SHEET_NAME, data);
+    return [...data];
+  }
+
+  const noAudioDict2 = findWordsNoAudio(
+    [...new Set<string>(wordsContent)],
+    'data/dict2Audio.txt',
+  );
+  const noAudioDict3 = findWordsNoAudio(
+    [...new Set<string>(wordsInSentence)],
+    'data/dict3Audio.txt',
+  );
+
+  const combined = new Set<string[]>([...noAudioDict2, ...noAudioDict3]);
+  // const destination = path.join(__dirname, 'data/noAudio.json');
+  // fs.writeFileSync(destination, JSON.stringify([...combined]));
+  const SPREADSHEET_ID = envConfig.DATA_DEMO;
+  const SHEET_NAME = 'Từ Thiếu Âm Thanh';
+  const auth = await GoogleAuthorization.authorize();
+  const spreadsheetService = new GoogleSpreadsheetService(SPREADSHEET_ID, auth);
+  await spreadsheetService.writeAll(SHEET_NAME, [...combined]);
   await client.close();
 }
 
