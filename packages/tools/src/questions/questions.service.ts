@@ -1,3 +1,3 @@
 export class QuestionsService {
-  public static async removeDuplicateChoices() {}
+  public static async removeNoneChoices() {}
 }
