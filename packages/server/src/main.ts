@@ -68,5 +68,5 @@ async function bootstrap() {
   console.log(`🚀 Lingo Server is listening at http://localhost:${port}`);
   console.log(process.env.NODE_ENV);
 }
-bootstrap();
-// AppClusterService.clusterize(bootstrap);
+// bootstrap();
+AppClusterService.clusterize(bootstrap);
