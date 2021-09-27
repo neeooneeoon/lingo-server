@@ -3,3 +3,7 @@ dist
 yarn.lock
 package-lock.json
 src/google/keys/*.json
+src/downloads/audios
+src/downloads/*.zip
+src/exports/data
+src/exports/*.json

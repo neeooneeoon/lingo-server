@@ -121,14 +121,15 @@ export class ScoreStatisticsService {
             resolve(new Array(7).fill(0));
           }),
     ]);
-    refUserXps = currentUserXps;
+    if (currentUserId === followUserId) {
+      refUserXps = currentUserXps;
+    }
     const result: Statistic = {
       currentUserXp: currentUserXps.reduce((prev, curr) => prev + curr),
       followUserXp: refUserXps.reduce((prev, curr) => prev + curr),
       followUserXpStatistic: refUserXps,
       currentUserXpStatistic: currentUserXps,
     };
-    console.log(result);
     return result;
   }
 
