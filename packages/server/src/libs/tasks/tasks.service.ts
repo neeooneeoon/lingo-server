@@ -17,7 +17,7 @@ export class TasksService {
     private versionsService: VersionsService,
   ) {}
 
-  @Cron('0 0 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  @Cron('15 0 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
   async changeStreakScore() {
     this.logger.log('Starting check streak');
     const users = await this.usersService.getAllUsers();

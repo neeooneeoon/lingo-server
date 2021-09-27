@@ -111,7 +111,7 @@ export class ScoreStatisticsService {
       throw new BadRequestException();
     }
     const startTime = dayjs().tz(VIETNAM_TIME_ZONE).startOf('week').toDate();
-    const endTime = dayjs().subtract(1, 'day').endOf('day').toDate();
+    const endTime = dayjs().endOf('day').toDate();
     // eslint-disable-next-line prefer-const
     let [currentUserXps, refUserXps] = await Promise.all([
       this.getXpStatistic(currentUserId, startTime, endTime),
@@ -121,14 +121,15 @@ export class ScoreStatisticsService {
             resolve(new Array(7).fill(0));
           }),
     ]);
-    refUserXps = currentUserXps;
+    if (currentUserId === followUserId) {
+      refUserXps = currentUserXps;
+    }
     const result: Statistic = {
       currentUserXp: currentUserXps.reduce((prev, curr) => prev + curr),
       followUserXp: refUserXps.reduce((prev, curr) => prev + curr),
       followUserXpStatistic: refUserXps,
       currentUserXpStatistic: currentUserXps,
     };
-    console.log(result);
     return result;
   }
 
@@ -166,7 +167,6 @@ export class ScoreStatisticsService {
             break;
         }
       }
-      console.log(filter);
       const result = await this.scoreStatisticModel
         .aggregate([
           { $match: filter },
@@ -287,6 +287,11 @@ export class ScoreStatisticsService {
       dayjs.extend(utc);
       dayjs.extend(timezone);
       const startTime = dayjs().tz(VIETNAM_TIME_ZONE).startOf('day').toDate();
+      const formatTimeStart = dayjs()
+        .tz(VIETNAM_TIME_ZONE)
+        .startOf('day')
+        .format('DD-MM-YYYY')
+        .toString();
       const endTime = dayjs().toDate();
       const filter = {
         user: new Types.ObjectId(userId),
@@ -295,14 +300,41 @@ export class ScoreStatisticsService {
           $lte: endTime,
         },
       };
-      const userXpRecord = await this.scoreStatisticModel
-        .findOne(filter)
-        .lean();
-      if (userXpRecord) {
-        await this.scoreStatisticModel.findOneAndUpdate(filter, {
-          xp: userXpRecord.xp + xp,
+      const hasScoreInToDay = await this.cacheManager.get<boolean>(
+        `${this.prefixKey}/scoreRecord/${userId}/${formatTimeStart}`,
+      );
+      let userXpRecord: LeanDocument<ScoreStatisticDocument>;
+      if (!hasScoreInToDay) {
+        userXpRecord = await this.scoreStatisticModel
+          .findOne(filter)
+          .select(['_id'])
+          .lean();
+        if (userXpRecord) {
+          await this.cacheManager.set<boolean>(
+            `${this.prefixKey}/scoreRecord/${userId}/${formatTimeStart}`,
+            true,
+            { ttl: 86400 },
+          );
+        }
+      }
+      if (userXpRecord || hasScoreInToDay) {
+        await this.scoreStatisticModel.updateOne(filter, {
+          $inc: { xp: xp },
         });
         return;
+      } else if (!userXpRecord) {
+        const newRecord = await this.scoreStatisticModel.create({
+          xp: xp,
+          user: Types.ObjectId(userId),
+        });
+        if (newRecord) {
+          await this.cacheManager.set<boolean>(
+            `${this.prefixKey}/scoreRecord/${userId}/${formatTimeStart}`,
+            true,
+            { ttl: 86400 },
+          );
+          return;
+        }
       }
     } catch (error) {
       throw new InternalServerErrorException(error);

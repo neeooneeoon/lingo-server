@@ -61,7 +61,10 @@ async function exportWordsNoSound() {
         const limit = formattedContent.length - 1;
         formattedContent = formattedContent.slice(0, limit);
       }
-      if (!formattedContent.match(/^[0-9]+$/)) {
+      if (
+        !formattedContent.match(/^[0-9]+$/) &&
+        formattedContent?.replaceAll(/-/g, '')
+      ) {
         const md5Hashed = md5(formattedContent);
         if (!files.includes(md5Hashed)) {
           data.add(formattedContent.trim());
@@ -80,16 +83,39 @@ async function exportWordsNoSound() {
     'data/dict3Audio.txt',
   );
 
-  const mergeSet = new Set<string>([...noAudioDict2, ...noAudioDict3]);
+  const compareDict3ToDict2 = findWordsNoAudio(
+    noAudioDict3,
+    'data/dict2Audio.txt',
+  );
+
+  const mergeSet = new Set<string>([...noAudioDict2, ...compareDict3ToDict2]);
   // const destination = path.join(__dirname, 'data/noAudio.json');
   // fs.writeFileSync(destination, JSON.stringify([...combined]));
   const writeData = [...mergeSet].map((element) => [element]);
   const SPREADSHEET_ID = envConfig.DATA_DEMO;
-  const SHEET_NAME = 'Từ Thiếu Âm Thanh';
+  const SHEET_NAME1 = 'Từ Thiếu Âm Thanh';
+  const SHEET_NAME2 = 'Từ Thiếu Âm Thanh 2';
   const auth = await GoogleAuthorization.authorize();
   const spreadsheetService = new GoogleSpreadsheetService(SPREADSHEET_ID, auth);
-  await spreadsheetService.clearAll(SHEET_NAME);
-  await spreadsheetService.writeAll(SHEET_NAME, writeData);
+  const writtenAudio = (await spreadsheetService.getSheet(SHEET_NAME1))
+    .filter((el) => el && el?.length > 0)
+    .map((el) => {
+      return {
+        content: el[0],
+        audio: el[1],
+      };
+    });
+  const data: string[][] = [];
+  writeData.forEach((element) => {
+    if (element) {
+      const item = writtenAudio.find((el) => el.content == element[0]);
+      if (item) {
+        data.push([item.content, item.audio]);
+      }
+    }
+  });
+  await spreadsheetService.clearAll(SHEET_NAME2);
+  await spreadsheetService.writeAll(SHEET_NAME2, data);
   await client.close();
 }
 
