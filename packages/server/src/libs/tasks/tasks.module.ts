@@ -5,6 +5,9 @@ import { UsersModule } from '@libs/users';
 import { Module } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { NotificationsModule } from '@libs/notifications';
+import { StoriesTask } from '@libs/tasks/stories.task';
+import { StoriesModule } from '@libs/stories';
+import { CacheModule } from '@cache';
 
 @Module({
   imports: [
@@ -13,7 +16,9 @@ import { NotificationsModule } from '@libs/notifications';
     BooksModule,
     ProgressesModule,
     VersionsModule,
+    StoriesModule,
+    CacheModule,
   ],
-  providers: [TasksService],
+  providers: [TasksService, StoriesTask],
 })
 export class TasksSModule {}

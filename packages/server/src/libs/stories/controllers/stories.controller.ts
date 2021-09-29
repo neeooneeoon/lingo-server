@@ -19,6 +19,11 @@ import { JwtPayLoad } from '@utils/types';
 export class StoriesController {
   constructor(private readonly storiesService: StoriesService) {}
 
+  @Get('stories')
+  public async groupStories() {
+    return this.storiesService.groupStories();
+  }
+
   @Get('api/stories/:bookId/:unitId')
   @ApiParam({ type: String, name: 'bookId', required: true })
   @ApiParam({ type: String, name: 'unitId', required: true })

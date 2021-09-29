@@ -1,37 +1,91 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Story, StoryDocument } from '@entities/story.entity';
 import { Model } from 'mongoose';
-import { from, Observable } from 'rxjs';
 import { StoryQuestionDocument } from '@entities/storyQuestion.entity';
 import { QuestionTypeCode } from '@utils/enums';
 import { WordsService } from '@libs/words/words.service';
 import { ScoreStatisticsService } from '@libs/scoreStatistics/scoreStatistics.service';
 import { UserScoresService } from '@libs/users/providers/userScores.service';
-import { StoryResult } from '@dto/stories';
+import { GroupStories, StoryResult } from '@dto/stories';
+import { ConfigsService } from '@configs';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class StoriesService {
+  private readonly prefixKey: string;
   constructor(
     @InjectModel(Story.name) private storiesModel: Model<StoryDocument>,
     private readonly wordsService: WordsService,
     private readonly scoreStatisticsService: ScoreStatisticsService,
     private readonly userScoresService: UserScoresService,
-  ) {}
+    private readonly configsService: ConfigsService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {
+    this.prefixKey = this.configsService.get('MODE');
+  }
 
-  public getStoriesInUnit(
-    bookId: string,
-    unitId: string,
-  ): Observable<StoryDocument[]> {
-    const unselectFields = ['-__v', '-sentences'];
-    return from(
-      this.storiesModel
+  public async groupStories(): Promise<GroupStories[]> {
+    return this.storiesModel.aggregate([
+      {
+        $group: {
+          _id: {
+            bookId: '$bookId',
+            unitId: '$unitId',
+          },
+          stories: {
+            $push: {
+              _id: '$_id',
+              audio: '$audio',
+              name: '$name',
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          bookId: '$_id.bookId',
+          unitId: '$_id.unitId',
+          _id: 0,
+          stories: '$stories',
+        },
+      },
+    ]);
+  }
+
+  public async getStoriesInUnit(bookId: string, unitId: string) {
+    const path = `${this.prefixKey}/${bookId}/${unitId}/stories`;
+    const group = await this.cacheManager.get<GroupStories>(path);
+    if (group) {
+      return group.stories;
+    } else {
+      const stories = await this.storiesModel
         .find({
           bookId: bookId,
           unitId: unitId,
         })
-        .select(unselectFields),
-    );
+        .select(['_id', 'audio', 'name'])
+        .lean();
+      if (stories?.length > 0) {
+        const group: GroupStories = {
+          bookId: bookId,
+          unitId: unitId,
+          stories: stories.map((element) => ({
+            _id: Number(element._id),
+            name: element.name,
+            audio: element.audio,
+          })),
+        };
+        await this.cacheManager.set<GroupStories>(path, group, { ttl: 86400 });
+        return group.stories;
+      }
+      return [];
+    }
   }
 
   public async getStoryQuestions(storyId: number) {
