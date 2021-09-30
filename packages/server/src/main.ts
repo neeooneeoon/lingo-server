@@ -65,7 +65,9 @@ async function bootstrap() {
 
   await app.listen(port);
   console.log('\nCompile successfully!\n');
-  console.log(`🚀 Lingo Server is listening at http://localhost:${port}`);
+  console.log(
+    `🚀 Lingo Server is listening at :${port} - [${process.env.MODE} MODE]`,
+  );
 }
 
 process.env.MODE === 'production'

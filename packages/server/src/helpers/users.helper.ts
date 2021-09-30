@@ -27,9 +27,9 @@ export class UsersHelper {
       userId: String(user._id),
       createdAt: user.createdAt,
       address: {
-        province: province ? province.name : '',
-        district: district ? district.name : '',
-        school: school ? school.name : '',
+        province: province ? { _id: province._id, name: province.name } : {},
+        district: district ? { _id: district._id, name: district.name } : {},
+        school: school ? { _id: school._id, name: school.name } : {},
         grade: grade ? grade : -1,
       },
       enableNotification: user.enableNotification,

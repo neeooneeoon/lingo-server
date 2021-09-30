@@ -45,9 +45,18 @@ export class UserProfile {
     type: 'object',
   })
   address: {
-    province: string;
-    district: string;
-    school: string;
+    province: {
+      _id?: number;
+      name?: string;
+    };
+    district: {
+      _id?: number;
+      name?: string;
+    };
+    school: {
+      _id?: number;
+      name?: string;
+    };
     grade: number;
   };
 
