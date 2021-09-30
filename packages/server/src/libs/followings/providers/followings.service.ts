@@ -407,7 +407,13 @@ export class FollowingsService {
           return null;
         })
         .filter((element) => element)
-        .sort((a, b) => b.xp - a.xp);
+        .sort((a, b) => b.xp - a.xp)
+        .map((item, index) => {
+          return {
+            ...item,
+            orderNumber: index + 1,
+          };
+        });
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

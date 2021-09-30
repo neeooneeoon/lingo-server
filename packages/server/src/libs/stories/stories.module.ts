@@ -13,6 +13,7 @@ import { ScoreStatisticsModule } from '@libs/scoreStatistics/scoreStatistics.mod
 import { UsersModule } from '@libs/users';
 import { StoryReport, StoryReportSchema } from '@entities//storyReport.entity';
 import { StoryReportsService } from './providers/storyReports.service';
+import { CacheModule } from '@cache';
 
 @Module({
   imports: [
@@ -24,8 +25,10 @@ import { StoryReportsService } from './providers/storyReports.service';
     WordsModule,
     ScoreStatisticsModule,
     UsersModule,
+    CacheModule,
   ],
   controllers: [StoriesController, StoryReportsController],
   providers: [StoriesService, StoryReportsService],
+  exports: [StoriesService],
 })
 export class StoriesModule {}

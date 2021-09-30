@@ -357,7 +357,7 @@ export class ScoreStatisticsService {
         },
       })
       .limit(statisticLength)
-      .select(['xp'])
+      .select(['xp', 'createdAt'])
       .lean();
     const xpStatisticResult: number[] = new Array(statisticLength).fill(0);
     for (const item of xpStatistic) {
@@ -369,9 +369,7 @@ export class ScoreStatisticsService {
     return xpStatisticResult;
   }
 
-  public async findScoreStatisticRecords(
-    userId: string,
-  ): Promise<ScoreStatisticDocument[]> {
+  public async findScoreStatisticRecords(userId: string) {
     dayjs.extend(utc);
     dayjs.extend(timezone);
     const startDate = dayjs()
@@ -385,13 +383,16 @@ export class ScoreStatisticsService {
       .subtract(1, 'day')
       .toDate();
 
-    return this.scoreStatisticModel.find({
-      user: Types.ObjectId(userId),
-      createdAt: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    });
+    return this.scoreStatisticModel
+      .find({
+        user: Types.ObjectId(userId),
+        createdAt: {
+          $gte: startDate,
+          $lte: endDate,
+        },
+      })
+      .select(['xp'])
+      .lean();
   }
 
   public async createRecord(body: CreateRecordDto) {

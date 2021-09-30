@@ -373,9 +373,9 @@ export class UsersService {
           this.userModel
             .findById(userId)
             .select(selectFields)
-            .populate('address.province', ['name'], Province.name)
-            .populate('address.district', ['name'], District.name)
-            .populate('address.school', ['name'], School.name)
+            .populate('address.province', ['name', '_id'], Province.name)
+            .populate('address.district', ['name', '_id'], District.name)
+            .populate('address.school', ['name', '_id'], School.name)
             .lean(),
         ).pipe(
           map((user: any) => {
