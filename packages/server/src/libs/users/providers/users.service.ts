@@ -654,19 +654,6 @@ export class UsersService {
     const locationRankings: LocationRanking[] = await Promise.all(
       result.map((element) => this.xpStatistic(element, byWeek)),
     );
-    await fs.writeFile(
-      path.join(process.cwd(), 'local/data/result.json'),
-      JSON.stringify(locationRankings),
-    );
-    await fs.writeFile(
-      path.join(process.cwd(), 'local/data/groupDistrict.json'),
-      JSON.stringify(
-        _.groupBy(
-          locationRankings[0].rankings,
-          (item) => `${item.subAddress.school}-${item.subAddress.grade}`,
-        ),
-      ),
-    );
     const updateNationwideRanking = async () => {
       const allRankings = locationRankings
         .map((item) => item.rankings)
@@ -722,21 +709,6 @@ export class UsersService {
       return Promise.all(locationRankings.map((element) => exec(element)));
     };
     const updateSubLocationRanking = async () => {
-      const updateField: {
-        _id: string;
-        district: {
-          weeklyOrder: number;
-          monthlyOrder: number;
-        };
-        school: {
-          weeklyOrder: number;
-          monthlyOrder: number;
-        };
-        grade: {
-          weeklyOrder: number;
-          monthlyOrder: number;
-        };
-      }[] = [];
       const groups = (locationRanking: LocationRanking) => {
         const districts = _.groupBy(
           locationRanking.rankings.filter(
