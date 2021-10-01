@@ -47,9 +47,18 @@ export class UserController {
   constructor(
     private readonly usersService: UsersService,
     private readonly userAddressService: UserAddressService,
-    private readonly invitationService: InvitationService,
+    // private readonly invitationService: InvitationService,
     private readonly userLessonService: UserLessonService,
   ) {}
+
+  // @UseGuards(JwtAuthGuard)
+  @Get('groupByAddress')
+  // @ApiBearerAuth()
+  @ApiConsumes('application/json')
+  async groupUsers() {
+    await this.usersService.groupUsers(true);
+    await this.usersService.groupUsers(false);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -169,14 +178,14 @@ export class UserController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('send/invitation/mail')
-  @ApiBearerAuth()
-  @ApiBody({ type: MailInputDto })
-  @ApiOperation({ summary: 'Gửi mail mời người khác sử dụng ứng dụng' })
-  invite(@Body('email') email: string, @UserCtx() user: JwtPayLoad) {
-    return this.invitationService.sendInvitation(email, user.userId);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Post('send/invitation/mail')
+  // @ApiBearerAuth()
+  // @ApiBody({ type: MailInputDto })
+  // @ApiOperation({ summary: 'Gửi mail mời người khác sử dụng ứng dụng' })
+  // invite(@Body('email') email: string, @UserCtx() user: JwtPayLoad) {
+  //   return this.invitationService.sendInvitation(email, user.userId);
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Delete('logout')

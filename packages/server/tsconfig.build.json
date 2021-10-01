@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "test", "dist", "**/*spec.ts", "python", "migrations"],
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts", "python", "migrations", "local"],
   "include": ["**/**/**/*.p8", "**/**/*.p8", "**/*.p8", "src"]
 }

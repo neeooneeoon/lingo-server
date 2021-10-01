@@ -414,4 +414,28 @@ export class ScoreStatisticsService {
     const followings = await this.followingsService.followings(userId);
     return followings.map((i) => String(i.followUser));
   }
+
+  public async totalXpWithFilter(filter: any) {
+    const result = await this.scoreStatisticModel.aggregate([
+      {
+        $match: filter ? filter : {},
+      },
+      {
+        $group: {
+          _id: { user: '$user' },
+          totalXp: { $sum: '$xp' },
+        },
+      },
+      {
+        $project: {
+          _id: '$_id.user',
+          totalXp: '$totalXp',
+        },
+      },
+      {
+        $limit: 15,
+      },
+    ]);
+    return result;
+  }
 }

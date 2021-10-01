@@ -1,0 +1,1 @@
+export { LocationRanking } from './LocationRanking';

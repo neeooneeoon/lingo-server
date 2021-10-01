@@ -52,7 +52,7 @@ import { UserLessonService } from './providers/userLesson.service';
     forwardRef(() => ScoreStatisticsModule),
     CacheModule,
     ConnectModule,
-    MailModule,
+    // MailModule,
   ],
   controllers: [
     UserController,
@@ -67,11 +67,12 @@ import { UserLessonService } from './providers/userLesson.service';
     GoogleService,
     FacebookService,
     UserAddressService,
-    InvitationService,
+    // InvitationService,
     AppleService,
     LoginService,
     UserScoresService,
     UserLessonService,
+    ScoreStatisticsModule,
   ],
   exports: [UsersService, UserScoresService, UserLessonService],
 })

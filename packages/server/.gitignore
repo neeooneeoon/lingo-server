@@ -40,3 +40,5 @@ package-json.lock
 *.log
 *.zip
 /scripts
+test/
+local/

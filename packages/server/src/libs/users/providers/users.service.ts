@@ -41,8 +41,16 @@ import { UserScoresService } from '@libs/users/providers/userScores.service';
 import { School } from '@entities/school.entity';
 import emojiRegex from 'emoji-regex/RGI_Emoji';
 import { ConfigsService } from '@configs';
-import { NAME_REGEX } from '@utils/constants';
-
+import { NAME_REGEX, VIETNAM_TIME_ZONE } from '@utils/constants';
+import * as _ from 'lodash';
+import { GroupAddressDto, SubAddress } from '@dto/address';
+import { LocationRanking } from '@dto/ranking';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import fs from 'fs-extra';
+import path from 'path';
+import { SubLocation } from '@utils/enums';
 @Injectable()
 export class UsersService {
   private prefixKey: string;
@@ -62,6 +70,7 @@ export class UsersService {
     private transactionService: TransactionService,
     private usersScoreService: UserScoresService,
     private readonly configsService: ConfigsService,
+    private readonly statisticService: ScoreStatisticsService,
   ) {
     this.prefixKey = this.configsService.get('MODE');
   }
@@ -582,5 +591,337 @@ export class UsersService {
         );
       }),
     );
+  }
+
+  public async groupUsers(byWeek?: boolean) {
+    const groupByProvinces = async (boundary: {
+      lower: number;
+      upper: number;
+    }) => {
+      const groups: GroupAddressDto[] = await this.userModel.aggregate([
+        {
+          $match: {
+            xp: { $ne: 0 },
+            'address.province': { $gte: boundary.lower, $lte: boundary.upper },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              province: '$address.province',
+            },
+            users: {
+              $push: {
+                _id: '$_id',
+                subAddress: {
+                  district: '$address.district',
+                  school: '$address.school',
+                  grade: '$address.grade',
+                },
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            province: '$_id.province',
+            users: '$users',
+          },
+        },
+        {
+          $limit: boundary.upper - boundary.lower + 1,
+        },
+      ]);
+      return groups;
+    };
+    const TOTAL_PROVINCES = 63;
+    const PROVINCES_PER_FRAGMENT = 10;
+    const remainder = TOTAL_PROVINCES % PROVINCES_PER_FRAGMENT;
+    const boundaries = this.usersHelper
+      .fragments(TOTAL_PROVINCES, PROVINCES_PER_FRAGMENT)
+      .map((e, index) => {
+        return e !== PROVINCES_PER_FRAGMENT
+          ? { lower: index * e + 1, upper: (index + 1) * e }
+          : {
+              lower: index * e + remainder + 1,
+              upper: (index + 1) * e + remainder,
+            };
+      });
+    const result: GroupAddressDto[] = (
+      await Promise.all(boundaries.map((element) => groupByProvinces(element)))
+    ).flat();
+    const locationRankings: LocationRanking[] = await Promise.all(
+      result.map((element) => this.xpStatistic(element, byWeek)),
+    );
+    await fs.writeFile(
+      path.join(process.cwd(), 'local/data/result.json'),
+      JSON.stringify(locationRankings),
+    );
+    await fs.writeFile(
+      path.join(process.cwd(), 'local/data/groupDistrict.json'),
+      JSON.stringify(
+        _.groupBy(
+          locationRankings[0].rankings,
+          (item) => `${item.subAddress.school}-${item.subAddress.grade}`,
+        ),
+      ),
+    );
+    const updateNationwideRanking = async () => {
+      const allRankings = locationRankings
+        .map((item) => item.rankings)
+        .flat()
+        .sort(function (a, b) {
+          return b.totalXp - a.totalXp;
+        });
+      if (allRankings?.length > 0) {
+        const nationwideField = byWeek
+          ? 'ranking.nationwide.weeklyOrder'
+          : 'ranking.nationwide.monthlyOrder';
+        const xpFiled = byWeek ? 'ranking.weeklyXp' : 'ranking.monthlyXp';
+        await Promise.all(
+          allRankings.map((element, index) => {
+            return this.userModel.updateOne(
+              {
+                _id: Types.ObjectId(String(element._id)),
+              },
+              {
+                $set: {
+                  [nationwideField]: index + 1,
+                  [xpFiled]: Number(element.totalXp),
+                },
+              },
+            );
+          }),
+        );
+      }
+    };
+    const updateProvinceRanking = async () => {
+      const exec = async (locationRanking: LocationRanking) => {
+        const rankings = locationRanking.rankings;
+        if (rankings?.length > 0) {
+          const ranking$province = byWeek
+            ? 'ranking.province.weeklyOrder'
+            : 'ranking.province.monthlyOrder';
+          return Promise.all(
+            rankings.map((element, index) => {
+              return this.userModel.updateOne(
+                {
+                  _id: Types.ObjectId(element._id),
+                },
+                {
+                  $set: {
+                    [ranking$province]: index + 1,
+                  },
+                },
+              );
+            }),
+          );
+        }
+      };
+      return Promise.all(locationRankings.map((element) => exec(element)));
+    };
+    const updateSubLocationRanking = async () => {
+      const updateField: {
+        _id: string;
+        district: {
+          weeklyOrder: number;
+          monthlyOrder: number;
+        };
+        school: {
+          weeklyOrder: number;
+          monthlyOrder: number;
+        };
+        grade: {
+          weeklyOrder: number;
+          monthlyOrder: number;
+        };
+      }[] = [];
+      const groups = (locationRanking: LocationRanking) => {
+        const districts = _.groupBy(
+          locationRanking.rankings.filter(
+            (item) => item.subAddress.district > 0,
+          ),
+          (item) => item.subAddress.district,
+        );
+        const schools = _.groupBy(
+          locationRanking.rankings.filter(
+            (item) => item.subAddress?.school > 0,
+          ),
+          (item) => item.subAddress.school,
+        );
+        const grades = _.groupBy(
+          locationRanking.rankings.filter((item) => item.subAddress?.grade > 0),
+          (item) => `${item.subAddress.school}-${item.subAddress.grade}`,
+        );
+        return { districts, schools, grades };
+      };
+      (async () => {
+        const timeField = byWeek ? 'weeklyOrder' : 'monthlyOrder';
+        await Promise.all(
+          locationRankings.map((locationRanking) => {
+            const rankings = locationRanking?.rankings;
+            if (rankings?.length > 0) {
+              const { districts, schools, grades } = groups(locationRanking);
+              const listRankingLocation = rankings.map((element) => {
+                const ranking$locations: {
+                  [key: string]: Object;
+                  userId: string;
+                } = { userId: element._id };
+                const findIn$Location = (
+                  key: string,
+                  subLocation: SubLocation,
+                  list: _.Dictionary<
+                    [
+                      { _id: string; totalXp: number; subAddress: SubAddress },
+                      ...{
+                        _id: string;
+                        totalXp: number;
+                        subAddress: SubAddress;
+                      }[]
+                    ]
+                  >,
+                ) => {
+                  const rankings = list[key];
+                  let index = rankings?.findIndex(
+                    (item) => String(item._id) === String(element._id),
+                  );
+                  index != null && index != undefined
+                    ? (index += 1)
+                    : (index = 0);
+                  ranking$locations[subLocation] = {
+                    [timeField]: index,
+                  };
+                };
+                findIn$Location(
+                  String(element.subAddress.district),
+                  SubLocation.District,
+                  districts,
+                );
+                findIn$Location(
+                  String(element.subAddress.school),
+                  SubLocation.School,
+                  schools,
+                );
+                findIn$Location(
+                  `${element.subAddress.school}-${element.subAddress.grade}`,
+                  SubLocation.Grade,
+                  grades,
+                );
+                return ranking$locations;
+              });
+              return Promise.all(
+                listRankingLocation.map((element) => {
+                  const object = {
+                    [`ranking.district.${timeField}`]:
+                      element['district'][timeField],
+                    [`ranking.school.${timeField}`]:
+                      element['school'][timeField],
+                    [`ranking.grade.${timeField}`]: element['grade'][timeField],
+                  };
+                  return this.userModel.updateOne(
+                    {
+                      _id: Types.ObjectId(element.userId),
+                    },
+                    {
+                      $set: {
+                        ...object,
+                      },
+                    },
+                  );
+                }),
+              );
+            }
+          }),
+        );
+      })();
+    };
+    await updateNationwideRanking();
+    await updateProvinceRanking();
+    await updateSubLocationRanking();
+  }
+
+  public async xpStatistic(group: GroupAddressDto, byWeek?: boolean) {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    const length = group?.users?.length;
+    let LIMIT = 10;
+    if (length <= 15) LIMIT = 6;
+    else if (length < 20) LIMIT = 8;
+    let startTime: Date;
+    let endTime: Date;
+    if (group?.users?.length > 0) {
+      if (byWeek === true) {
+        const today = dayjs().tz(VIETNAM_TIME_ZONE).day();
+        if (today === 0) {
+          startTime = dayjs()
+            .tz(VIETNAM_TIME_ZONE)
+            .startOf('week')
+            .subtract(1, 'week')
+            .toDate();
+          endTime = dayjs()
+            .tz(VIETNAM_TIME_ZONE)
+            .endOf('week')
+            .subtract(1, 'week')
+            .toDate();
+        } else {
+          startTime = dayjs().tz(VIETNAM_TIME_ZONE).startOf('week').toDate();
+          endTime = dayjs().tz(VIETNAM_TIME_ZONE).toDate();
+        }
+      } else {
+        const today = dayjs().tz(VIETNAM_TIME_ZONE).date();
+        if (today === 1) {
+          startTime = dayjs()
+            .tz(VIETNAM_TIME_ZONE)
+            .startOf('month')
+            .subtract(1, 'month')
+            .toDate();
+          endTime = dayjs()
+            .tz(VIETNAM_TIME_ZONE)
+            .endOf('month')
+            .subtract(1, 'month')
+            .toDate();
+        } else {
+          startTime = dayjs().tz(VIETNAM_TIME_ZONE).startOf('month').toDate();
+          endTime = dayjs().tz(VIETNAM_TIME_ZONE).toDate();
+        }
+      }
+      const remainder = group.users.length % LIMIT;
+      const boundaries = this.usersHelper
+        .fragments(group.users.length, LIMIT)
+        .map((e, index) => {
+          const offset = e !== LIMIT ? 0 : remainder;
+          const start = index * e + offset;
+          const end = (index + 1) * e + offset;
+          return group.users.slice(start, end).map((element) => element._id);
+        });
+      const ranking = (
+        await Promise.all(
+          boundaries.map((element) => {
+            return this.scoreStatisticsService.totalXpWithFilter({
+              createdAt: {
+                $gte: startTime,
+                $lte: endTime,
+              },
+              user: { $in: element },
+            });
+          }),
+        )
+      )
+        .flat()
+        .sort(function (a, b) {
+          return b.totalXp - a.totalXp;
+        });
+      const result = [];
+      ranking.forEach((element) => {
+        const user = group.users.find(
+          (item) => String(item._id) == String(element._id),
+        );
+        if (user) {
+          result.push({ ...element, subAddress: user.subAddress });
+        }
+      });
+      return { province: group.province, rankings: result };
+    }
   }
 }

@@ -79,3 +79,9 @@ export enum Notification {
   DailyReminder = 'DailyReminder',
   ScoreReminder = 'ScoreReminder',
 }
+
+export enum SubLocation {
+  District = 'district',
+  School = 'school',
+  Grade = 'grade',
+}
