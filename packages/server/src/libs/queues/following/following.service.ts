@@ -13,4 +13,9 @@ export class FollowingQueueService {
   async pushTagsToCache() {
     await this.followingQueue.add('pushTagsToCache', {}, { priority: 1 });
   }
+
+  @Cron('0 5 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async pushFollowingsToCache() {
+    await this.followingQueue.add('pushFollowingsToCache', {}, { priority: 1 });
+  }
 }

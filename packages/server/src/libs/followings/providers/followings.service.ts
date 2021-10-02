@@ -37,22 +37,60 @@ export class FollowingsService {
     this.prefixKey = this.configsService.get('MODE');
   }
 
-  public async countFollowings(currentUser: string) {
-    const cachedCounter = await this.cache.get<number>(
+  public async countFollowings(currentUser: string): Promise<number> {
+    const cachedCounter = await this.cache.get<Array<string>>(
       `${this.prefixKey}/followings/${currentUser}`,
     );
-    if (cachedCounter) return cachedCounter;
-    const counterFromDb = await this.followingModel.countDocuments({
-      user: Types.ObjectId(currentUser),
-    });
-    await this.cache.set<number>(
-      `${this.prefixKey}/followings/${currentUser}`,
-      counterFromDb,
-      {
-        ttl: MAX_TTL,
-      },
+    if (cachedCounter) return cachedCounter?.length;
+    const items = await this.followingModel
+      .find({
+        user: Types.ObjectId(currentUser),
+      })
+      .select(['followUser'])
+      .lean();
+    if (items?.length > 0) {
+      await this.cache.set<Array<string>>(
+        `${this.prefixKey}/followings/${currentUser}`,
+        items.map((item) => String(item.followUser)),
+        {
+          ttl: MAX_TTL,
+        },
+      );
+      return items?.length;
+    }
+    return 0;
+  }
+
+  public async pushToCache() {
+    const groups: Array<{ user: string; items: Array<string> }> =
+      await this.followingModel.aggregate([
+        {
+          $group: {
+            _id: {
+              user: '$user',
+            },
+            items: {
+              $push: '$followUser',
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            user: '$_id.user',
+            items: '$items',
+          },
+        },
+      ]);
+    await Promise.all(
+      groups.map((element) => {
+        const path = `${this.prefixKey}/followings/${element.user}`;
+        return this.cache.set<Array<string>>(path, element.items, {
+          ttl: MAX_TTL,
+        });
+      }),
     );
-    return counterFromDb;
+    return groups;
   }
 
   public getMyFollowings(
