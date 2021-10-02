@@ -13,7 +13,6 @@ import { QuestionHoldersService } from '@libs/questionHolders/providers/question
 import { LessonTree } from '@dto/book';
 import { AnswerResult } from '@dto/lesson';
 import { LevelWork, UnitWork, WorkInfo } from '@dto/works';
-import { QuestionHolderDocument } from '@entities/questionHolder.entity';
 import { AnswerService } from '@libs/questionHolders/providers/answer.service';
 import { PointService } from '@libs/questionHolders/providers/point.service';
 import { UserProfile } from '@dto/user';

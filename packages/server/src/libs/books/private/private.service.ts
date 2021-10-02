@@ -1,6 +1,5 @@
 import { QuestionReducingOutput } from '@dto/questionHolder';
 import { BookDocument } from '@entities/book.entity';
-import { QuestionHolderDocument } from '@entities/questionHolder.entity';
 import { QuestionHoldersService } from '@libs/questionHolders/providers/questionHolders.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { BooksService } from '../providers/books.service';

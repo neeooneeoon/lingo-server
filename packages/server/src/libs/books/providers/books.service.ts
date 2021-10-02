@@ -344,7 +344,7 @@ export class BooksService {
         });
         function shuffle(array: Array<LeanDocument<QuestionDocument>>) {
           if (array.length > 1) {
-            const currentIndex = array.length;
+            // const currentIndex = array.length;
             // while (currentIndex != 0) {
             //   const randomIndex = Math.floor(Math.random() * currentIndex);
             //   currentIndex--;

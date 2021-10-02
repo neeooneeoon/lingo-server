@@ -48,8 +48,6 @@ import { LocationRanking } from '@dto/ranking';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import fs from 'fs-extra';
-import path from 'path';
 import { SubLocation } from '@utils/enums';
 @Injectable()
 export class UsersService {
@@ -738,7 +736,7 @@ export class UsersService {
               const { districts, schools, grades } = groups(locationRanking);
               const listRankingLocation = rankings.map((element) => {
                 const ranking$locations: {
-                  [key: string]: Object;
+                  [key: string]: unknown;
                   userId: string;
                 } = { userId: element._id };
                 const findIn$Location = (
