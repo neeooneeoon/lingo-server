@@ -88,6 +88,9 @@ export class User {
 
   @Prop({ type: Boolean, required: true, default: false })
   enableNotification: boolean;
+
+  @Prop({ type: Object, required: false })
+  ranking: any;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

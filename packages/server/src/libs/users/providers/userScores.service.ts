@@ -43,6 +43,7 @@ export class UserScoresService {
           new: true,
         },
       );
+      userDidUpdated.address = input.user.address as unknown;
       const profile = this.usersHelper.mapToUserProfile(userDidUpdated);
       await this.cache.set<UserProfile>(
         `${this.prefixKey}/profile/${String(userDidUpdated._id)}`,

@@ -230,6 +230,7 @@ export class ScoreStatisticsService {
     try {
       const xpArr: UserRank[] = [];
       let tempArr: LeanDocument<ScoreStatisticDocument>[] = [];
+      console.log(filter);
       if (displayFollowings) {
         tempArr = await this.getXpStatisticByAddress(
           filter,
@@ -239,6 +240,8 @@ export class ScoreStatisticsService {
           role,
         );
         const followingIds = await this.getFollowingIds(userId);
+        console.log(followingIds);
+        console.log(tempArr);
         tempArr = tempArr.filter((i) => {
           const user = i.user as unknown as UserDocument;
           return followingIds.includes(user._id.toHexString());
@@ -413,5 +416,29 @@ export class ScoreStatisticsService {
   public async getFollowingIds(userId: string): Promise<string[]> {
     const followings = await this.followingsService.followings(userId);
     return followings.map((i) => String(i.followUser));
+  }
+
+  public async totalXpWithFilter(filter: any) {
+    const result = await this.scoreStatisticModel.aggregate([
+      {
+        $match: filter ? filter : {},
+      },
+      {
+        $group: {
+          _id: { user: '$user' },
+          totalXp: { $sum: '$xp' },
+        },
+      },
+      {
+        $project: {
+          _id: '$_id.user',
+          totalXp: '$totalXp',
+        },
+      },
+      {
+        $limit: 15,
+      },
+    ]);
+    return result;
   }
 }

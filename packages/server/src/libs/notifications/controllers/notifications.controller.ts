@@ -35,7 +35,7 @@ export class NotificationsController {
   @ApiParam({ type: String, required: true, name: 'notificationId' })
   @ApiOperation({ summary: 'Push thông báo' })
   pushNotification(@Param('notificationId') notificationId: string) {
-    return this.notificationsService.scoreReminderNotification();
+    return this.notificationsService.updateSystem();
   }
 
   @Get('listNotifications')
