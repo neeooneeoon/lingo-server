@@ -595,17 +595,32 @@ export class BooksService {
   }
 
   public async getLevelsInUnit(bookId: string, unitId: string) {
+    const path = `${this.prefixKey}/${bookId}/${unitId}/lessonMetaData`;
+    const lessonMetaData = await this.cacheManager.get<
+      {
+        levelIndex: number;
+        totalLessons: number;
+      }[]
+    >(path);
+    if (lessonMetaData) return lessonMetaData;
     const book = await this.bookModel.findById(bookId).select(['units']).lean();
     const units = book?.units;
     if (units?.length > 0) {
       const currentUnit = units.find((element) => element._id === unitId);
       if (currentUnit) {
-        return currentUnit.levels.map((element) => {
+        const lessonMetaData = currentUnit.levels.map((element) => {
           return {
             levelIndex: element.levelIndex,
             totalLessons: element.totalLessons,
           };
         });
+        await this.cacheManager.set<
+          {
+            levelIndex: number;
+            totalLessons: number;
+          }[]
+        >(path, lessonMetaData, { ttl: 86400 });
+        return lessonMetaData;
       } else {
         throw new BadRequestException('Unit not found');
       }
