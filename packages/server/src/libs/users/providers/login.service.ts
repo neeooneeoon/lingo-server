@@ -87,6 +87,15 @@ export class LoginService {
       lastActive: new Date(),
       address: { province: -1, district: -1 },
       enableNotification: false,
+      ranking: {
+        weeklyXp: 0,
+        monthlyXp: 0,
+        nationwide: { weeklyOrder: 0, monthlyOrder: 0 },
+        province: { weeklyOrder: 0, monthlyOrder: 0 },
+        district: { weeklyOrder: 0, monthlyOrder: 0 },
+        school: { weeklyOrder: 0, monthlyOrder: 0 },
+        grade: { weeklyOrder: 0, monthlyOrder: 0 },
+      },
     });
   }
 

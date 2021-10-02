@@ -37,18 +37,24 @@ export class FollowingsService {
     this.prefixKey = this.configsService.get('MODE');
   }
 
-  public async countFollowings(currentUser: string): Promise<number> {
+  public async countFollowings(
+    currentUser: string,
+  ): Promise<{ items: Array<string>; count: number }> {
     const cachedCounter = await this.cache.get<Array<string>>(
       `${this.prefixKey}/followings/${currentUser}`,
     );
-    if (cachedCounter) return cachedCounter?.length;
+    if (cachedCounter)
+      return {
+        items: cachedCounter,
+        count: cachedCounter?.length,
+      };
     const items = await this.followingModel
       .find({
         user: Types.ObjectId(currentUser),
       })
       .select(['followUser'])
       .lean();
-    if (items?.length > 0) {
+    if (items) {
       await this.cache.set<Array<string>>(
         `${this.prefixKey}/followings/${currentUser}`,
         items.map((item) => String(item.followUser)),
@@ -56,9 +62,15 @@ export class FollowingsService {
           ttl: MAX_TTL,
         },
       );
-      return items?.length;
+      return {
+        items: items.map((item) => String(item.followUser)),
+        count: items?.length,
+      };
     }
-    return 0;
+    return {
+      items: [],
+      count: 0,
+    };
   }
 
   public async pushToCache() {
@@ -121,7 +133,7 @@ export class FollowingsService {
       return forkJoin([total$, followings$]).pipe(
         map(([total, followings]) => {
           return {
-            total: total,
+            total: total.count,
             items: followings,
           };
         }),
@@ -147,7 +159,7 @@ export class FollowingsService {
       return forkJoin([total$, followings$]).pipe(
         map(([total, followings]) => {
           return {
-            total: total,
+            total: total.count,
             items: followings,
           };
         }),
@@ -176,36 +188,35 @@ export class FollowingsService {
     }
   }
 
-  public updateFollowingInCache(currentUser: string, value: number) {
+  public updateFollowingInCache(
+    currentUser: string,
+    value: string,
+    isDelete: boolean,
+  ): Observable<{ items: Array<string>; count: number }> {
     const path = `${this.prefixKey}/followings/${currentUser}`;
-    return from(this.cache.get<number>(path)).pipe(
-      switchMap((currentValue) => {
-        if (currentValue) {
+    return from(this.cache.get<Array<string>>(path)).pipe(
+      switchMap((snapshot) => {
+        if (snapshot) {
+          const list = new Set(snapshot);
+          isDelete ? list.delete(value) : list.add(value);
           this.cache
-            .set<number>(path, currentValue + value, { ttl: MAX_TTL })
+            .set<Array<string>>(path, [...list], {
+              ttl: MAX_TTL,
+            })
             .then((r) => {
               this.logger.log({
                 status: r,
                 time: this.logger.getTimestamp(),
               });
             });
-          return of(currentValue + value);
+          return of({
+            items: [...list],
+            count: list?.size,
+          });
         } else {
-          return from(
-            this.followingModel.countDocuments({
-              user: Types.ObjectId(currentUser),
-            }),
-          ).pipe(
-            switchMap((totalFollowings) => {
-              this.cache
-                .set<number>(path, totalFollowings, { ttl: MAX_TTL })
-                .then((r) => {
-                  this.logger.log({
-                    status: r,
-                    time: this.logger.getTimestamp(),
-                  });
-                });
-              return of(totalFollowings);
+          return from(this.countFollowings(currentUser)).pipe(
+            map((result) => {
+              return result;
             }),
           );
         }
@@ -238,7 +249,7 @@ export class FollowingsService {
             ).pipe(
               switchMap((following) => {
                 if (following) {
-                  this.updateFollowingInCache(currentUser, 1)
+                  this.updateFollowingInCache(currentUser, followUser, false)
                     .pipe(map((r) => r))
                     .subscribe(console.log);
                   return of(following);
@@ -263,7 +274,7 @@ export class FollowingsService {
             ).pipe(
               switchMap((following) => {
                 if (following) {
-                  this.updateFollowingInCache(currentUser, 1)
+                  this.updateFollowingInCache(currentUser, followUser, false)
                     .pipe(map((r) => r))
                     .subscribe(console.log);
                   return of(following);
@@ -290,7 +301,7 @@ export class FollowingsService {
     ).pipe(
       switchMap((deleteResult) => {
         if (deleteResult.deletedCount === 1) {
-          this.updateFollowingInCache(currentUser, -1)
+          this.updateFollowingInCache(currentUser, followedUser, true)
             .pipe(map((r) => r))
             .subscribe();
           return of('Un-follow success');
@@ -493,7 +504,7 @@ export class FollowingsService {
     ]).pipe(
       map(([total, followings]) => {
         return {
-          total: total,
+          total: total.count,
           items: followings,
         };
       }),

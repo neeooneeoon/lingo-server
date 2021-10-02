@@ -1042,4 +1042,61 @@ export class UsersService {
       return { province: group.province, rankings: result };
     }
   }
+
+  public async userFollowingRanking(
+    currentUser: string,
+    time: 'weekly' | 'monthly',
+  ) {
+    const selectFields = ['_id', 'role', 'avatar', 'displayName'];
+    const extendField =
+      time === 'weekly' ? 'ranking.weeklyXp' : 'ranking.monthlyXp';
+    selectFields.push(extendField);
+    const following = await this.followingsService.countFollowings(currentUser);
+    if (following?.items?.length > 0) {
+      const listUserId = following.items.map((item) => Types.ObjectId(item));
+      const users = await this.userModel.aggregate([
+        {
+          $match: {
+            _id: { $in: listUserId },
+          },
+        },
+        {
+          $sort: {
+            [extendField]: -1,
+          },
+        },
+        {
+          $project: {
+            _id: '$_id',
+            displayName: '$displayName',
+            role: '$role',
+            ranking: {
+              weeklyXp: '$ranking.weeklyXp',
+              monthlyXp: '$ranking.monthlyXp',
+            },
+            avatar: '$avatar',
+          },
+        },
+        {
+          $limit: 10,
+        },
+      ]);
+      if (users?.length > 0) {
+        const result = users.map((element, index) => {
+          const rankingField = 'ranking';
+          const timeField = time === 'weekly' ? 'weeklyXp' : 'monthlyXp';
+          return {
+            orderNumber: index + 1,
+            displayName: element.displayName,
+            avatar: element.avatar,
+            userId: element._id,
+            xp: element[rankingField][timeField],
+            isCurrentUser: false,
+            role: element.role,
+          };
+        });
+        return result;
+      }
+    } else return [];
+  }
 }
