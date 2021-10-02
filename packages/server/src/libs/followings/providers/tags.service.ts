@@ -72,7 +72,8 @@ export class TagsService {
               .find({
                 user: Types.ObjectId(currentUser),
               })
-              .select(unSelect),
+              .select(unSelect)
+              .lean(),
           ).pipe(
             switchMap((userTags) => {
               this.cache
@@ -219,6 +220,44 @@ export class TagsService {
           }
         }
         throw new BadRequestException();
+      }),
+    );
+  }
+
+  public async pushToCache() {
+    const tags: Array<{
+      user: string;
+      tags: Array<{ _id: string; color: string; name: string }>;
+    }> = await this.tagModel.aggregate([
+      {
+        $group: {
+          _id: {
+            user: '$user',
+          },
+          tags: {
+            $push: {
+              _id: '$_id',
+              color: '$color',
+              name: '$name',
+              user: '$user',
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          user: '$_id.user',
+          tags: '$tags',
+          _id: 0,
+        },
+      },
+    ]);
+    await Promise.all(
+      tags.map((element) => {
+        const path = `${this.prefixKey}/tags/${element.user}`;
+        return this.cache.set<Partial<TagDocument>[]>(path, element.tags, {
+          ttl: MAX_TTL,
+        });
       }),
     );
   }

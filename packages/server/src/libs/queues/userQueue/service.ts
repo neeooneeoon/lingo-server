@@ -7,12 +7,12 @@ import { Queue } from 'bull';
 export class UserQueueService {
   constructor(@InjectQueue('user') private userQueue: Queue) {}
 
-  @Cron('10 0 * * *')
+  @Cron('0 3 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
   async updateRanking() {
     await this.userQueue.add('updateRanking', {}, { priority: 2 });
   }
 
-  @Cron('25 0 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  @Cron('15 3 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
   async pushProfile() {
     await this.userQueue.add('pushProfile', {}, { priority: 1 });
   }
