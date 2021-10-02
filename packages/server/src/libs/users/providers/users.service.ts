@@ -573,6 +573,7 @@ export class UsersService {
       'createdAt',
       'address',
       'enableNotification',
+      'ranking',
     ];
     const users = await this.userModel
       .find({ xp: { $ne: 0 } })

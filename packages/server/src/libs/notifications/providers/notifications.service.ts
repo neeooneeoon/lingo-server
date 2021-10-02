@@ -173,6 +173,36 @@ export class NotificationsService {
       );
     }
   }
+
+  public async updateSystem() {
+    const MAX_DEVICE_MULTICAST = 1000;
+    const devices = await this.deviceTokenModel.find({});
+    const enableDevices = devices.map((device) => device.token);
+    const payload = {
+      title: '⚙️ Cập nhật hệ thống',
+      body: 'Hiện tại ứng dụng đang trong thời gian bảo trì. Xin cảm ơn!',
+    };
+    if (enableDevices.length <= MAX_DEVICE_MULTICAST) {
+      await this.sendMulticast(enableDevices, payload);
+    } else {
+      const remainder =
+        Math.floor(enableDevices.length / MAX_DEVICE_MULTICAST) + 1;
+      const listGroupDevices: Array<Array<string>> = [];
+      for (let i = 0; i < remainder; i++) {
+        const multicastDevices = enableDevices.slice(
+          i * MAX_DEVICE_MULTICAST,
+          (i + 1) * MAX_DEVICE_MULTICAST,
+        );
+        if (multicastDevices?.length > 0) {
+          listGroupDevices.push(multicastDevices);
+        }
+      }
+
+      await Promise.all(
+        listGroupDevices.map((element) => this.sendMulticast(element, payload)),
+      );
+    }
+  }
   public async sendNotificationTest() {
     const devices = await this.deviceTokenModel.find({
       user: Types.ObjectId('60e3cc151f2d656c247426ce'),
