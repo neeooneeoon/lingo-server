@@ -23,4 +23,16 @@ export class FollowingProcessor {
       throw new BadRequestException();
     }
   }
+
+  @Process('pushFollowingsToCache')
+  async handlePushFollowingsToCache() {
+    try {
+      this.logger.debug('Start pushFollowingsToCache');
+      await this.followingService.pushToCache();
+      this.logger.debug('End pushFollowingsToCache');
+    } catch (error) {
+      this.logger.debug(error);
+      throw new BadRequestException(error);
+    }
+  }
 }

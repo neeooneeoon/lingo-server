@@ -42,6 +42,11 @@ export class FollowingsController {
     private followersService: FollowersService,
   ) {}
 
+  @Get('test')
+  async group() {
+    return this.followingsService.pushToCache();
+  }
+
   @Post('add')
   @ApiOperation({ summary: 'Theo dõi người dùng' })
   @ApiBody({ type: AddFollowingDto })
