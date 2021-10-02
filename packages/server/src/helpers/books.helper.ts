@@ -51,10 +51,10 @@ export class BooksHelper {
   }
   public divideRange(rootSize: number, minSize: number) {
     const totalUnits = Math.floor(rootSize / minSize);
-    const remainder = rootSize % minSize;
+    // const remainder = rootSize % minSize;
     const ranges = new Array(totalUnits).fill(0);
-    const i = 0,
-      j = 0;
+    // const i = 0,
+    //   j = 0;
     // while (true) {
     //   if (totalUnits <= remainder) {
     //     if (i < totalUnits) {

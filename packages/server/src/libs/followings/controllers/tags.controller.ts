@@ -31,6 +31,11 @@ import { TagsService } from '../providers/tags.service';
 export class TagsController {
   constructor(private tagsService: TagsService) {}
 
+  @Get('test')
+  async findAll() {
+    return this.tagsService.pushToCache();
+  }
+
   @Post('add')
   @ApiOperation({ summary: 'Tạo thẻ' })
   @ApiBody({ type: CreateTagDto })

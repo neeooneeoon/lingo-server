@@ -1,7 +1,6 @@
-import { Controller, Get, UseGuards, HttpStatus, Req } from '@nestjs/common';
-import { Request } from 'express';
+import { Controller, Get, UseGuards, HttpStatus } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Login')
 @Controller('facebook')

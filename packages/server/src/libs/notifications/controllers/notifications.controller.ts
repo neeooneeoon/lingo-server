@@ -32,9 +32,12 @@ export class NotificationsController {
 
   @Post('enable/:notificationId')
   @CheckPolicies(new UserPermission(Action.Manage))
-  @ApiParam({ type: String, required: true, name: 'notificationId' })
+  // @ApiParam({ type: String, required: true, name: 'notificationId' })
   @ApiOperation({ summary: 'Push thông báo' })
-  pushNotification(@Param('notificationId') notificationId: string) {
+  // pushNotification(@Param('notificationId') notificationId: string) {
+  //   return this.notificationsService.updateSystem();
+  // }
+  pushNotification() {
     return this.notificationsService.updateSystem();
   }
 

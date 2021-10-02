@@ -20,6 +20,7 @@ import { UserRank } from '@dto/leaderBoard/userRank.dto';
 import { UserDocument } from '@entities/user.entity';
 import { Cache } from 'cache-manager';
 import { ConfigsService } from '@configs';
+import { MAX_TTL } from '@utils/constants';
 
 @Injectable()
 export class FollowingsService {
@@ -48,7 +49,7 @@ export class FollowingsService {
       `${this.prefixKey}/followings/${currentUser}`,
       counterFromDb,
       {
-        ttl: 10800,
+        ttl: MAX_TTL,
       },
     );
     return counterFromDb;
@@ -59,7 +60,7 @@ export class FollowingsService {
     tagIds: string[],
     currentPage: number,
   ) {
-    const nPerPage = 15;
+    const nPerPage = 10;
     const nSkip = currentPage <= 0 ? 0 : (currentPage - 1) * nPerPage;
     const followUserRef = ['displayName', 'avatar', 'xp'];
     const tagRef = ['color', 'name'];
@@ -76,7 +77,8 @@ export class FollowingsService {
           .limit(nPerPage)
           .populate('followUser', followUserRef)
           .populate('tags', tagRef)
-          .select(unSelect),
+          .select(unSelect)
+          .lean(),
       );
       return forkJoin([total$, followings$]).pipe(
         map(([total, followings]) => {
@@ -101,7 +103,8 @@ export class FollowingsService {
           .limit(nPerPage)
           .populate('followUser', followUserRef)
           .populate('tags', tagRef)
-          .select(unSelect),
+          .select(unSelect)
+          .lean(),
       );
       return forkJoin([total$, followings$]).pipe(
         map(([total, followings]) => {
@@ -141,7 +144,7 @@ export class FollowingsService {
       switchMap((currentValue) => {
         if (currentValue) {
           this.cache
-            .set<number>(path, currentValue + value, { ttl: 10800 })
+            .set<number>(path, currentValue + value, { ttl: MAX_TTL })
             .then((r) => {
               this.logger.log({
                 status: r,
@@ -157,7 +160,7 @@ export class FollowingsService {
           ).pipe(
             switchMap((totalFollowings) => {
               this.cache
-                .set<number>(path, totalFollowings, { ttl: 10800 })
+                .set<number>(path, totalFollowings, { ttl: MAX_TTL })
                 .then((r) => {
                   this.logger.log({
                     status: r,
@@ -447,7 +450,8 @@ export class FollowingsService {
         .skip(nSkip)
         .limit(nPerPage)
         .populate('followUser', followUserRef)
-        .select(unSelect),
+        .select(unSelect)
+        .lean(),
     ]).pipe(
       map(([total, followings]) => {
         return {

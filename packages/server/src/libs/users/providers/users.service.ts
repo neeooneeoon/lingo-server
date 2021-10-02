@@ -41,15 +41,13 @@ import { UserScoresService } from '@libs/users/providers/userScores.service';
 import { School } from '@entities/school.entity';
 import emojiRegex from 'emoji-regex/RGI_Emoji';
 import { ConfigsService } from '@configs';
-import { NAME_REGEX, VIETNAM_TIME_ZONE } from '@utils/constants';
+import { MAX_TTL, NAME_REGEX, VIETNAM_TIME_ZONE } from '@utils/constants';
 import * as _ from 'lodash';
 import { GroupAddressDto, SubAddress } from '@dto/address';
 import { LocationRanking } from '@dto/ranking';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import fs from 'fs-extra';
-import path from 'path';
 import { SubLocation } from '@utils/enums';
 @Injectable()
 export class UsersService {
@@ -351,8 +349,11 @@ export class UsersService {
     return xpArr;
   }
 
-  public async getAllUsers(): Promise<UserDocument[]> {
-    return this.userModel.find({});
+  public async getAllUsers(): Promise<LeanDocument<UserDocument>[]> {
+    return this.userModel
+      .find({ xp: { $ne: 0 } })
+      .select(['_id'])
+      .lean();
   }
 
   public findUser(userId: string) {
@@ -655,6 +656,28 @@ export class UsersService {
     const locationRankings: LocationRanking[] = await Promise.all(
       result.map((element) => this.xpStatistic(element, byWeek)),
     );
+    const findProfileWithRanking = async (ranking: {
+      _id: string;
+      totalXp: number;
+      order: number;
+    }) => {
+      const selectFields = ['_id', 'role', 'avatar', 'displayName', 'address'];
+      const user = await this.userModel
+        .findById(Types.ObjectId(ranking._id))
+        .select(selectFields)
+        .lean();
+      if (user) {
+        return {
+          orderNumber: ranking.order,
+          displayName: user.displayName,
+          avatar: user.avatar,
+          userId: String(user._id),
+          xp: ranking.totalXp,
+          isCurrentUser: false,
+          role: user.role,
+        };
+      }
+    };
     const updateNationwideRanking = async () => {
       const allRankings = locationRankings
         .map((item) => item.rankings)
@@ -682,6 +705,30 @@ export class UsersService {
             );
           }),
         );
+        const highestScorersNationwide = allRankings.slice(0, 10);
+        const nationwideRanking = await Promise.all(
+          highestScorersNationwide.map((element, index) => {
+            return findProfileWithRanking({
+              _id: element._id,
+              totalXp: element.totalXp,
+              order: index + 1,
+            });
+          }),
+        );
+        const timePath = byWeek ? 'weekly' : 'monthly';
+        const locationPath = 'nationwide';
+        const pathCached = `${this.prefixKey}/ranking/${timePath}/${locationPath}`;
+        await this.cache.set<
+          {
+            orderNumber: number;
+            displayName: string;
+            avatar: string;
+            userId: string;
+            xp: number;
+            isCurrentUser: boolean;
+            role: Role;
+          }[]
+        >(pathCached, nationwideRanking, { ttl: MAX_TTL });
       }
     };
     const updateProvinceRanking = async () => {
@@ -691,7 +738,7 @@ export class UsersService {
           const ranking$province = byWeek
             ? 'ranking.province.weeklyOrder'
             : 'ranking.province.monthlyOrder';
-          return Promise.all(
+          await Promise.all(
             rankings.map((element, index) => {
               return this.userModel.updateOne(
                 {
@@ -702,9 +749,38 @@ export class UsersService {
                     [ranking$province]: index + 1,
                   },
                 },
+                {
+                  new: true,
+                },
               );
             }),
           );
+          const highestScorersProvince = rankings?.slice(0, 10);
+          if (highestScorersProvince?.length > 0) {
+            const provinceRanking = await Promise.all(
+              highestScorersProvince.map((element, index) => {
+                return findProfileWithRanking({
+                  _id: element._id,
+                  totalXp: element.totalXp,
+                  order: index + 1,
+                });
+              }),
+            );
+            const timePath = byWeek ? 'weekly' : 'monthly';
+            const locationPath = `province/${locationRanking.province}`;
+            const pathCached = `${this.prefixKey}/ranking/${timePath}/${locationPath}`;
+            await this.cache.set<
+              {
+                orderNumber: number;
+                displayName: string;
+                avatar: string;
+                userId: string;
+                xp: number;
+                isCurrentUser: boolean;
+                role: Role;
+              }[]
+            >(pathCached, provinceRanking, { ttl: MAX_TTL });
+          }
         }
       };
       return Promise.all(locationRankings.map((element) => exec(element)));
@@ -738,7 +814,7 @@ export class UsersService {
               const { districts, schools, grades } = groups(locationRanking);
               const listRankingLocation = rankings.map((element) => {
                 const ranking$locations: {
-                  [key: string]: Object;
+                  [key: string]: unknown;
                   userId: string;
                 } = { userId: element._id };
                 const findIn$Location = (
@@ -807,11 +883,80 @@ export class UsersService {
             }
           }),
         );
+        const updateSubAddressRankingCache = async (
+          listSubLocationRaking: _.Dictionary<
+            [
+              {
+                _id: string;
+                totalXp: number;
+                subAddress: SubAddress;
+              },
+              ...{
+                _id: string;
+                totalXp: number;
+                subAddress: SubAddress;
+              }[]
+            ]
+          >,
+          subLocation: SubLocation,
+        ) => {
+          const listSubLocations = Object.keys(listSubLocationRaking);
+          if (listSubLocations?.length > 0) {
+            const exec = async (key: string) => {
+              const rankings = listSubLocationRaking[key];
+              if (rankings?.length > 0) {
+                const higherScoreUsers = rankings.slice(0, 10);
+                const subLocationRanking = await Promise.all(
+                  higherScoreUsers.map((element, index) => {
+                    return findProfileWithRanking({
+                      _id: element._id,
+                      totalXp: element.totalXp,
+                      order: index + 1,
+                    });
+                  }),
+                );
+                const timePath = byWeek ? 'weekly' : 'monthly';
+                const locationPath = subLocation;
+                const pathCached = `${this.prefixKey}/ranking/${timePath}/${locationPath}/${key}`;
+                await this.cache.set<
+                  {
+                    orderNumber: number;
+                    displayName: string;
+                    avatar: string;
+                    userId: string;
+                    xp: number;
+                    isCurrentUser: boolean;
+                    role: Role;
+                  }[]
+                >(pathCached, subLocationRanking, { ttl: MAX_TTL });
+              }
+            };
+            await Promise.all(
+              listSubLocations.map((element) => {
+                return exec(element);
+              }),
+            );
+          }
+        };
+        await Promise.all(
+          locationRankings.map((locationRanking) => {
+            const rankings = locationRanking?.rankings;
+            if (rankings?.length > 0) {
+              const { districts, schools, grades } = groups(locationRanking);
+              return Promise.all([
+                updateSubAddressRankingCache(districts, SubLocation.District),
+                updateSubAddressRankingCache(schools, SubLocation.School),
+                updateSubAddressRankingCache(grades, SubLocation.Grade),
+              ]);
+            }
+          }),
+        );
       })();
     };
     await updateNationwideRanking();
     await updateProvinceRanking();
     await updateSubLocationRanking();
+    console.log('Done__________________________________');
   }
 
   public async xpStatistic(group: GroupAddressDto, byWeek?: boolean) {

@@ -99,6 +99,74 @@ export class ScoreStatisticsService {
     }
     return xpArr;
   }
+
+  public async getRankingByTimeAndLocation(
+    userId: string,
+    timeSelect: string,
+    displayFollowings: boolean,
+    location?: string,
+    locationId?: number,
+    schoolId?: number,
+    role?: Role,
+  ) {
+    timeSelect = timeSelect?.trim()?.toLowerCase();
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    if (!timeSelect) {
+      throw new BadRequestException('timeSelect not entered');
+    }
+    const getPath = (timeSelect: 'monthly' | 'weekly') => {
+      let locationPath = location?.trim()?.toLowerCase();
+      let cachePath = `${this.prefixKey}/ranking`;
+      if (!locationPath) {
+        locationPath = 'nationwide';
+      }
+      cachePath = cachePath.concat(`/${timeSelect}/${locationPath}`);
+      if (locationPath === 'nationwide') {
+        return cachePath;
+      }
+      let reflectLocationId = String(locationId);
+      if (locationPath === 'grade') {
+        reflectLocationId = `${schoolId}-${locationId}`;
+      }
+      cachePath = cachePath.concat(`/${reflectLocationId}`);
+      return cachePath;
+    };
+    let path = '';
+    switch (timeSelect) {
+      case 'month':
+        path = getPath('monthly');
+        break;
+      case 'week':
+        path = getPath('weekly');
+      default:
+        break;
+    }
+    if (!path) {
+      return [];
+    }
+    const rankings = await this.cacheManager.get<
+      {
+        orderNumber: number;
+        displayName: string;
+        avatar: string;
+        userId: string;
+        xp: number;
+        isCurrentUser: boolean;
+        role: Role;
+      }[]
+    >(path);
+    if (rankings?.length > 0) {
+      const result = rankings.map((element) => {
+        return {
+          ...element,
+          isCurrentUser: element.userId == userId,
+        };
+      });
+      return result;
+    }
+    return [];
+  }
   public async getUserXpThisWeek(
     currentUserId: string,
     followUserId: string,
@@ -377,13 +445,13 @@ export class ScoreStatisticsService {
     dayjs.extend(timezone);
     const startDate = dayjs()
       .tz(VIETNAM_TIME_ZONE)
-      .startOf('day')
-      .subtract(1, 'day')
+      .startOf('d')
+      .subtract(1, 'd')
       .toDate();
     const endDate = dayjs()
       .tz(VIETNAM_TIME_ZONE)
-      .endOf('day')
-      .subtract(1, 'day')
+      .endOf('d')
+      .subtract(1, 'd')
       .toDate();
 
     return this.scoreStatisticModel

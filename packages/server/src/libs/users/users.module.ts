@@ -26,8 +26,8 @@ import { LoginService } from '@libs/users/providers/login.service';
 import { UserScoresService } from '@libs/users/providers/userScores.service';
 import { CacheModule } from '@cache';
 import { ConnectModule } from '@connect';
-import { MailModule } from 'src/mail/mail.module';
-import { InvitationService } from './providers/invitation.service';
+// import { MailModule } from 'src/mail/mail.module';
+// import { InvitationService } from './providers/invitation.service';
 import { MailHelper } from '@helpers/mail.helper';
 import { UserLessonService } from './providers/userLesson.service';
 

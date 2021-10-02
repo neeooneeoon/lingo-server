@@ -54,7 +54,7 @@ export class FollowersService {
   }
 
   public getFollowers(userId: string, currentPage: number) {
-    const nPerPage = 15;
+    const nPerPage = 10;
     const nSkip = currentPage === 0 ? 0 : (currentPage - 1) * nPerPage;
     const userRef = ['displayName', 'avatar', 'xp'];
     const unSelect = ['-__v', '-tags', '-followUser'];
@@ -68,7 +68,8 @@ export class FollowersService {
         .skip(nSkip)
         .limit(nPerPage)
         .populate('user', userRef)
-        .select(unSelect),
+        .select(unSelect)
+        .lean(),
     ]).pipe(
       map(([total, followers]) => {
         const items = followers.map((follower) => {

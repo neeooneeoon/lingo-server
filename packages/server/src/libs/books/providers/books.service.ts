@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Book, BookDocument } from '@entities/book.entity';
@@ -25,9 +26,9 @@ import {
 } from '@dto/progress';
 import { QuestionHoldersService } from '@libs/questionHolders/providers/questionHolders.service';
 import { LessonDocument } from '@entities/lesson.entity';
-import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { booksName } from '@utils/constants';
+import { forkJoin, from, Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { booksName, MAX_TTL } from '@utils/constants';
 import { Unit } from '@dto/unit/unit.dto';
 import { SentenceDocument } from '@entities/sentence.entity';
 import { WordsService } from '@libs/words/words.service';
@@ -42,6 +43,7 @@ import { TransactionService } from '@connect';
 @Injectable()
 export class BooksService {
   private prefixKey: string;
+  private readonly logger = new Logger(BooksService.name);
   constructor(
     @InjectModel(Book.name) private bookModel: Model<BookDocument>,
     @Inject(forwardRef(() => ProgressesService))
@@ -62,20 +64,64 @@ export class BooksService {
     book: Partial<ProgressBook>,
   ): Observable<ActiveBookProgress> {
     const unSelect = ['name', 'grade', 'cover', '-_id', 'units._id'];
+    const path = `${this.prefixKey}/bookMetadata/${book.bookId}/`;
     return from(
-      this.bookModel.findById(book.bookId).select(unSelect).lean(),
+      this.cacheManager.get<Partial<LeanDocument<BookDocument>>>(path),
     ).pipe(
-      map((result) => {
+      switchMap((bookCache) => {
+        if (!bookCache) {
+          return from(
+            this.bookModel.findById(book.bookId).select(unSelect).lean(),
+          ).pipe(
+            switchMap((snapshot) => {
+              this.cacheManager
+                .set<Partial<LeanDocument<BookDocument>>>(path, snapshot, {
+                  ttl: MAX_TTL,
+                })
+                .then((r) => this.logger.log(r));
+              return of(snapshot);
+            }),
+          );
+        } else {
+          return of(bookCache);
+        }
+      }),
+      map((bookResult) => {
         return {
-          name: result?.name,
-          grade: result?.grade,
-          cover: result?.cover,
+          name: bookResult?.name,
+          grade: bookResult?.grade,
+          cover: bookResult?.cover,
           bookId: book.bookId,
           doneLessons: book.doneLessons,
           totalLessons: book.totalLessons,
           lastDid: book.lastDid,
           units: book.units,
         };
+      }),
+    );
+  }
+
+  public pushBookMetadataToCache() {
+    const selectFields = ['name', 'grade', 'cover', '_id', 'units._id'];
+    return from(this.bookModel.find({}).select(selectFields).lean()).pipe(
+      switchMap((books) => {
+        if (books?.length > 0) {
+          return forkJoin(
+            books.map((book) => {
+              const path = `${this.prefixKey}/bookMetadata/${book._id}/`;
+              return from(
+                this.cacheManager
+                  .set<Partial<LeanDocument<BookDocument>>>(path, book, {
+                    ttl: MAX_TTL,
+                  })
+                  .then((r) => {
+                    this.logger.debug(`${book._id} - ${r}`);
+                  }),
+              );
+            }),
+          );
+        }
+        return of([]);
       }),
     );
   }
@@ -344,7 +390,7 @@ export class BooksService {
         });
         function shuffle(array: Array<LeanDocument<QuestionDocument>>) {
           if (array.length > 1) {
-            const currentIndex = array.length;
+            // const currentIndex = array.length;
             // while (currentIndex != 0) {
             //   const randomIndex = Math.floor(Math.random() * currentIndex);
             //   currentIndex--;
@@ -635,7 +681,7 @@ export class BooksService {
       await this.cacheManager.set<LeanDocument<BookDocument>[]>(
         `${this.prefixKey}/books/${grade}`,
         books,
-        { ttl: 86400 },
+        { ttl: MAX_TTL },
       );
     }
   }

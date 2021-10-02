@@ -1,3 +1,4 @@
+import { MAX_TTL } from '@utils/constants';
 import { CreateTagDto } from '@dto/following';
 import { Tag, TagDocument } from '@entities/tag.entity';
 import {
@@ -71,7 +72,8 @@ export class TagsService {
               .find({
                 user: Types.ObjectId(currentUser),
               })
-              .select(unSelect),
+              .select(unSelect)
+              .lean(),
           ).pipe(
             switchMap((userTags) => {
               this.cache
@@ -79,7 +81,7 @@ export class TagsService {
                   `${this.prefixKey}/tags/${currentUser}`,
                   userTags,
                   {
-                    ttl: 7200,
+                    ttl: MAX_TTL,
                   },
                 )
                 .then((r) => {
@@ -133,7 +135,7 @@ export class TagsService {
               .set<Partial<TagDocument>[]>(
                 `${this.prefixKey}/tags/${currentUser}`,
                 [...tags, leanTag],
-                { ttl: 7200 },
+                { ttl: MAX_TTL },
               )
               .then((r) => console.log(r));
             return of(leanTag);
@@ -163,7 +165,7 @@ export class TagsService {
                   `${this.prefixKey}/tags/${currentUser}`,
                   tags,
                   {
-                    ttl: 7200,
+                    ttl: MAX_TTL,
                   },
                 )
                 .then((r) => console.log(r));
@@ -209,7 +211,7 @@ export class TagsService {
                   `${this.prefixKey}/tags/${currentUser}`,
                   tags,
                   {
-                    ttl: 7200,
+                    ttl: MAX_TTL,
                   },
                 )
                 .then((r) => console.log(r));
@@ -218,6 +220,44 @@ export class TagsService {
           }
         }
         throw new BadRequestException();
+      }),
+    );
+  }
+
+  public async pushToCache() {
+    const tags: Array<{
+      user: string;
+      tags: Array<{ _id: string; color: string; name: string }>;
+    }> = await this.tagModel.aggregate([
+      {
+        $group: {
+          _id: {
+            user: '$user',
+          },
+          tags: {
+            $push: {
+              _id: '$_id',
+              color: '$color',
+              name: '$name',
+              user: '$user',
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          user: '$_id.user',
+          tags: '$tags',
+          _id: 0,
+        },
+      },
+    ]);
+    await Promise.all(
+      tags.map((element) => {
+        const path = `${this.prefixKey}/tags/${element.user}`;
+        return this.cache.set<Partial<TagDocument>[]>(path, element.tags, {
+          ttl: MAX_TTL,
+        });
       }),
     );
   }

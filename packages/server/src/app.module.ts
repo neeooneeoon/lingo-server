@@ -15,8 +15,8 @@ import { NotificationsModule } from '@libs/notifications';
 import { StoriesModule } from '@libs/stories';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { EvaluationModule } from '@libs/evaluation';
+import { QueueModule } from '@libs/queues/queue.module';
 import { join } from 'path';
-import { UserQueueModule } from '@libs/queues/userQueue';
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ import { UserQueueModule } from '@libs/queues/userQueue';
     NotificationsModule,
     StoriesModule,
     EvaluationModule,
-    UserQueueModule,
+    QueueModule,
   ],
   controllers: [],
   providers: [AppService],
