@@ -395,14 +395,12 @@ export class FollowingsService {
   public async findFollowing(
     currentUser: string,
     followUser: string,
-  ): Promise<LeanDocument<FollowingDocument>> {
-    return this.followingModel
-      .findOne({
-        user: Types.ObjectId(currentUser),
-        followUser: Types.ObjectId(followUser),
-      })
-      .select(['_id'])
-      .lean();
+  ): Promise<boolean> {
+    const followings = await this.countFollowings(currentUser);
+    if (followings?.items?.length > 0) {
+      return followings?.items?.includes(followUser);
+    }
+    return false;
   }
 
   public async checkIsFollowing(
@@ -418,7 +416,7 @@ export class FollowingsService {
     }
     return {
       ...otherUserProfile,
-      followed: !!following,
+      followed: following,
     };
   }
   public async getAllTimeFollowingsXp(
