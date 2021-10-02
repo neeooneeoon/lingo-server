@@ -60,7 +60,7 @@ export class FollowingsService {
     tagIds: string[],
     currentPage: number,
   ) {
-    const nPerPage = 15;
+    const nPerPage = 10;
     const nSkip = currentPage <= 0 ? 0 : (currentPage - 1) * nPerPage;
     const followUserRef = ['displayName', 'avatar', 'xp'];
     const tagRef = ['color', 'name'];
@@ -77,7 +77,8 @@ export class FollowingsService {
           .limit(nPerPage)
           .populate('followUser', followUserRef)
           .populate('tags', tagRef)
-          .select(unSelect),
+          .select(unSelect)
+          .lean(),
       );
       return forkJoin([total$, followings$]).pipe(
         map(([total, followings]) => {
@@ -102,7 +103,8 @@ export class FollowingsService {
           .limit(nPerPage)
           .populate('followUser', followUserRef)
           .populate('tags', tagRef)
-          .select(unSelect),
+          .select(unSelect)
+          .lean(),
       );
       return forkJoin([total$, followings$]).pipe(
         map(([total, followings]) => {
@@ -448,7 +450,8 @@ export class FollowingsService {
         .skip(nSkip)
         .limit(nPerPage)
         .populate('followUser', followUserRef)
-        .select(unSelect),
+        .select(unSelect)
+        .lean(),
     ]).pipe(
       map(([total, followings]) => {
         return {

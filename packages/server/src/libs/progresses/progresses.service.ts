@@ -1,3 +1,4 @@
+import { MAX_TTL } from '@utils/constants';
 import { LeanDocument, Model, Types, UpdateWriteOpResult } from 'mongoose';
 import { Progress, ProgressDocument } from '@entities/progress.entity';
 import {
@@ -587,7 +588,7 @@ export class ProgressesService {
             return this.cacheManager.set<BookProgressMetaData[]>(
               `${this.prefixKey}/${userId}/progressBooks`,
               progressBooks,
-              { ttl: 86400 },
+              { ttl: MAX_TTL },
             );
           }
         }),

@@ -36,4 +36,16 @@ export class BookProcessor {
       throw new BadRequestException(error);
     }
   }
+
+  @Process('pushBookMetadataToCache')
+  async handlePushBookMetadataToCache() {
+    try {
+      this.logger.debug('Start pushBookMetadataToCache');
+      await this.booksService.pushBookMetadataToCache().toPromise();
+      this.logger.debug('Done pushBookMetadataToCache');
+    } catch (error) {
+      this.logger.debug(error);
+      throw new BadRequestException(error);
+    }
+  }
 }

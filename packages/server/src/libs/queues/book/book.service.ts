@@ -16,4 +16,9 @@ export class BookQueueService {
   async pushStoriesToCache() {
     await this.bookQueue.add('pushStoriesToCache', {}, { priority: 2 });
   }
+
+  @Cron('30 4 * * *', { timeZone: 'Asia/Ho_Chi_Minh' })
+  async pushBookMetadataToCache() {
+    await this.bookQueue.add('pushBookMetadataToCache', {}, { priority: 2 });
+  }
 }
