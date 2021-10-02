@@ -15,7 +15,7 @@ import { FacebookService } from '@libs/users/providers/facebook.service';
 import { UsersHelper } from '@helpers/users.helper';
 import { AuthenticationService } from '@authentication';
 import { ProgressesService } from '@libs/progresses/progresses.service';
-import { DEFAULT_AVATAR } from '@utils/constants';
+import { DEFAULT_AVATAR, MAX_TTL } from '@utils/constants';
 import { Cache } from 'cache-manager';
 import { Province } from '@entities/province.entity';
 import { District } from '@entities/district.entity';
@@ -101,15 +101,20 @@ export class LoginService {
         userId: user._id,
         role: user.role,
       });
+      const deviceTokenPromise = !info?.deviceToken?.trim()
+        ? new Promise((resolve, reject) => {
+            resolve(true);
+          })
+        : this.notificationsService.storeDeviceToken(
+            String(user._id),
+            info.deviceToken,
+          );
       await Promise.all([
-        this.notificationsService.storeDeviceToken(
-          String(user._id),
-          info.deviceToken,
-        ),
+        deviceTokenPromise,
         this.cache.set(
           `${this.prefixKey}/profile/${String(user._id)}`,
           profile,
-          { ttl: 86400 },
+          { ttl: MAX_TTL },
         ),
       ]);
       return {

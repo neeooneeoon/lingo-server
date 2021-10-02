@@ -22,7 +22,7 @@ export class User {
   @Prop({ type: String, required: false, default: '' })
   givenName?: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: false, default: '' })
   displayName: string;
 
   @Prop({ type: Date, required: false, default: '' })

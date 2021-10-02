@@ -144,7 +144,7 @@ export class NotificationsService {
     }
   }
 
-  public async scheduleNotifications() {
+  public async dailyRemind() {
     const MAX_DEVICE_MULTICAST = 1000;
     const devices = await this.deviceTokenModel.find({});
     const enableDevices = devices.map((device) => device.token);

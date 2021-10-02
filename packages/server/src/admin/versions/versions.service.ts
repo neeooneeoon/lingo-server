@@ -1,3 +1,4 @@
+import { MAX_TTL } from '@utils/constants';
 import {
   CACHE_MANAGER,
   Inject,
@@ -95,11 +96,13 @@ export class VersionsService {
   }
 
   public async pushToCache() {
-    const currentVersion = await this.versionModel.findOne({});
+    const currentVersion = (await this.versionModel
+      .findOne({})
+      .lean()) as VersionDocument;
     await this.cacheManager.set<VersionDocument>(
       `${this.prefixKey}/currentVersion`,
       currentVersion,
-      { ttl: 86400 },
+      { ttl: MAX_TTL },
     );
   }
 }

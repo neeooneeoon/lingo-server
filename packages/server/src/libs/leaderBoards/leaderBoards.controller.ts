@@ -81,15 +81,16 @@ export class LeaderBoardsController {
       if (role == Role.Admin) {
         throw new ForbiddenException();
       }
-      const result = await this.scoreStatisticsService.getRankByTime(
-        user.userId,
-        timeSelect,
-        displayFollowings,
-        location,
-        locationId,
-        schoolId,
-        role,
-      );
+      const result =
+        await this.scoreStatisticsService.getRankingByTimeAndLocation(
+          user.userId,
+          timeSelect,
+          displayFollowings,
+          location,
+          locationId,
+          schoolId,
+          role,
+        );
       return result;
     } catch (error) {
       console.log(error);

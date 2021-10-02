@@ -27,7 +27,7 @@ import { QuestionHoldersService } from '@libs/questionHolders/providers/question
 import { LessonDocument } from '@entities/lesson.entity';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { booksName } from '@utils/constants';
+import { booksName, MAX_TTL } from '@utils/constants';
 import { Unit } from '@dto/unit/unit.dto';
 import { SentenceDocument } from '@entities/sentence.entity';
 import { WordsService } from '@libs/words/words.service';
@@ -635,7 +635,7 @@ export class BooksService {
       await this.cacheManager.set<LeanDocument<BookDocument>[]>(
         `${this.prefixKey}/books/${grade}`,
         books,
-        { ttl: 86400 },
+        { ttl: MAX_TTL },
       );
     }
   }

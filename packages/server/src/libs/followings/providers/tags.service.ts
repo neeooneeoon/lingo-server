@@ -1,3 +1,4 @@
+import { MAX_TTL } from '@utils/constants';
 import { CreateTagDto } from '@dto/following';
 import { Tag, TagDocument } from '@entities/tag.entity';
 import {
@@ -79,7 +80,7 @@ export class TagsService {
                   `${this.prefixKey}/tags/${currentUser}`,
                   userTags,
                   {
-                    ttl: 7200,
+                    ttl: MAX_TTL,
                   },
                 )
                 .then((r) => {
@@ -133,7 +134,7 @@ export class TagsService {
               .set<Partial<TagDocument>[]>(
                 `${this.prefixKey}/tags/${currentUser}`,
                 [...tags, leanTag],
-                { ttl: 7200 },
+                { ttl: MAX_TTL },
               )
               .then((r) => console.log(r));
             return of(leanTag);
@@ -163,7 +164,7 @@ export class TagsService {
                   `${this.prefixKey}/tags/${currentUser}`,
                   tags,
                   {
-                    ttl: 7200,
+                    ttl: MAX_TTL,
                   },
                 )
                 .then((r) => console.log(r));
@@ -209,7 +210,7 @@ export class TagsService {
                   `${this.prefixKey}/tags/${currentUser}`,
                   tags,
                   {
-                    ttl: 7200,
+                    ttl: MAX_TTL,
                   },
                 )
                 .then((r) => console.log(r));

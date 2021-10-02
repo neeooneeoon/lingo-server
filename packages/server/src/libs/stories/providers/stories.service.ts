@@ -1,3 +1,4 @@
+import { MAX_TTL } from '@utils/constants';
 import {
   BadRequestException,
   CACHE_MANAGER,
@@ -56,6 +57,18 @@ export class StoriesService {
         },
       },
     ]);
+  }
+
+  public async pushToCache() {
+    const groups = await this.groupStories();
+    await Promise.all(
+      groups.map((group) => {
+        const path = `${this.prefixKey}/${group.bookId}/${group.unitId}/stories`;
+        return this.cacheManager.set<GroupStories>(path, group, {
+          ttl: MAX_TTL,
+        });
+      }),
+    );
   }
 
   public async getStoriesInUnit(bookId: string, unitId: string) {
