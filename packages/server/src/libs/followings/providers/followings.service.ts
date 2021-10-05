@@ -1,5 +1,5 @@
 import { Role } from '@utils/enums';
-import { LeanDocument, Model, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Following, FollowingDocument } from '@entities/following.entity';
 import {
   BadRequestException,

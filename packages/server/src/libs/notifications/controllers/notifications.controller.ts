@@ -22,6 +22,7 @@ import { CheckPolicies } from '@middlewares/policy/policy.decorator';
 import { UserPermission } from '@middlewares/policy/permissions/user.permission';
 import { Action } from '@utils/enums';
 import { CreateNotificationTemplateDto } from '@dto/notification/createNotificationTemplate.dto';
+import { UPDATE_SYSTEM_MESSAGE } from '../constants';
 
 @Controller('api/notification')
 @ApiTags('Notification')
@@ -38,7 +39,13 @@ export class NotificationsController {
   //   return this.notificationsService.updateSystem();
   // }
   pushNotification() {
-    return this.notificationsService.updateSystem();
+    return this.notificationsService.sendStaticMessage(UPDATE_SYSTEM_MESSAGE);
+  }
+
+  @Get('groupDeviceTokens')
+  @CheckPolicies(new UserPermission(Action.Manage))
+  async groupDeviceTokens() {
+    return this.notificationsService.groupDeviceTokens();
   }
 
   @Get('listNotifications')
