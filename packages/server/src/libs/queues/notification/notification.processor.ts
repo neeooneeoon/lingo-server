@@ -1,6 +1,10 @@
 import { NotificationsService } from '@libs/notifications/providers/notifications.service';
 import { Process, Processor } from '@nestjs/bull';
 import { BadRequestException, Logger } from '@nestjs/common';
+import {
+  DAILY_MESSAGE,
+  LEARNING_VOCABULARY_MESSAGE,
+} from '@libs/notifications/constants';
 
 @Processor('notification')
 export class NotificationProcessor {
@@ -12,7 +16,7 @@ export class NotificationProcessor {
   async handleDailyRemind() {
     try {
       this.logger.debug('Start dailyRemind');
-      await this.notificationService.dailyRemind();
+      await this.notificationService.sendStaticMessage(DAILY_MESSAGE);
       this.logger.debug('Done dailyRemind');
       return;
     } catch (error) {
@@ -25,7 +29,9 @@ export class NotificationProcessor {
   async handleRemindLearnVocabulary() {
     try {
       this.logger.debug('Start remindLearnVocabulary');
-      await this.notificationService.remindLearnVocabulary();
+      await this.notificationService.sendStaticMessage(
+        LEARNING_VOCABULARY_MESSAGE,
+      );
       this.logger.debug('Done remindLearnVocabulary');
       return;
     } catch (error) {

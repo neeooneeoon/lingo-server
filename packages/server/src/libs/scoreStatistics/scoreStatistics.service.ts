@@ -19,7 +19,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { VIETNAM_TIME_ZONE } from '@utils/constants';
+import { MAX_TTL, VIETNAM_TIME_ZONE } from '@utils/constants';
 import { LeanDocument, Model, Types } from 'mongoose';
 import { Location, Role } from '@utils/enums';
 import { CreateRecordDto } from '@dto/leaderBoard/createRecord.dto';
@@ -107,7 +107,7 @@ export class ScoreStatisticsService {
     location?: string,
     locationId?: number,
     schoolId?: number,
-    role?: Role,
+    _role?: Role,
   ) {
     timeSelect = timeSelect?.trim()?.toLowerCase();
     dayjs.extend(utc);
@@ -389,7 +389,7 @@ export class ScoreStatisticsService {
           await this.cacheManager.set<boolean>(
             `${this.prefixKey}/scoreRecord/${userId}/${formatTimeStart}`,
             true,
-            { ttl: 86400 },
+            { ttl: MAX_TTL },
           );
         }
       }
@@ -407,7 +407,7 @@ export class ScoreStatisticsService {
           await this.cacheManager.set<boolean>(
             `${this.prefixKey}/scoreRecord/${userId}/${formatTimeStart}`,
             true,
-            { ttl: 86400 },
+            { ttl: MAX_TTL },
           );
           return;
         }
@@ -448,27 +448,16 @@ export class ScoreStatisticsService {
   public async findScoreStatisticRecords(userId: string) {
     dayjs.extend(utc);
     dayjs.extend(timezone);
-    const startDate = dayjs()
+    const formatTimeStart = dayjs()
       .tz(VIETNAM_TIME_ZONE)
-      .startOf('d')
-      .subtract(1, 'd')
-      .toDate();
-    const endDate = dayjs()
-      .tz(VIETNAM_TIME_ZONE)
-      .endOf('d')
-      .subtract(1, 'd')
-      .toDate();
-
-    return this.scoreStatisticModel
-      .find({
-        user: Types.ObjectId(userId),
-        createdAt: {
-          $gte: startDate,
-          $lte: endDate,
-        },
-      })
-      .select(['xp'])
-      .lean();
+      .startOf('day')
+      .subtract(1, 'day')
+      .format('DD-MM-YYYY')
+      .toString();
+    const hasScoreInToDay = await this.cacheManager.get<boolean>(
+      `${this.prefixKey}/scoreRecord/${userId}/${formatTimeStart}`,
+    );
+    return hasScoreInToDay;
   }
 
   public async createRecord(body: CreateRecordDto) {

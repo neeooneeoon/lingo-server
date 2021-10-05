@@ -40,7 +40,10 @@ export class UserProcessor {
       const users = await this.usersService.getAllUsers();
       await Promise.all(
         users.map((user) =>
-          this.usersService.changeUserStreak(String(user._id)),
+          this.usersService.changeUserStreak(
+            String(user._id),
+            Number(user.streak),
+          ),
         ),
       );
     } catch (error) {

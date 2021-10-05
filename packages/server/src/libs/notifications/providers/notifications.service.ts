@@ -21,6 +21,8 @@ import { messaging } from 'firebase-admin/lib/messaging';
 import { UsersService } from '@libs/users/providers/users.service';
 import { UserDocument } from '@entities/user.entity';
 import { FollowingsService } from '@libs/followings/providers/followings.service';
+import { GroupDeviceToken } from '@dto/notification';
+import { MAX_DEVICE_MULTICAST } from '../constants';
 
 @Injectable()
 export class NotificationsService {
@@ -33,6 +35,37 @@ export class NotificationsService {
     private followingsService: FollowingsService,
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
   ) {}
+
+  public async groupDeviceTokens(): Promise<GroupDeviceToken[]> {
+    const groups: GroupDeviceToken[] = await this.deviceTokenModel.aggregate([
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            user: '$user',
+          },
+          items: {
+            $push: {
+              token: '$token',
+              createdAt: '$createdAt',
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          user: '$_id.user',
+          items: '$items',
+          _id: 0,
+        },
+      },
+    ]);
+    return groups.filter((element) => element.items?.length > 0);
+  }
 
   public async getDeviceToken(objectMessage: {
     currentUser: string;
@@ -116,16 +149,10 @@ export class NotificationsService {
   }
   public async sendMulticast(
     tokens: string[],
-    notification: Omit<PushNotificationDto, 'token'>,
+    message: messaging.MessagingPayload,
   ): Promise<void> {
-    const { title, body } = notification;
-    const payload = {
-      notification: {
-        title,
-        body,
-      },
-    };
-    await admin.messaging().sendToDevice(tokens, payload);
+    await admin.messaging().sendToDevice(tokens, message);
+    return;
   }
 
   public async storeDeviceToken(
@@ -144,22 +171,22 @@ export class NotificationsService {
     }
   }
 
-  public async dailyRemind() {
-    const MAX_DEVICE_MULTICAST = 1000;
-    const devices = await this.deviceTokenModel.find({});
-    const enableDevices = devices.map((device) => device.token);
-    const payload = {
-      title: '⏰ Nhắc nhở hằng ngày.',
-      body: 'Bạn chỉ cần dành ra 10 phút mỗi ngày để nâng cao kỹ năng Tiếng Anh. Bắt đầu thôi!',
-    };
-    if (enableDevices.length <= MAX_DEVICE_MULTICAST) {
-      await this.sendMulticast(enableDevices, payload);
+  public async sendStaticMessage(message: messaging.MessagingPayload) {
+    const groups = await this.groupDeviceTokens();
+    const devicesSet = new Set<string>();
+    groups.forEach((element) => {
+      const token = element?.items[0]?.token;
+      if (token) devicesSet.add(token);
+    });
+    const latestDevices = [...devicesSet];
+    if (latestDevices.length <= MAX_DEVICE_MULTICAST) {
+      await this.sendMulticast(latestDevices, message);
     } else {
       const remainder =
-        Math.floor(enableDevices.length / MAX_DEVICE_MULTICAST) + 1;
+        Math.floor(latestDevices.length / MAX_DEVICE_MULTICAST) + 1;
       const listGroupDevices: Array<Array<string>> = [];
       for (let i = 0; i < remainder; i++) {
-        const multicastDevices = enableDevices.slice(
+        const multicastDevices = latestDevices.slice(
           i * MAX_DEVICE_MULTICAST,
           (i + 1) * MAX_DEVICE_MULTICAST,
         );
@@ -169,40 +196,11 @@ export class NotificationsService {
       }
 
       await Promise.all(
-        listGroupDevices.map((element) => this.sendMulticast(element, payload)),
+        listGroupDevices.map((element) => this.sendMulticast(element, message)),
       );
     }
   }
 
-  public async updateSystem() {
-    const MAX_DEVICE_MULTICAST = 1000;
-    const devices = await this.deviceTokenModel.find({});
-    const enableDevices = devices.map((device) => device.token);
-    const payload = {
-      title: '⚙️ Cập nhật hệ thống',
-      body: 'Hiện tại ứng dụng đang trong thời gian bảo trì. Xin cảm ơn!',
-    };
-    if (enableDevices.length <= MAX_DEVICE_MULTICAST) {
-      await this.sendMulticast(enableDevices, payload);
-    } else {
-      const remainder =
-        Math.floor(enableDevices.length / MAX_DEVICE_MULTICAST) + 1;
-      const listGroupDevices: Array<Array<string>> = [];
-      for (let i = 0; i < remainder; i++) {
-        const multicastDevices = enableDevices.slice(
-          i * MAX_DEVICE_MULTICAST,
-          (i + 1) * MAX_DEVICE_MULTICAST,
-        );
-        if (multicastDevices?.length > 0) {
-          listGroupDevices.push(multicastDevices);
-        }
-      }
-
-      await Promise.all(
-        listGroupDevices.map((element) => this.sendMulticast(element, payload)),
-      );
-    }
-  }
   public async sendNotificationTest() {
     const devices = await this.deviceTokenModel.find({
       user: Types.ObjectId('60e3cc151f2d656c247426ce'),
@@ -353,35 +351,6 @@ export class NotificationsService {
           }),
         );
       }
-    }
-  }
-  public async remindLearnVocabulary() {
-    const MAX_DEVICE_MULTICAST = 1000;
-    const devices = await this.deviceTokenModel.find({});
-    const enableDevices = devices.map((device) => device.token);
-    const payload = {
-      title: '💡 LINGO MÁCH BẠN',
-      body: 'Có thể bạn chưa biết, buổi sáng là thời điểm tốt nhất để ghi nhớ từ vựng. Học ngay thôi!',
-    };
-    if (enableDevices.length <= MAX_DEVICE_MULTICAST) {
-      await this.sendMulticast(enableDevices, payload);
-    } else {
-      const remainder =
-        Math.floor(enableDevices.length / MAX_DEVICE_MULTICAST) + 1;
-      const listGroupDevices: Array<Array<string>> = [];
-      for (let i = 0; i < remainder; i++) {
-        const multicastDevices = enableDevices.slice(
-          i * MAX_DEVICE_MULTICAST,
-          (i + 1) * MAX_DEVICE_MULTICAST,
-        );
-        if (multicastDevices?.length > 0) {
-          listGroupDevices.push(multicastDevices);
-        }
-      }
-
-      await Promise.all(
-        listGroupDevices.map((element) => this.sendMulticast(element, payload)),
-      );
     }
   }
 }

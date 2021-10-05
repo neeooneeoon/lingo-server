@@ -9,7 +9,13 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { LeanDocument, Model, Types, UpdateWriteOpResult } from 'mongoose';
+import {
+  LeanDocument,
+  Model,
+  Types,
+  UpdateQuery,
+  UpdateWriteOpResult,
+} from 'mongoose';
 import { User, UserDocument } from '@entities/user.entity';
 import { ProgressesService } from '@libs/progresses/progresses.service';
 import { UsersHelper } from '@helpers/users.helper';
@@ -352,7 +358,7 @@ export class UsersService {
   public async getAllUsers(): Promise<LeanDocument<UserDocument>[]> {
     return this.userModel
       .find({ xp: { $ne: 0 } })
-      .select(['_id'])
+      .select(['_id', 'streak'])
       .lean();
   }
 
@@ -411,21 +417,34 @@ export class UsersService {
     );
   }
 
-  public async changeUserStreak(userId: string): Promise<UpdateWriteOpResult> {
-    const [user, scoreRecords] = await Promise.all([
-      this.userModel.findById(Types.ObjectId(userId)),
-      this.scoreStatisticsService.findScoreStatisticRecords(userId),
-    ]);
-    return this.userModel.updateOne(
-      {
-        _id: Types.ObjectId(userId),
-      },
-      {
-        $set: {
-          streak: scoreRecords.length === 0 ? 0 : user.streak + 1,
+  public async changeUserStreak(
+    userId: string,
+    streak: number,
+  ): Promise<UpdateWriteOpResult> {
+    const hasDoneLesson =
+      await this.scoreStatisticsService.findScoreStatisticRecords(userId);
+    let updateQuery: UpdateQuery<UserDocument>;
+    if (hasDoneLesson) {
+      updateQuery = {
+        $inc: {
+          streak: 1,
         },
-      },
-    );
+      };
+    } else {
+      updateQuery = {
+        $set: {
+          streak: 0,
+        },
+      };
+    }
+    if (hasDoneLesson || (!hasDoneLesson && streak != 0)) {
+      return this.userModel.updateOne(
+        {
+          _id: Types.ObjectId(userId),
+        },
+        updateQuery,
+      );
+    }
   }
 
   public scoresOverview(userId: string): Observable<ScoreOverviewDto> {
