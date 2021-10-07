@@ -145,13 +145,26 @@ export class QuestionHoldersService {
       const setSentenceIds: Set<string> = new Set<string>(
         currentUnit.sentenceIds,
       );
+      const uniqueQuestions: Array<{ focus: string; code: QuestionTypeCode }> =
+        [];
       const listQuestions: any[] = [];
 
       for (const questionId of listAskingQuestionIds) {
         const inspectedQuestion = questions.find(
           (question) => question._id == questionId,
         );
-        if (inspectedQuestion) {
+        const alreadyExists = uniqueQuestions.findIndex(
+          (element) =>
+            element.code === inspectedQuestion?.code &&
+            element.focus === inspectedQuestion?.focus,
+        );
+        if (inspectedQuestion && alreadyExists == -1) {
+          if (inspectedQuestion?.code && inspectedQuestion?.focus) {
+            uniqueQuestions.push({
+              code: inspectedQuestion.code,
+              focus: inspectedQuestion.focus,
+            });
+          }
           const {
             code: questionCode,
             choices,
