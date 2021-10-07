@@ -303,7 +303,6 @@ export class ScoreStatisticsService {
     try {
       const xpArr: UserRank[] = [];
       let tempArr: LeanDocument<ScoreStatisticDocument>[] = [];
-      console.log(filter);
       if (displayFollowings) {
         tempArr = await this.getXpStatisticByAddress(
           filter,
@@ -313,8 +312,6 @@ export class ScoreStatisticsService {
           role,
         );
         const followingIds = await this.getFollowingIds(userId);
-        console.log(followingIds);
-        console.log(tempArr);
         tempArr = tempArr.filter((i) => {
           const user = i.user as unknown as UserDocument;
           return followingIds.includes(user._id.toHexString());

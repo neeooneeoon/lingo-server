@@ -353,7 +353,7 @@ export class BooksService {
         await this.cacheManager.set<LeanDocument<QuestionDocument>[]>(
           `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
           questions,
-          { ttl: 7200 },
+          { ttl: MAX_TTL },
         );
       }
     }
@@ -390,15 +390,15 @@ export class BooksService {
         });
         function shuffle(array: Array<LeanDocument<QuestionDocument>>) {
           if (array.length > 1) {
-            // const currentIndex = array.length;
-            // while (currentIndex != 0) {
-            //   const randomIndex = Math.floor(Math.random() * currentIndex);
-            //   currentIndex--;
-            //   [array[currentIndex], array[randomIndex]] = [
-            //     array[randomIndex],
-            //     array[currentIndex],
-            //   ];
-            // }
+            let currentIndex = array.length;
+            while (currentIndex != 0) {
+              const randomIndex = Math.floor(Math.random() * currentIndex);
+              currentIndex--;
+              [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex],
+                array[currentIndex],
+              ];
+            }
           }
           return array;
         }

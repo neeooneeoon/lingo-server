@@ -288,7 +288,7 @@ export class ProgressesService {
       this.cacheManager.set<BookProgressMetaData[]>(
         `${this.prefixKey}/${userId}/progressBooks`,
         booksProgress,
-        { ttl: 86400 },
+        { ttl: MAX_TTL },
       ),
     ]);
     return result;
@@ -379,7 +379,7 @@ export class ProgressesService {
         progressLevel.lessons = lessons;
         progressLevel.passed = true;
       }
-      progressUnit.passedLevels++;
+      progressUnit.passedLevels = progressUnit.passedLevels + 1;
       progressUnit.doneLessons += lessons.length;
       progressUnit.doneQuestions += workInfo.doneQuestions;
     }
