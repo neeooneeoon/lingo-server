@@ -1,3 +1,4 @@
+import { MAX_TTL } from '@utils/constants';
 import { OverLevelCalculating } from '@dto/works';
 import { LeanDocument, Model, Types } from 'mongoose';
 import { Work, WorkDocument } from '@entities/work.entity';
@@ -132,7 +133,7 @@ export class WorksService {
         await this.cacheManager.set<LeanDocument<QuestionDocument>[]>(
           `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
           questions,
-          { ttl: 7200 },
+          { ttl: MAX_TTL },
         );
       }
       // const questions = await this.cacheManager.get<
@@ -295,6 +296,9 @@ export class WorksService {
   public async calculatePointForOverLevel(input: OverLevelCalculating) {
     try {
       const { bookId, unitId, levelIndex, results, workInfo } = input;
+      const totalQuestions = workInfo.totalQuestions
+        ? workInfo.totalQuestions
+        : workInfo.doneQuestions;
       let questions = await this.cacheManager.get<
         LeanDocument<QuestionDocument>[] | null
       >(`${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`);
@@ -312,7 +316,7 @@ export class WorksService {
         await this.cacheManager.set<LeanDocument<QuestionDocument>[]>(
           `${this.prefixKey}/questionHolder/${bookId}/${unitId}/${levelIndex}`,
           questions,
-          { ttl: 7200 },
+          { ttl: MAX_TTL },
         );
       }
       let totalPoint = 0;
@@ -327,11 +331,7 @@ export class WorksService {
             correctAnswer++;
             continue;
           }
-          const isCorrect = await this.answerService.checkAnswer(
-            results[i],
-            question,
-          );
-          if (isCorrect) {
+          if (question) {
             totalPoint += this.pointService.getQuestionPoint(question);
             correctAnswer++;
           }
@@ -340,8 +340,8 @@ export class WorksService {
       return {
         totalPoint,
         correctAnswer,
-        totalQuestions: workInfo.totalQuestions,
-        percentage: Math.round(correctAnswer / workInfo.totalQuestions) * 100,
+        totalQuestions,
+        percentage: Math.round(correctAnswer / totalQuestions) * 100,
       };
     } catch (error) {
       console.log(error);

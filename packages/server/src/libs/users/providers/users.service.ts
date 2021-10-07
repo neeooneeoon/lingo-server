@@ -975,7 +975,6 @@ export class UsersService {
     await updateNationwideRanking();
     await updateProvinceRanking();
     await updateSubLocationRanking();
-    console.log('Done__________________________________');
   }
 
   public async xpStatistic(group: GroupAddressDto, byWeek?: boolean) {
