@@ -5,6 +5,7 @@ import {
   DAILY_MESSAGE,
   LEARNING_VOCABULARY_MESSAGE,
 } from '@libs/notifications/constants';
+import { DoneCallback, Job } from 'bull';
 
 @Processor('notification')
 export class NotificationProcessor {
@@ -41,11 +42,12 @@ export class NotificationProcessor {
   }
 
   @Process('scoreReminderMorning')
-  async handleScoreReminderMorning() {
+  async handleScoreReminderMorning(job: Job, doneCallback: DoneCallback) {
     try {
       this.logger.debug('Start scoreReminderMorning');
       await this.notificationService.scoreReminderNotification();
       this.logger.debug('Done scoreReminderMorning');
+      doneCallback();
     } catch (error) {
       this.logger.debug(error);
       throw new BadRequestException(error);
