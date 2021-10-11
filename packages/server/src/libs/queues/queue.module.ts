@@ -4,6 +4,7 @@ import { UserQueueModule } from './userQueue';
 import { BookQueueModule } from './book';
 import { ProgressQueueModule } from './progress';
 import { FollowingQueueModule } from './following';
+import { StoryQueueModule } from './story';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { FollowingQueueModule } from './following';
     BookQueueModule,
     ProgressQueueModule,
     FollowingQueueModule,
+    StoryQueueModule,
   ],
 })
 export class QueueModule {}

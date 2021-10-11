@@ -55,7 +55,7 @@ async function bootstrap() {
     .setVersion('0.0.1')
     .build();
   const apiDocument = SwaggerModule.createDocument(app, openApiConfig);
-  SwaggerModule.setup('/idumzbuxaqqqbxal', app, apiDocument);
+  SwaggerModule.setup('/docs/index.html', app, apiDocument);
   // if (process.env.NODE_ENV === 'production') {
   //   app.use('/docs', (req, res, next) => {
   //     res.status(404).send('Not Found');
