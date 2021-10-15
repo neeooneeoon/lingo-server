@@ -5,7 +5,7 @@ import { notificationQueue } from './queue.js';
 import { TIME_ZONE } from '../configs/index.js';
 
 const vocabularyRemind = new CronJob(
-  '30 6 * * *',
+  '50 6 * * *',
   async () => {
     await notificationQueue.add('remindLearnVocabulary', {}, { priority: 1 });
   },
