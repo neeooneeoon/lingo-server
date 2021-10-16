@@ -27,7 +27,7 @@ const dailyRemind = new CronJob(
 dailyRemind.start();
 
 const scoreRemindMorning = new CronJob(
-  '45 8 * * *',
+  '51 11 * * *',
   async () => {
     await notificationQueue.add('scoreReminderMorning', {}, { priority: 1 });
   },
