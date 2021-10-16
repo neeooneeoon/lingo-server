@@ -39,7 +39,7 @@ export class VersionsController {
   }
 
   @Get('/current')
-  getCurrentVersion() {
-    return this.versionsService.getCurrentVersion();
+  getCurrentVersion(@Query() query) {
+    return this.versionsService.getCurrentVersion(query['os']);
   }
 }
