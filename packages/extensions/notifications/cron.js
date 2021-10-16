@@ -16,7 +16,7 @@ const vocabularyRemind = new CronJob(
 vocabularyRemind.start();
 
 const dailyRemind = new CronJob(
-  '19 0 * * *',
+  '30 19 * * *',
   async () => {
     await notificationQueue.add('dailyRemind', {}, { priority: 1 });
   },
@@ -27,7 +27,7 @@ const dailyRemind = new CronJob(
 dailyRemind.start();
 
 const scoreRemindMorning = new CronJob(
-  '51 11 * * *',
+  '45 8 * * *',
   async () => {
     await notificationQueue.add('scoreReminderMorning', {}, { priority: 1 });
   },
