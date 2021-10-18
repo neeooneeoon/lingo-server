@@ -8,6 +8,9 @@ export class Version {
 
   @Prop({ type: String, required: true })
   tag: string;
+
+  @Prop({ type: String, required: false, default: 'Android' })
+  os: string;
 }
 export type VersionDocument = Document & Version;
 export const VersionSchema = SchemaFactory.createForClass(Version);

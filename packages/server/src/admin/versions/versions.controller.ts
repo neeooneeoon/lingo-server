@@ -13,7 +13,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { MatchVersionDto, UpdateVersionDto } from '@dto/version';
+import { CurrentVersionDto, MatchVersionDto, UpdateVersionDto } from '@dto/version';
 
 @ApiTags('Version')
 @Controller('api/admin/version')
@@ -39,7 +39,13 @@ export class VersionsController {
   }
 
   @Get('/current')
-  getCurrentVersion() {
-    return this.versionsService.getCurrentVersion();
+  @ApiQuery({ type: String, name: 'os', required: false})
+  @ApiResponse({ type: CurrentVersionDto })
+  @ApiOperation({ summary: 'Lấy thông tin version hiện tại' })
+  getCurrentVersion(@Query('os') os?: string) {
+    if(!os){
+      os = 'Android';
+    }
+    return this.versionsService.getCurrentVersion(os);
   }
 }
