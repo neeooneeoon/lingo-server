@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Version, VersionDocument } from '@entities/version.entity';
@@ -80,18 +81,13 @@ export class VersionsService {
     throw new NotFoundException("Can't find version");
   }
 
-  public async getCurrentVersion(): Promise<VersionDocument> {
-    let currentVersion = await this.cacheManager.get<VersionDocument>(
-      `${this.prefixKey}/currentVersion`,
-    );
-    if (!currentVersion) {
-      currentVersion = await this.versionModel.findOne({});
+  public async getCurrentVersion(os: string): Promise<VersionDocument> {
+    let currentVersion = await this.versionModel.findOne({os: os});
       await this.cacheManager.set<VersionDocument>(
         `${this.prefixKey}/currentVersion`,
         currentVersion,
         { ttl: 86400 },
       );
-    }
     return currentVersion;
   }
 
