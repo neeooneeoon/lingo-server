@@ -82,12 +82,12 @@ export class VersionsService {
   }
 
   public async getCurrentVersion(os: string): Promise<VersionDocument> {
-    let currentVersion = await this.versionModel.findOne({os: os});
-      await this.cacheManager.set<VersionDocument>(
-        `${this.prefixKey}/currentVersion`,
-        currentVersion,
-        { ttl: 86400 },
-      );
+    let currentVersion = await this.versionModel.findOne({ os: os });
+    await this.cacheManager.set<VersionDocument>(
+      `${this.prefixKey}/currentVersion`,
+      currentVersion,
+      { ttl: 86400 },
+    );
     return currentVersion;
   }
 
