@@ -15,7 +15,6 @@ import { ConfigsService } from '@configs';
 
 @Injectable()
 export class VersionsService {
-  private osName: string;
   private prefixKey: string;
   constructor(
     @InjectModel(Version.name)
@@ -83,8 +82,7 @@ export class VersionsService {
   }
 
   public async getCurrentVersion(os: string): Promise<VersionDocument> {
-    this.osName = os;
-    var currentVersion = await this.versionModel.findOne({os: this.osName});
+    let currentVersion = await this.versionModel.findOne({os: os});
       await this.cacheManager.set<VersionDocument>(
         `${this.prefixKey}/currentVersion`,
         currentVersion,
@@ -95,7 +93,7 @@ export class VersionsService {
 
   public async pushToCache() {
     const currentVersion = (await this.versionModel
-      .findOne({os: this.osName})
+      .findOne({})
       .lean()) as VersionDocument;
     await this.cacheManager.set<VersionDocument>(
       `${this.prefixKey}/currentVersion`,
