@@ -384,6 +384,7 @@ export class UsersService {
           'createdAt',
           'address',
           'enableNotification',
+          'showRatingDialog'
         ];
         return from(
           this.userModel
@@ -483,6 +484,35 @@ export class UsersService {
         throw new BadRequestException('Failed.');
       }),
     );
+  }
+
+  public toggleRatingDialog(
+    currentUser: string,
+    toggle: boolean,
+  ): Observable<boolean> {
+    return from(
+      this.userModel.updateOne(
+        {
+          _id: Types.ObjectId(currentUser),
+        },
+        {
+          $set: {
+            showRatingDialog: toggle,
+          },
+        },
+      ),
+    ).pipe(
+      map((updateResult) => {
+        if (updateResult.nModified === 1) return true;
+        throw new BadRequestException('Failed.');
+      }),
+    );
+  }
+
+  public async getRatingDialog(userCtx: JwtPayLoad) {
+    return this.userModel.findOne({
+      _id: Types.ObjectId(userCtx.userId),
+    }, {showRatingDialog: 1, _id: 0});
   }
 
   public async isUserInLocation(
@@ -593,6 +623,7 @@ export class UsersService {
       'createdAt',
       'address',
       'enableNotification',
+      'showRatingDialog',
       'ranking',
     ];
     const users = await this.userModel

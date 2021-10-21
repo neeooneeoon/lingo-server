@@ -87,6 +87,7 @@ export class LoginService {
       lastActive: new Date(),
       address: { province: -1, district: -1 },
       enableNotification: false,
+      showRatingDialog: true,
       ranking: {
         weeklyXp: 0,
         monthlyXp: 0,

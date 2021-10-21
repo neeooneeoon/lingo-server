@@ -38,6 +38,10 @@ import { UserCtx } from '@utils/decorators/custom.decorator';
 import { JwtPayLoad } from '@utils/types';
 import { ScoreOverviewDto } from '@dto/progress';
 import { UserAddressService } from '@libs/users/providers/userAddress.service';
+import {
+  ToggleRatingDialogDto,
+  ToggleRatingDialogRes,
+} from '@lingo/core/src/dto/user/toggleRatingDialog.dto';
 // import { InvitationService } from '../providers/invitation.service';
 // import { MailInputDto } from '@dto/mail/mailInput.dto';
 
@@ -123,7 +127,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('search')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'TÌm kiếm người dùng theo email hoặc tên hiển thị' })
+  @ApiOperation({ summary: 'Tìm kiếm người dùng theo email hoặc tên hiển thị' })
   @ApiConsumes('application/json')
   @ApiQuery({ type: String, name: 'search', required: true })
   @ApiQuery({ type: Number, name: 'page', required: true })
@@ -175,6 +179,29 @@ export class UserController {
     return this.usersService.toggleReceiveNotification(
       user.userId,
       body.enable,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('getRatingDialog')
+  @ApiOperation({ summary: 'Lấy trạng thái thông báo đánh giá ứng dụng' })
+  getRatingDialog(@UserCtx() user: JwtPayLoad) {
+    return this.usersService.getRatingDialog(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('toggleRatingDialog')
+  @ApiBearerAuth()
+  @ApiBody({ type: ToggleRatingDialogDto })
+  @ApiResponse({ type: ToggleRatingDialogRes })
+  @ApiOperation({ summary: 'Bật / tắt thông báo đánh giá ứng dụng' })
+  toggleRatingDialog(
+    @Body() body: ToggleRatingDialogDto,
+    @UserCtx() user: JwtPayLoad,
+  ) {
+    return this.usersService.toggleRatingDialog(
+      user.userId,
+      body.showRatingDialog,
     );
   }
 

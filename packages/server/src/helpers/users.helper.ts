@@ -33,7 +33,8 @@ export class UsersHelper {
         grade: grade ? grade : -1,
       },
       enableNotification: user.enableNotification,
-      ranking: user.ranking,
+      showRatingDialog: user.showRatingDialog,
+      ranking: user.ranking
     };
   }
 

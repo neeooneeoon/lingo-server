@@ -62,4 +62,7 @@ export class UserProfile {
 
   @ApiProperty({ type: Boolean })
   enableNotification: boolean;
+
+  @ApiProperty({ type: Boolean })
+  showRatingDialog: boolean;
 }
